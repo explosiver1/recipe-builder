@@ -23,7 +23,9 @@ git pull    #Pulls changes that have been made while you're working, and prevent
     #Replace the lines with the code you want to keep in the merge, then continue.
 git add [merge conflicted files that were fixed]
 git commit -m "[Message Text]"  
-git push origin [branch]    #origin normally refers to the repository address. You can actually add additional remotes to represent different repo locations.
+git push -u origin HEAD   #origin normally refers to the repository address. You can actually add additional remotes to represent different repo locations.
+    #The -u flag is for --set-upstream and HEAD pushes the current branch to a remote  branch of the same name.
+    #This command allows you to make a branch in the remote that doesn't exist there yet.
 #You should see deltas processed if the push finds the repo and authenticates successfully.
 
 #Now, you can make a pull request on the github website. There's probably a way to do it in code, but I'm not sure how yet.
