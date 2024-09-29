@@ -1,0 +1,10 @@
+@model recipe_builder.Models.Recipe
+
+@{
+    ViewData["Title"] = "View Recipe";
+}
+
+<div class="text-center">
+    <h1 class="display-4">@Html.DisplayNameFor(model => model.Name): @Html.DisplayFor(model => model.Name)</h1>
+    <p>Let's get ready to cook!</p>
+</div>
