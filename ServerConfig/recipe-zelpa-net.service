@@ -1,0 +1,15 @@
+[Unit]
+Description=ASP.net Recipe Builder App Service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=root
+ExecStart=/usr/bin/dotnet /root/recipe-builder/publish/recipe-builder.dll
+SyslogIdentifier=RecipeBuilder
+Environment=DOTNET_ROOT=/usr/lib64/dotnet
+[Install]
+WantedBy=multi-user.target

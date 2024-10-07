@@ -1,3 +1,0 @@
-Burritos
-Tacos
-Bananas
