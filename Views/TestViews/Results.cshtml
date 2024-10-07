@@ -1,0 +1,21 @@
+@model recipe_builder.ViewModels.TestViewModel
+@{
+    ViewData["Title"] = "Title";
+}
+
+<div class="text-center">
+    <h1>Hello @Model.fName @Model.lName!</h1>
+    <p>Let's get ready to cook!</p>
+</div>
+<div>
+    @* SITE NAVIGATION OPTIONS *@
+    @* In place of href, for local actions, use asp-action to call action from controller to load different page or process data *@
+    
+    @*This calls the Index action of the same controller. *@
+    <a asp-action="Index">Change Name</a> 
+    @* If need to call action of different controller, need to use asp-controller as well, controller name w/o word controller *@
+    <a asp-controller="Home" asp-action="Index">Go Home</a>
+    @*Alternatively, we can define a different navigation action within the current controller and call that*@
+    <a asp-action="ReturnHome">Return Home</a>
+    
+</div>
