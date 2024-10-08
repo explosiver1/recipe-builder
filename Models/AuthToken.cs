@@ -1,3 +1,4 @@
+
 namespace recipe_builder.Models;
 
 public class AuthToken {
