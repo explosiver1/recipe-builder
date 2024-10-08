@@ -1,10 +1,10 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing.Constraints;
-using recipe_builder.Models;
-using recipe_builder.ViewModels;
+using RecipeBuilder.Models;
+using RecipeBuilder.ViewModels;
 
-namespace recipe_builder.Controllers;
+namespace RecipeBuilder.Controllers;
 
 public class TestViewsController : Controller
 {
