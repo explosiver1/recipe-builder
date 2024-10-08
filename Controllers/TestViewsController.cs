@@ -23,7 +23,7 @@ public class TestViewsController : Controller
         //View will just load the view with model data directly
         //RedirectToAction will call the action with name Results and pass it data model
         //This allows for more processing if needed
-        //return View("Results", model);
+        //return View("Results", model);//Might need to use when needing to hide data
         //If need to redirect to action in different controller, use second string argument of controller name
         return RedirectToAction("Results", model);
     }
@@ -33,7 +33,7 @@ public class TestViewsController : Controller
     }
     public IActionResult Results(TestViewModel data)
     {
-        data.fName ="Sam";
+        // data.fName ="Sam";
         return View(data);
     }
 
