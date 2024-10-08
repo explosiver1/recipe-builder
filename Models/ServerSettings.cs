@@ -1,4 +1,4 @@
-namespace recipe_builder.Models;
+namespace RecipeBuilder.Models;
 
 public class ServerSettings
 {

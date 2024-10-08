@@ -1,6 +1,6 @@
 using System;
 
-namespace recipe_builder.Models;
+namespace RecipeBuilder.Models;
 
 public static class CtrlModel
 {
@@ -17,7 +17,7 @@ public static class CtrlModel
     // Send recipe data from user to DB (& return recipe to the controller?)
     public static Recipe SetRecipe(Recipe recipe)
     {
-        
+
         return new Recipe {Name = "Chicken Parm"};
     }
 }
