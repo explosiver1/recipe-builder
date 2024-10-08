@@ -34,6 +34,10 @@ a {
   box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
 
+.dropdown-toggle {
+  color: #343a40;
+}
+
 .dropdown-menu {
   display: none;
   position: absolute;
