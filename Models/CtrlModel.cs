@@ -2,18 +2,22 @@ using System;
 
 namespace recipe_builder.Models;
 
-public class CtrlModel
+public static class CtrlModel
 {
-    // Used to send recipe from DB to user via controller
-    public Recipe GetRecipe() //String recipeName)
+    // Fetch recipe from DB & return it to controller
+    public static Recipe GetRecipe(String recipeName)
     {
+        // Will need updated to match DBQueryModel's Method & Parameters
+        //Recipe recipe = DBQueryModel.GetRecipe(recipeName);
+
         // Update so that the recipe returned is created by the dbmodel & returned here to pass on to ctrler
-        return new Recipe {Name = "Chicken Parm"};
+        return new Recipe {Name = recipeName};//recipe;
     }
 
-    // Used to send recipe from user via controller to DB
-    public Recipe SetRecipe(Recipe recipe)
+    // Send recipe data from user to DB (& return recipe to the controller?)
+    public static Recipe SetRecipe(Recipe recipe)
     {
+        
         return new Recipe {Name = "Chicken Parm"};
     }
 }
