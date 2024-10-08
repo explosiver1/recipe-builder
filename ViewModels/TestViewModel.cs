@@ -1,11 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace recipe_builder.ViewModels;
+namespace RecipeBuilder.ViewModels;
 
 public class TestViewModel
 {
-    [Required(ErrorMessage ="First Name is required")]
+    [Required(ErrorMessage = "First Name is required")]
     public string? fName { get; set; }
     public string? lName { get; set; }
 }

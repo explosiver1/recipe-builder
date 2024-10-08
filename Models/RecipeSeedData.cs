@@ -1,8 +1,8 @@
 using System;
 
-namespace recipe_builder.Models;
+namespace RecipeBuilder.Models;
 
 public class RecipeSeedData
 {
-    Recipe porkchop = new Recipe {Name = "Pork Chops"};
+    Recipe porkchop = new Recipe { Name = "Pork Chops" };
 }

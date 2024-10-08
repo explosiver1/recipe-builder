@@ -1,5 +1,5 @@
 
-namespace recipe_builder.Models;
+namespace RecipeBuilder.Models;
 
 public class AuthToken {
 
@@ -17,7 +17,14 @@ public AuthToken(string username) {
 
 public bool Validate() {
     //Check if token is expired here.
-    return true;
+    int test = Compare(DateTime.Now, expiration);
+
+    //Negative is earlier than, equal is same, greater is later than. Relationship of first parameter to second parameter.
+    if (test >= 0) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 }
