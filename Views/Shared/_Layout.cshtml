@@ -22,23 +22,9 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <div class="dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="recipeDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Recipe
-                                <i class="fa fa-caret-down"></i>
-                            </a>
-                            <ul class="dropdown-menu" aria-labelledby="recipeDropdown">
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Recipe" asp-action="Index">View Recipes</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Recipe" asp-action="Add">Add</a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="Recipe" asp-action="Edit">Edit</a>
-                                </li>
-                            </ul>
-                        </div>
+                        <li class="nav-item">
+				            <a class="nav-link text-dark" asp-area="" asp-controller="Recipe" asp-action="Index">Recipes</a>
+			            </li>
                         <li class="nav-item">
 				            <a class="nav-link text-dark" asp-area="" asp-controller="Cookbooks" asp-action="Index">Cookbooks</a>
 			            </li>
@@ -48,9 +34,26 @@
                         <li class="nav-item">
 				            <a class="nav-link text-dark" asp-area="" asp-controller="Meals" asp-action="Index">Meals</a>
 			            </li>
-                        <li class="nav-item">
-				            <a class="nav-link text-dark" asp-area="" asp-controller="MealPlanner" asp-action="Index">Meal Planner</a>
-			            </li>
+                        <div class="dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="cookbookDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Meal Planner
+                                <i class="fa fa-caret-down"></i>
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="cookbookDropdown">
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="MealPlanner" asp-action="Plan">Meal Planner</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="MealPlanner" asp-action="Daily">Daily Planner</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="MealPlanner" asp-action="Week">Weekly Planner</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" asp-area="" asp-controller="MealPlanner" asp-action="Index">Monthly Planner</a>
+                                </li>
+                            </ul>
+                        </div>
                         <li class="nav-item">
 				            <a class="nav-link text-dark" asp-area="" asp-controller="ShoppingList" asp-action="Index">Shopping List</a>
 			            </li>
