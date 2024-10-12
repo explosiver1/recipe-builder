@@ -1,8 +1,24 @@
+@model RecipeBuilder.ViewModels.RecipeAddVM
 @{
-    ViewData["Title"] = "Title";
+    ViewData["Title"] = "Add Recipe";
 }
 
 <div class="text-center">
-    <h1>Heading</h1>
+    <h1>Add Recipe</h1>
     <p>Let's get ready to cook!</p>
+    <form asp-action="Add" method="post">
+        <div class="form-group">
+            @* <label asp-for="cookbookName" class="control-label">Cookbook</label>
+            <input asp-for="cookbookName" class="form-control"> *@
+            <label asp-for="recipe.Name" class="control-label">Recipe Name:</label>
+            <input asp-for="recipe.Name" class="form-control" />
+            <span asp-validation-for="recipe.Name" class="text-danger"></span>
+        </div>
+        @* <div class="form-group">
+            <label asp-for="lName" class="control-label">Last Name:</label>
+            <input asp-for="lName" class="form-control" />
+            <span asp-validation-for="lName" class="text-danger"></span>
+        </div> *@
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
 </div>

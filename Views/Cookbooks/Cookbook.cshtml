@@ -1,8 +1,32 @@
+@model RecipeBuilder.ViewModels.CookbooksCookbookVM
+
 @{
-    ViewData["Title"] = "Title";
+    ViewData["Title"] = @Model.cookbook.Title;
 }
 
 <div class="text-center">
-    <h1>Heading</h1>
+    <h1>@Model.cookbook.Title Cookbook</h1>
     <p>Let's get ready to cook!</p>
+</div>
+<a asp-controller="Recipe" asp-action="Add" asp-route-cookbookName=@Model.cookbook.Title>Add Recipe</a>
+<div class="text-center">
+    <table class="table">
+    <tr>
+        <th>
+            Recipes
+        </th>
+        <th></th>
+    </tr>
+
+    @if(Model.cookbook.Recipes != null)
+    {
+        @foreach (var recipe in Model.cookbook.Recipes) {
+            <tr>
+                <td>
+                    <a asp-controller=Recipe asp-action=Index asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name>@recipe.Name</a>
+                </td>
+            </tr>
+        }
+    }
+    </table>
 </div>
