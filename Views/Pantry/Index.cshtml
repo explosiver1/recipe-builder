@@ -1,20 +1,84 @@
 @{
-    ViewData["Title"] = "Title";
+    ViewData["Title"] = "Pantry";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Pantry</h1>
-    <br>
-    <button type="button">Shopping List</button>
-    <br>
-</div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pantry</title>
 
-<div class=""> 
-    <br>
+    <style>
+        #pantryContainer {
+            background-color: #F4F3EC; 
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 900px;
+            margin: auto; 
+        }
+
+        .text-center h1 {
+            color: #4A743E;
+        }
+
+        /* bulleted list for pantry items */
+        ul {
+            list-style-type: disc; 
+            padding-left: 20px; 
+            color: #4A743E; 
+        }
+
+        ul li {
+            font-size: 18px;
+            margin: 10px 0; 
+        }
+
+        a {
+            margin-left: 10px;
+            text-decoration: none; 
+            color: #96AE6D; 
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <script>
+        // remove an item from the pantry list
+        function removeItem(event) {
+            const item = event.target.closest('li'); // get closest list item
+            if (item) {
+                item.remove(); // remove item from the DOM
+            }
+        }
+    </script>
+</head>
+
+<body>
+    <div class="text-center">
+        <h1 class="display-4">Pantry</h1>
+        <br>
+    </div>
+
+    <div id="pantryContainer">
+        <br>
         <ul>
-        <li>Almonds <a href="url">Add Item To Shopping List</a> <a href="url">Remove</a></li>
-        <li>Bread <a href="url">Add Item To Shopping List</a> <a href="url">Remove</a></li>
-        <li>Coconuts <a href="url">Add Item To Shopping List</a> <a href="url">Remove</a></li>
-        <li>Dates <a href="url">Add Item To Shopping List</a> <a href="url">Remove</a></li>
+            <li>Almonds 
+                <a href="#">Add Item To Shopping List</a> 
+                <a href="#" onclick="removeItem(event)">Remove</a>
+            </li>
+            <li>Bread 
+                <a href="#">Add Item To Shopping List</a> 
+                <a href="#" onclick="removeItem(event)">Remove</a>
+            </li>
+            <li>Coconuts 
+                <a href="#">Add Item To Shopping List</a> 
+                <a href="#" onclick="removeItem(event)">Remove</a>
+            </li>
+            <li>Dates 
+                <a href="#">Add Item To Shopping List</a> 
+                <a href="#" onclick="removeItem(event)">Remove</a>
+            </li>
         </ul>
-</div>
+    </div>
+</body>
+</html>

@@ -2,16 +2,60 @@
     ViewData["Title"] = "Web Chef Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">About Us</h1>
-    <br>
-    <button type="button">Sign Up</button>
-    <button type="button">Sign In</button>
-    <br>
-    <br>
-    <p> We initiated this application to address the growing need for a centralized, easy-to-use platform for meal planning and recipe management. 
-        Many users face challenges in managing their recipes, adjusting portions, organizing grocery lists, and meal planning, which can make cooking and 
-        meal preparation a stressful experience. Existing solutions often lack the flexibility to accommodate dietary restrictions or provide an intuitive user experience. 
-        This project aims to provide a comprehensive solution that simplifies meal planning and enhances the overall culinary experience for users. 
-        The decision to build this software arose from the desire to offer an engaging platform that reduces the complexity of kitchen tasks, thereby allowing users to focus on the joy of cooking.</p>
-</div>
+<!-- button styling -->
+<head>
+    <style>
+        #button a {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4A743E; 
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        #button a:hover {
+            background-color: #96AE6D;
+        }
+
+        /* to make buttons side by side */
+        .button-container {
+            display: inline-block;
+            margin: 0 10px; 
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- page styling -->
+    <div class="text-center">
+        <h1 class="display-4" style="color: #4A743E;">About Us</h1>
+        <br>
+
+        <!-- button containers with to make them side by side -->
+        <div class="button-container" id="button">
+            <a href="@Url.Action("Login", "Account")">Log In</a>
+        </div>
+
+        <div class="button-container" id="button">
+            <a href="@Url.Action("Create", "Account")">Sign Up</a>
+        </div>
+
+        <br><br>
+
+        <p>We initiated this application to address the growing need for a centralized, easy-to-use platform for meal planning and recipe management. 
+            Many users face challenges in managing their recipes, adjusting portions, organizing grocery lists, and meal planning, which can make cooking and 
+            meal preparation a stressful experience. Existing solutions often lack the flexibility to accommodate dietary restrictions or provide an intuitive user experience. 
+            This project aims to provide a comprehensive solution that simplifies meal planning and enhances the overall culinary experience for users. 
+            The decision to build this software arose from the desire to offer an engaging platform that reduces the complexity of kitchen tasks, thereby allowing users to focus on the joy of cooking.
+        </p>
+    </div>
+</body>
