@@ -4,26 +4,83 @@ namespace RecipeBuilder.Models
     {
         public int CookbookId { get; set; }
         public string Title { get; set; }
-        public List<Recipe> Recipes { get; set; }
+        public List<Recipe> Recipes { get; set; } = new List<Recipe>();
 
+        // Constructor with validation
+        public Cookbook(int cookbookId, string title)
+        {
+            if (string.IsNullOrWhiteSpace(title))
+                throw new ArgumentException("Cookbook title cannot be empty.");
+
+            CookbookId = cookbookId;
+            Title = title;
+        }// end Constructor
+
+        // Add a recipe with validation
         public void AddRecipe(Recipe recipe)
         {
-            Recipes.Add(recipe);
-        }
+            if (recipe == null)
+            {
+                Console.WriteLine("Recipe cannot be empty.");
+                return;
+            }//end if
 
+            Recipes.Add(recipe);
+            Console.WriteLine($"Recipe '{recipe.Name}' added to cookbook '{Title}'.");
+        }// end AddRecipe
+
+        // Remove a recipe with validation
         public void RemoveRecipe(Recipe recipe)
         {
-            Recipes.Remove(recipe);
-        }
+            if (recipe == null || !Recipes.Contains(recipe))
+            {
+                Console.WriteLine("Recipe not found in the cookbook.");
+                return;
+            }//end if
 
+            Recipes.Remove(recipe);
+            Console.WriteLine($"Recipe '{recipe.Name}' removed from cookbook '{Title}'.");
+        }// end RemoveRecipe
+
+        // Get recipe with null check
         public Recipe GetRecipe(int recipeId)
         {
-            return Recipes.FirstOrDefault(r => r.RecipeId == recipeId);
-        }
+            var recipe = Recipes.FirstOrDefault(r => r.RecipeId == recipeId);
+            if (recipe == null)
+                Console.WriteLine($"No recipe found with ID {recipeId}.");
+            
+            return recipe;
+        }// end GetRecipe
 
+        // Rename cookbook with validation
         public void RenameCookbook(string newTitle)
         {
+            if (string.IsNullOrWhiteSpace(newTitle))
+            {
+                Console.WriteLine("New title cannot be empty.");
+                return;
+            }//end if
+
             Title = newTitle;
-        }
-    }
-}
+            Console.WriteLine($"Cookbook renamed to: {newTitle}");
+        }// end RenameCookbook
+
+        // Placeholder for Neo4j connection
+        public void ConnectToUser(User user)
+        {
+            bool useDatabase = false;  // Switch to true when Neo4j is ready
+
+            if (useDatabase)
+            {
+                // Placeholder for Neo4j relationship creation between user and cookbook
+                Console.WriteLine($"Creating a connection between user '{user.Username}' and cookbook '{Title}' in Neo4j...");
+                // TODO: Add Neo4j code here (e.g., MERGE or CREATE relationship)
+            }//end if
+            else
+            {
+                // In-memory logic for now
+                Console.WriteLine($"Simulating a connection between user '{user.Username}' and cookbook '{Title}'.");
+            }//end else
+        }// end ConnectToUser
+    }// end Cookbook
+}// end namespace
