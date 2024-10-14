@@ -56,10 +56,10 @@ namespace RecipeBuilder.Models
                 return;
             }//end if
 
-            var newCookbook = new Cookbook
+            var newCookbook = new Cookbook(Cookbooks.Count + 1, title);
             {
-                CookbookId = Cookbooks.Count + 1, // Simple ID incrementer
-                Title = title
+                Cookbooks.Add(newCookbook);
+                Console.WriteLine($"Cookbook '{title}' created and added to user.");
             };//end newCookbook
             Cookbooks.Add(newCookbook);
         }//end CreateCookbook
