@@ -136,20 +136,18 @@ public class DBQueryModel
                         IngredientDetail ingD;
                         try
                         {
-                            Ingredient ing = new Ingredient(
-                                                bNode["identity"].As<int>(),
-                                                bNode.Properties["name"].As<string>(),
-                                                "",
-                                                rNode.Properties["unit"].As<string>()
-                                                );
-                            rNode.Properties["quantity"].As<float>();
-                            ingD = new IngredientDetail(ing, rNode.Properties["quantity"].As<float>(), ing.Unit);
-
+                            Ingredient ing = new Ingredient();
+                            ingD = new IngredientDetail();
+                            ing.Name = bNode.Properties["name"].As<string>();
+                            ingD.Unit = rNode.Properties["unit"].As<string>();
+                            ingD.Quantity = rNode.Properties["quantity"].As<float>();
+                            ingD.Ingredient = ing;
                         }
                         catch
                         {
-                            Ingredient ing = new Ingredient(0, "", "", "");
-                            ingD = new IngredientDetail(ing, 0.0f, "None");
+                            Ingredient ing = new Ingredient();
+                            ingD = new IngredientDetail();
+                            ingD.Ingredient = ing;
                         }
                         r.AddIngredient(ingD);
                         break;
@@ -229,14 +227,7 @@ public class DBQueryModel
                     cb.Title = "Error";
                 }
 
-                try
-                {
-                    cb.CookbookId = cbNode["identity"].As<int>();
-                }
-                catch
-                {
-                    cb.CookbookId = 0;
-                }
+
 
                 firstPass = false;
             }
