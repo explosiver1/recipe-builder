@@ -5,9 +5,10 @@ namespace RecipeBuilder.Models;
 public static class RecipeSeedData
 {
 
-    public static IngredientDetail porkchop = new IngredientDetail(new Ingredient (1, "Porkchop", "A Porkchop", "porkchop"), 2, "porkchops");
-    public static IngredientDetail seasoning = new IngredientDetail(new Ingredient (2, "Seasoning", "Seasoning", "TBSP"), 3, "TBSP");
-    public static IngredientDetail lambchop = new IngredientDetail(new Ingredient (1, "lambchop", "A lambchop", "lambchop"), 2, "lambchops");
+    public static IngredientDetail porkchop = new IngredientDetail{Ingredient=new Ingredient {Name = "Porkchop"}, Quantity = 2, Unit ="chops"};
+    public static IngredientDetail lambchop = new IngredientDetail{Ingredient=new Ingredient {Name = "Lambchop"}, Quantity = 3, Unit ="chops"};
+    public static IngredientDetail seasoning = new IngredientDetail{Ingredient=new Ingredient {Name = "Seasoning"}, Quantity = 5, Unit ="TBSP"};
+
     public static Recipe porkchopRecipe = new Recipe { 
         Name = "Pork Chops", Instructions = ["Season porkchop","Cook porkchop"], 
         Difficulty = 1, Rating = 3, CookTime = 45, 
@@ -20,8 +21,8 @@ public static class RecipeSeedData
         Ingredients = [lambchop,seasoning]          
             };
 
-    public static Cookbook dessertsCookbook = new Cookbook { Title = "desserts", CookbookId = 1, Recipes = []};
-    public static Cookbook chopsCookbook =new Cookbook { Title = "Chops", CookbookId = 2, Recipes = [porkchopRecipe, lambchopRecipe]};
+    public static Cookbook dessertsCookbook = new Cookbook { Title = "desserts", Recipes = []};
+    public static Cookbook chopsCookbook =new Cookbook { Title = "Chops", Recipes = [porkchopRecipe, lambchopRecipe]};
     public static List<Cookbook> cookbooks = [dessertsCookbook, chopsCookbook];
     public static Cookbook GetCookbook(string cookbookName)
     {
