@@ -1,8 +1,18 @@
+@model RecipeBuilder.ViewModels.CookbooksCookbookVM
 
 @{
-    ViewData["Title"] = "View Cookbook";
+    ViewData["Title"] = @Model.cookbook.Title;
 }
-
+               
+<style>
+    body {
+        hr.rounded {
+        border-top: 8px solid #96AE6D;
+        border-radius: 5px;
+        }
+    }
+</style>
+<body>
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex">
         @*<form asp-action="" method="get" class="form-inline"> * need to know which model to pull from for Tag search*@
@@ -14,7 +24,8 @@
         </div>
         @*</form>*@
     </div>
-    <h2 class="text-center flex-grow-1 display-4" style="margin: 0;">Cookbook Title</h2> @*Need to put the cookbook title*@
+    <h2 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">@Model.cookbook.Title Cookbook</h2>
+    <hr class="rounded">
     <a asp-controller="Cookbooks" asp-action="Edit">Edit Cookbook</a>
 </div>
 <div class="text-center">
@@ -25,25 +36,47 @@
     <button type="submit" class="btn btn-primary ml-2">Search</button>
     @*</form>*@
 </div>
-<div class="row">
-    @*@if (Model!=null &&Model.Count()>0) *A loop for when we set up with model*
-    {       *Displays the recipes inside the cookbook*
-        foreach (var recipe in Model)
-        {*@
+<a asp-controller="Recipe" asp-action="Add" asp-route-cookbookName=@Model.cookbook.Title>Add Recipe</a>
+<div class="text-center">
+    <table class="table">
+    <tr>
+        <th>
+            Recipes
+        </th>
+        <th></th>
+    </tr>
+
+    @if(Model.cookbook.Recipes != null)
+    {
+        @foreach (var recipe in Model.cookbook.Recipes) {
+            <tr>
+                <td>
+                    <a asp-controller=Recipe asp-action=Index asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name>@recipe.Name</a>
+                </td>
+            </tr>
+        }
+    }
+    </table>
+</div>
+@*<div class="row">
+    @if (Model.cookbook.Recipes !=null)
+    {
+        @foreach (var recipe in Model.cookbook.Recipes)
+        {
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="card-title">Recipe1 name</h5>
-                        <p class="card-text">Recipe1 Description</p>
-                        @*need to tell model which recipe*@
-                        <a asp-controller="Recipe" asp-action="Look">Recipe1 name</a>
+                        <h5 class="card-title">@recipe.Name</h5>
+                        <p class="card-text">@recipe.Rating</p>
+                        <a asp-controller=Recipe asp-action=Index asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name>@recipe.Name</a>
                     </div>
                 </div>
             </div>
-        @*}
+        }
     }
     else
     {
         <p>No Recipes Found.</p>
-    }*@
-</div>
+    }
+</div>*@
+</body>

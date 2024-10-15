@@ -3,6 +3,10 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
+#My Additions
+[lL]aunch.json
+
+
 # dotenv files
 .env
 

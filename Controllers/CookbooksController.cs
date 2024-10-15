@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
+using RecipeBuilder.ViewModels;
 
 namespace RecipeBuilder.Controllers;
 
@@ -9,27 +10,15 @@ public class CookbooksController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        return View();
-    }
-
-    [HttpPost]
-    public IActionResult Index(String cookbookName)
-    {
-        return View();
+        CookbooksIndexVM viewModel = new CookbooksIndexVM {cookbooks = RecipeSeedData.cookbooks};
+        return View(viewModel);
     }
 
     [HttpGet]
-    public IActionResult Cookbook()
+    public IActionResult Cookbook(String id)
     {
-        return View();
-    }
-
-    [HttpPost]
-    public IActionResult Cookbook(String recipeName)
-    {
-        // Update to get recipe model instance using recipeName & pass that recipe to view
-        // Update to redirectToAction 
-        return View("~/Views/Recipe/Index.aspx");
+        CookbooksCookbookVM viewModel = new CookbooksCookbookVM{cookbook=RecipeSeedData.GetCookbook(id)};
+        return View(viewModel);
     }
 
     [HttpGet]
