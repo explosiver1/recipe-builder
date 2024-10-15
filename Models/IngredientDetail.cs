@@ -7,20 +7,13 @@ namespace RecipeBuilder.Models
         public float Quantity { get; set; }
         public string Unit { get; set; }
 
-        // Constructor
-        public IngredientDetail(Ingredient ingredient, float quantity, string unit)
+        // Blank constructor initializing default values
+        public IngredientDetail()
         {
-            if (ingredient == null)
-                throw new ArgumentException("Ingredient cannot be empty.");
-            if (quantity <= 0)
-                throw new ArgumentException("Quantity must be greater than zero.");
-            if (string.IsNullOrWhiteSpace(unit))
-                throw new ArgumentException("Unit cannot be empty.");
-
-            Ingredient = ingredient;
-            Quantity = quantity;
-            Unit = unit;
-        }//end IngredientDetail
+            Ingredient = new Ingredient();
+            Quantity = 0;
+            Unit = string.Empty;
+        }//end Blank Constructor
 
         // Methods
         // Get quantity
@@ -29,7 +22,7 @@ namespace RecipeBuilder.Models
             return Quantity;
         }
 
-        // Set quantity
+        // Set quantity with validation
         public void SetQuantity(float newQuantity)
         {
             if (newQuantity <= 0)
@@ -42,7 +35,7 @@ namespace RecipeBuilder.Models
             Console.WriteLine($"{Ingredient.Name} quantity updated to: {newQuantity} {Unit}");
         }//end SetQuantity
 
-        // Update unit
+        // Update unit with validation
         public void SetUnit(string newUnit)
         {
             if (string.IsNullOrWhiteSpace(newUnit))
@@ -55,6 +48,7 @@ namespace RecipeBuilder.Models
             Console.WriteLine($"{Ingredient.Name} unit updated to: {newUnit}");
         }//end SetUnit
 
+        // Connect to recipe placeholder for Neo4j integration
         public void ConnectToRecipe(Recipe recipe)
         {
             bool useDatabase = false;  // Switch to true when Neo4j is ready
@@ -72,11 +66,10 @@ namespace RecipeBuilder.Models
             }//end else
         }//end ConnectToRecipe
 
-        // Display ingredient info
+        // Display ingredient detail information
         public void DisplayIngredientDetail()
         {
             Console.WriteLine($"{Quantity} {Unit} of {Ingredient.Name}");
         }//end DisplayIngredientDetail
-
     }//end IngredientDetail
 }//end namespace RecipeBuilder.Models

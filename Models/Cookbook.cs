@@ -2,19 +2,15 @@ namespace RecipeBuilder.Models
 {
     public class Cookbook
     {
-        public int CookbookId { get; set; }
         public string Title { get; set; }
-        public List<Recipe> Recipes { get; set; } = new List<Recipe>();
+        public List<Recipe> Recipes { get; set; }
 
-        // Constructor with validation
-        public Cookbook(int cookbookId, string title)
+        // Blank constructor initializing to default values
+        public Cookbook()
         {
-            if (string.IsNullOrWhiteSpace(title))
-                throw new ArgumentException("Cookbook title cannot be empty.");
-
-            CookbookId = cookbookId;
-            Title = title;
-        }// end Constructor
+            Title = string.Empty;
+            Recipes = new List<Recipe>();
+        }// end Blank Constructor
 
         // Add a recipe with validation
         public void AddRecipe(Recipe recipe)
@@ -42,13 +38,13 @@ namespace RecipeBuilder.Models
             Console.WriteLine($"Recipe '{recipe.Name}' removed from cookbook '{Title}'.");
         }// end RemoveRecipe
 
-        // Get recipe with null check
-        public Recipe GetRecipe(int recipeId)
+        // Get recipe by name with null check
+        public Recipe GetRecipe(string recipeName)
         {
-            var recipe = Recipes.FirstOrDefault(r => r.RecipeId == recipeId);
+            var recipe = Recipes.FirstOrDefault(r => r.Name.Equals(recipeName, StringComparison.OrdinalIgnoreCase));
             if (recipe == null)
-                Console.WriteLine($"No recipe found with ID {recipeId}.");
-            
+                Console.WriteLine($"No recipe found with the name '{recipeName}'.");
+
             return recipe;
         }// end GetRecipe
 
