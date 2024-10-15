@@ -3,26 +3,17 @@ namespace RecipeBuilder.Models
     public class Ingredient
     {
         // Attributes
-        public int IngredientId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Unit { get; set; } // Unit of measurement
+        public string Unit { get; set; }
 
-        // Constructor
-        public Ingredient(int ingredientId, string name, string description, string unit)
+        // Blank constructor initializing to default values
+        public Ingredient()
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Ingredient name cannot be empty.");
-            if (string.IsNullOrWhiteSpace(description))
-                throw new ArgumentException("Ingredient description cannot be empty.");
-            if (string.IsNullOrWhiteSpace(unit))
-                throw new ArgumentException("Ingredient unit cannot be empty.");
-
-            IngredientId = ingredientId;
-            Name = name;
-            Description = description;
-            Unit = unit;
-        }//end Ingredient
+            Name = string.Empty;
+            Description = string.Empty;
+            Unit = string.Empty;
+        }// end Blank Constructor
 
         // Methods
         // Update description
@@ -36,7 +27,7 @@ namespace RecipeBuilder.Models
 
             Description = newDescription;
             Console.WriteLine($"{Name} description updated to: {newDescription}");
-        }//end UpdateDescription
+        }// end UpdateDescription
 
         // Update unit
         public void UpdateUnit(string newUnit)
@@ -49,9 +40,9 @@ namespace RecipeBuilder.Models
 
             Unit = newUnit;
             Console.WriteLine($"{Name} unit updated to: {newUnit}");
-        }//end UpdateUnit
+        }// end UpdateUnit
 
-        //Placeholder for creating a connection to this ingredient in Neo4j
+        // Placeholder for Neo4j connection
         public void ConnectToUser(User user)
         {
             bool useDatabase = false;  // Switch this to true when Neo4j is ready
@@ -66,8 +57,8 @@ namespace RecipeBuilder.Models
             {
                 // In-memory logic for now
                 Console.WriteLine($"Simulating a connection between {user.Username} and {Name}.");
-            }
-        }
+            }// end else
+        }// end ConnectToUser
 
         // Display ingredient information
         public void DisplayIngredientInfo()
@@ -86,7 +77,6 @@ namespace RecipeBuilder.Models
                 Console.WriteLine("Unit is missing.");
             else
                 Console.WriteLine($"Unit: {Unit}");
-        }//end DisplayIngredientInfo
-    }//end Ingredient
-
-}//end namespace RecipeBuilder.Models
+        }// end DisplayIngredientInfo
+    }// end Ingredient
+}// end namespace RecipeBuilder.Models
