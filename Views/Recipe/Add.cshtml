@@ -1,8 +1,51 @@
+@*need to know whihc model*@
+
 @{
-    ViewData["Title"] = "Title";
+    ViewData["Title"] = "Create New Recipe";
 }
 
 <div class="text-center">
-    <h1>Heading</h1>
-    <p>Let's get ready to cook!</p>
+    <h2 class="display-4">Create Recipe</h2>
 </div>
+@*<form asp-action="" method="post"> *need to know which controller is used*@
+<div class="form-group">
+    <label for="Name">Recipe Name:</label>
+    <input type="text" class="form-control" id="Name" name="Name" required />
+</div>
+
+<div class="form-group">
+    <label for="Tags">Tags:</label>
+    <input type="text" class="form-control" id="Tags" name="Tags" />
+</div>
+
+<div class="form-group">
+    <label for="Description">Description:</label>
+    <textarea class="form-control" id="Description" name="Description" required></textarea>
+</div>
+
+<div class="form-group">
+    <label for="Servings">Number of Servings:</label>
+    <input type="number" class="form-control" id="Servings" name="Servings" min="1" required />
+</div>
+
+<div class="form-group">
+    <label for="ServingSize">Serving Size:</label>
+    <input type="text" class="form-control" id="ServingSize" name="ServingSize" required />
+</div>
+
+<div class="form-group">
+    <label for="Tools">Tools/Equipment Needed:</label>
+    <textarea class="form-control" id="Tools" name="Tools"></textarea>
+</div>
+
+<div class="form-group">
+    <label for="Ingredients">Ingredients:</label>
+    <textarea class="form-control" id="Ingredients" name="Ingredients" required></textarea>
+</div>
+
+<div class="form-group">
+    <label for="Instructions">Instructions:</label>
+    <textarea class="form-control" id="Instructions" name="Instructions" required></textarea>
+</div>
+<button type="submit" class="btn btn-primary">Save</button>
+@*</form>*@

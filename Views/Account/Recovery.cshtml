@@ -1,8 +1,12 @@
 @{
-    ViewData["Title"] = "Title";
+    ViewData["Title"] = "Recovery";
 }
 
 <div class="text-center">
-    <h1>Heading</h1>
-    <p>Let's get ready to cook!</p>
+    <h2 class="display-4">Recovery</h2>
+    <label for="email">Email:</label>
+    @*<input asp-for="" class="" />*@
+    <input type="text" id="email" name="email"><br><br>
+    @*Authurization needed for recovery redirect*@
+    <a asp-controller="Home" asp-action="Index">Send Email</a><br><br>
 </div>

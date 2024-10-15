@@ -3,16 +3,20 @@
 }
 
 <div class="text-center">
-    <h1>Create Account</h1><br>
+    <h2 class="display-4">Create Account</h2><br>
     <label for="username">Username:</label>
+    @*<input asp-for="" class="" />*@
     <input type="text" id="username" name="username"><br><br>
     <label for="name">Name:</label>
+    @*<input asp-for="" class="" />*@
     <input type="text" id="name" name="name"><br><br>
     <label for="email">Email:</label>
+    @*<input asp-for="" class="" />*@
     <input type="text" id="email" name="email"><br><br>
     <label for="password">Password:</label>
+    @*<input asp-for="" class="" />*@
     <input type="password" id="password" name="password"><br><br>
-
-    <button type="button">Sign Up</button>
-    <button type="button">Sign In</button>
+    @*Authurization needed for sign in redirect*@
+    <a asp-controller="Cookbooks" asp-action="Index">Sign In</a><br><br>
+    <a asp-controller="Home" asp-action="Index">Back</a><br><br>
 </div>

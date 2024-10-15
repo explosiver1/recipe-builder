@@ -32,4 +32,15 @@ public class CookbooksController : Controller
         return View("~/Views/Recipe/Index.aspx");
     }
 
+    [HttpGet]
+    public IActionResult Add()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult Edit()
+    {
+        return View();
+    }
 }
