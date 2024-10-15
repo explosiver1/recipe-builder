@@ -1,8 +1,387 @@
 @{
-    ViewData["Title"] = "Title";
+    ViewData["Title"] = "Ingredients";
 }
 
-<div class="text-center">
-    <h1>Heading</h1>
-    <p>Let's get ready to cook!</p>
-</div>
+<head>
+    <style>
+        body {
+            background-color: #ffffff; 
+            color: #333; 
+            margin: 0;
+            padding: 20px;
+        }
+
+        .text-center {
+            text-align: center; 
+        }
+
+        .display-4 {
+            font-size: 2.5em; 
+            color: #4A743E; 
+        }
+
+        .search-container {
+            margin: 20px 0; 
+        }
+
+        .search-container input[type="text"] {
+            width: 300px; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+        }
+
+        .alphabet {
+            display: flex; 
+            justify-content: center;
+            margin: 20px 0; 
+        }
+
+        .alphabet a {
+            margin: 0 10px; 
+            text-decoration: none; 
+            color: #4A743E; 
+            font-weight: bold; 
+            transition: color 0.3s; 
+        }
+
+        .alphabet a:hover {
+            color: #4A743E; 
+        }
+
+        .ingredients-list {
+            margin-top: 30px; 
+        }
+
+        .ingredients-list ul {
+            list-style-type: none; 
+            padding: 0; 
+        }
+
+        .ingredients-list li {
+            font-size: 18px; 
+            margin: 5px 0; 
+            padding: 10px; 
+            border-bottom: 1px solid #ccc; 
+        }
+
+        .ingredients-list li:hover {
+            background-color: #F4F3EC; 
+        }
+
+        .ingredients-list a {
+            text-decoration: none; 
+            color: #4A743E; 
+        }
+    </style>
+</head>
+
+<body>
+    <div class="text-center">
+        <h1 class="display-4">Ingredients</h1>
+        <br>
+        <div class="search-container">
+            <input type="text" id="ingredientSearch" placeholder="Search" oninput="scrollToIngredient()">
+        </div>
+    </div>
+
+    <div class="alphabet">
+        <a href="#A">A</a>
+        <a href="#B">B</a>
+        <a href="#C">C</a>
+        <a href="#D">D</a>
+        <a href="#E">E</a>
+        <a href="#F">F</a>
+        <a href="#G">G</a>
+        <a href="#H">H</a>
+        <a href="#I">I</a>
+        <a href="#J">J</a>
+        <a href="#K">K</a>
+        <a href="#L">L</a>
+        <a href="#M">M</a>
+        <a href="#N">N</a>
+        <a href="#O">O</a>
+        <a href="#P">P</a>
+        <a href="#Q">Q</a>
+        <a href="#R">R</a>
+        <a href="#S">S</a>
+        <a href="#T">T</a>
+        <a href="#U">U</a>
+        <a href="#V">V</a>
+        <a href="#W">W</a>
+        <a href="#X">X</a>
+        <a href="#Y">Y</a>
+        <a href="#Z">Z</a>
+
+    </div>
+
+    <div class="ingredients-list">
+        <h2 id="A">A</h2>
+        <ul>
+            <!-- links are placeholders, will edit soon -->
+            <li><a href="/recipes/absinthe">Absinthe</a></li>
+            <li><a href="/recipes/all-purpose-flour">All purpose flour</a></li>
+            <li><a href="/recipes/almonds">Almonds</a></li>
+            <li><a href="/recipes/apples">Apples</a></li>
+            <li><a href="/recipes/apple-cider-vinegar">Apple cider vinegar</a></li>
+            <li><a href="/recipes/apricot">Apricot</a></li>
+            <li><a href="/recipes/artichokes">Artichokes</a></li>
+            <li><a href="/recipes/arugula">Arugula</a></li>
+            <li><a href="/recipes/asparagus">Asparagus</a></li>
+            <li><a href="/recipes/avocados">Avocados</a></li>
+        </ul>
+
+        <h2 id="B">B</h2>
+        <ul>
+            <li><a href="/recipes/bacon">Bacon</a></li>
+            <li><a href="/recipes/baked-beans">Baked beans</a></li>
+            <li><a href="/recipes/baking-powder">Baking powder</a></li>
+            <li><a href="/recipes/baking-soda">Baking soda</a></li>
+            <li><a href="/recipes/balsamic-vinegar">Balsamic vinegar</a></li>
+            <li><a href="/recipes/bamboo-shoots">Bamboo shoots</a></li>
+            <li><a href="/recipes/bananas">Bananas</a></li>
+            <li><a href="/recipes/barley">Barley</a></li>
+            <li><a href="/recipes/basil">Basil</a></li>
+            <li><a href="/recipes/bay-leaves">Bay leaves</a></li>
+            <li><a href="/recipes/beans">Beans</a></li>
+            <li><a href="/recipes/beats">Beats</a></li>
+            <li><a href="/recipes/beef">Beef</a></li>
+            <li><a href="/recipes/bell-peppers">Bell peppers</a></li>
+            <li><a href="/recipes/black-beans">Black beans</a></li>
+            <li><a href="/recipes/blackberries">Blackberries</a></li>
+            <li><a href="/recipes/blueberries">Blueberries</a></li>
+            <li><a href="/recipes/bok-choy">Bok choy</a></li>
+            <li><a href="/recipes/bologna">Bologna</a></li>
+            <li><a href="/recipes/bourbon">Bourbon</a></li>
+            <li><a href="/recipes/brandy">Brandy</a></li>
+            <li><a href="/recipes/brie">brie</a></li>
+            <li><a href="/recipes/brown-rice">Brown rice</a></li>
+            <li><a href="/recipes/brown-sugar">Brown sugar</a></li>
+            <li><a href="/recipes/brussels-sprouts">Brussels sprouts</a></li>
+            <li><a href="/recipes/butter">Butter</a></li>
+            <li><a href="/recipes/buttermilk">Buttermilk</a></li>
+            <li><a href="/recipes/butternut-squash">Butternut squash</a></li>
+        </ul>
+
+        <h2 id="C">C</h2>
+        <ul>
+            <li><a href="/recipes/canola-oil">Canola oil</a></li>
+            <li><a href="/recipes/cashews">Cashews</a></li>
+            <li><a href="/recipes/cheese">Cheese</a></li>
+            <li><a href="/recipes/chicken-breast">Chicken breast</a></li>
+            <li><a href="/recipes/chocolate-chips">Chocolate chips</a></li>
+            <li><a href="/recipes/coconut-milk">Coconut milk</a></li>
+            <li><a href="/recipes/coffee">Coffee</a></li>
+            <li><a href="/recipes/corn-starch">Corn starch</a></li>
+        </ul>
+
+        <h2 id="D">D</h2>
+        <ul>
+            <li><a href="/recipes/dark-chocolate">Dark chocolate</a></li>
+            <li><a href="/recipes/dijon-mustard">Dijon mustard</a></li>
+            <li><a href="/recipes/dill">Dill</a></li>
+            <li><a href="/recipes/dragon-fruit">Dragon fruit</a></li>
+        </ul>
+
+        <h2 id="E">E</h2>
+        <ul>
+            <li><a href="/recipes/edamame">Edamame</a></li>
+            <li><a href="/recipes/eel">Eel</a></li>
+            <li><a href="/recipes/eggfruit">Eggfruit</a></li>
+            <li><a href="/recipes/eggplant">Eggplant</a></li>
+            <li><a href="/recipes/egg">Egg</a></li>
+            <li><a href="/recipes/elderberry">Elderberry</a></li>
+            <li><a href="/recipes/eggs">Eggs</a></li>
+            <li><a href="/recipes/evaporated-milk">Evaporated milk</a></li>
+            <li><a href="/recipes/english-muffins">English muffins</a></li>
+            <li><a href="/recipes/extra-virgin-olive-oil">Extra virgin olive oil</a></li>
+        </ul>
+
+        <h2 id="F">F</h2>
+        <ul>
+            <li><a href="/recipes/fennel">Fennel</a></li>
+            <li><a href="/recipes/feta">Feta</a></li>
+            <li><a href="/recipes/fenugreek">Fenugreek</a></li>
+            <li><a href="/recipes/fig">Fig</a></li>
+            <li><a href="/recipes/fish">Fish</a></li>
+            <li><a href="/recipes/fudge">Fudge</a></li>
+            <li><a href="/recipes/flour">Flour</a></li>
+            <li><a href="/recipes/feta-cheese">Feta cheese</a></li>
+            <li><a href="/recipes/fish-sauce">Fish sauce</a></li>
+            <li><a href="/recipes/french-onion">French onion</a></li>
+            <li><a href="/recipes/fresh-basil">Fresh basil</a></li>
+            <li><a href="/recipes/frozen-peas">Frozen peas</a></li>
+        </ul>
+
+        <h2 id="G">G</h2>
+        <ul>
+            <li><a href="/recipes/garlic">Garlic</a></li>
+            <li><a href="/recipes/gelatin">Gelatin</a></li>
+            <li><a href="/recipes/gin">Gin</a></li>
+            <li><a href="/recipes/gouda">Gouda</a></li>
+            <li><a href="/recipes/graham-crackers">Graham Crackers</a></li>
+            <li><a href="/recipes/granola">Granola</a></li>
+            <li><a href="/recipes/grapes">Grapes</a></li>
+            <li><a href="/recipes/greek-yogurt">Greek Yogurt</a></li>
+            <li><a href="/recipes/green-beans">Green Beans</a></li>
+            <li><a href="/recipes/green-onions">Green Onions</a></li>
+            <li><a href="/recipes/grenadine">Grenadine</a></li>
+            <li><a href="/recipes/guavas">Guavas</a></li>
+        </ul>
+
+        <h2 id="H">H</h2>
+        <ul>
+            <li><a href="/recipes/honey">Honey</a></li>
+            <li><a href="/recipes/hummus">Hummus</a></li>
+        </ul>
+
+        <h2 id="I">I</h2>
+        <ul>
+            <li><a href="/recipes/iceberg-lettuce">Iceberg lettuce</a></li>
+            <li><a href="/recipes/italian-seasoning">Italian seasoning</a></li>
+        </ul>
+
+        <h2 id="J">J</h2>
+        <ul>
+            <li><a href="/recipes/jalapenos">Jalapeños</a></li>
+            <li><a href="/recipes/jam">Jam</a></li>
+        </ul>
+
+        <h2 id="K">K</h2>
+        <ul>
+            <li><a href="/recipes/kale">Kale</a></li>
+            <li><a href="/recipes/ketchup">Ketchup</a></li>
+            <li><a href="/recipes/kiwi">Kiwi</a></li>
+        </ul>
+
+        <h2 id="L">L</h2>
+        <ul>
+            <li><a href="/recipes/lamb">Lamb</a></li>
+            <li><a href="/recipes/lemons">Lemons</a></li>
+            <li><a href="/recipes/lime-juice">Lime juice</a></li>
+            <li><a href="/recipes/lentils">Lentils</a></li>
+        </ul>
+
+        <h2 id="M">M</h2>
+        <ul>
+            <li><a href="/recipes/mango">Mango</a></li>
+            <li><a href="/recipes/mayonnaise">Mayonnaise</a></li>
+            <li><a href="/recipes/milk">Milk</a></li>
+            <li><a href="/recipes/miso">Miso</a></li>
+            <li><a href="/recipes/mushrooms">Mushrooms</a></li>
+            <li><a href="/recipes/mustard">Mustard</a></li>
+        </ul>
+
+        <h2 id="N">N</h2>
+        <ul>
+            <li><a href="/recipes/nachos">Nachos</a></li>
+            <li><a href="/recipes/nutmeg">Nutmeg</a></li>
+            <li><a href="/recipes/nuts">Nuts</a></li>
+        </ul>
+
+        <h2 id="O">O</h2>
+        <ul>
+            <li><a href="/recipes/oats">Oats</a></li>
+            <li><a href="/recipes/olive-oil">Olive oil</a></li>
+            <li><a href="/recipes/onions">Onions</a></li>
+            <li><a href="/recipes/orange-juice">Orange juice</a></li>
+            <li><a href="/recipes/oregano">Oregano</a></li>
+        </ul>
+
+        <h2 id="P">P</h2>
+        <ul>
+            <li><a href="/recipes/paprika">Paprika</a></li>
+            <li><a href="/recipes/parmesan">Parmesan</a></li>
+            <li><a href="/recipes/peaches">Peaches</a></li>
+            <li><a href="/recipes/peanut-butter">Peanut butter</a></li>
+            <li><a href="/recipes/pears">Pears</a></li>
+            <li><a href="/recipes/pepper">Pepper</a></li>
+            <li><a href="/recipes/pickles">Pickles</a></li>
+            <li><a href="/recipes/pineapple">Pineapple</a></li>
+            <li><a href="/recipes/pita-bread">Pita bread</a></li>
+            <li><a href="/recipes/potatoes">Potatoes</a></li>
+            <li><a href="/recipes/pumpkin">Pumpkin</a></li>
+        </ul>
+
+        <h2 id="Q">Q</h2>
+        <ul>
+            <li><a href="/recipes/quinoa">Quinoa</a></li>
+        </ul>
+
+        <h2 id="R">R</h2>
+        <ul>
+            <li><a href="/recipes/raisins">Raisins</a></li>
+            <li><a href="/recipes/raspberries">Raspberries</a></li>
+            <li><a href="/recipes/rice">Rice</a></li>
+            <li><a href="/recipes/ricotta">Ricotta</a></li>
+            <li><a href="/recipes/rosemary">Rosemary</a></li>
+        </ul>
+
+        <h2 id="S">S</h2>
+        <ul>
+            <li><a href="/recipes/salmon">Salmon</a></li>
+            <li><a href="/recipes/sesame-seeds">Sesame seeds</a></li>
+            <li><a href="/recipes/soy-sauce">Soy sauce</a></li>
+            <li><a href="/recipes/spaghetti">Spaghetti</a></li>
+            <li><a href="/recipes/spinach">Spinach</a></li>
+            <li><a href="/recipes/strawberries">Strawberries</a></li>
+            <li><a href="/recipes/sugar">Sugar</a></li>
+            <li><a href="/recipes/sweet-potatoes">Sweet potatoes</a></li>
+        </ul>
+
+        <h2 id="T">T</h2>
+        <ul>
+            <li><a href="/recipes/tarragon">Tarragon</a></li>
+            <li><a href="/recipes/thyme">Thyme</a></li>
+            <li><a href="/recipes/tofu">Tofu</a></li>
+            <li><a href="/recipes/tomato-sauce">Tomato sauce</a></li>
+            <li><a href="/recipes/turmeric">Turmeric</a></li>
+        </ul>
+
+        <h2 id="U">U</h2>
+        <ul>
+            <li><a href="/recipes/udon-noodles">Udon noodles</a></li>
+        </ul>
+
+        <h2 id="V">V</h2>
+        <ul>
+            <li><a href="/recipes/vanilla">Vanilla</a></li>
+            <li><a href="/recipes/vegetable-oil">Vegetable oil</a></li>
+            <li><a href="/recipes/vinegar">Vinegar</a></li>
+        </ul>
+
+        <h2 id="W">W</h2>
+        <ul>
+            <li><a href="/recipes/walnuts">Walnuts</a></li>
+            <li><a href="/recipes/watermelon">Watermelon</a></li>
+            <li><a href="/recipes/whipped-cream">Whipped cream</a></li>
+            <li><a href="/recipes/whole-grain-bread">Whole grain bread</a></li>
+            <li><a href="/recipes/worcestershire-sauce">Worcestershire sauce</a></li>
+        </ul>
+
+        <h2 id="Y">Y</h2>
+        <ul>
+            <li><a href="/recipes/yogurt">Yogurt</a></li>
+        </ul>
+
+        <h2 id="Z">Z</h2>
+        <ul>
+            <li><a href="/recipes/zucchini">Zucchini</a></li>
+        </ul>
+    </div>
+
+    <script>
+        function scrollToIngredient() {
+            const searchInput = document.getElementById('ingredientSearch').value.toLowerCase();
+            const items = document.querySelectorAll('.ingredients-list li a');
+
+            items.forEach(item => {
+                if (item.textContent.toLowerCase().includes(searchInput)) {
+                    const ingredientSection = item.closest('ul').previousElementSibling; // get the following header (h2)
+                    ingredientSection.scrollIntoView({ behavior: 'smooth' });
+                    return; // exit loop
+                }
+            });
+        }
+    </script>
+</body>

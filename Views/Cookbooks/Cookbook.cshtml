@@ -3,9 +3,19 @@
 @{
     ViewData["Title"] = @Model.cookbook.Title;
 }
-
+               
+<style>
+    body {
+        hr.rounded {
+        border-top: 8px solid #96AE6D;
+        border-radius: 5px;
+        }
+    }
+</style>
+<body>
 <div class="text-center">
-    <h1>@Model.cookbook.Title Cookbook</h1>
+    <h1 class="display-4" style="color: #4A743E;>@Model.cookbook.Title Cookbook</h1>
+    <hr class="rounded">
     <p>Let's get ready to cook!</p>
 </div>
 <a asp-controller="Recipe" asp-action="Add" asp-route-cookbookName=@Model.cookbook.Title>Add Recipe</a>
@@ -30,3 +40,5 @@
     }
     </table>
 </div>
+</body>
+

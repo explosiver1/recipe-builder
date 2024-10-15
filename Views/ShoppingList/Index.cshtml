@@ -1,8 +1,161 @@
 @{
-    ViewData["Title"] = "Title";
+    ViewData["Title"] = "Shopping List";
 }
 
-<div class="text-center">
-    <h1>Heading</h1>
-    <p>Let's get ready to cook!</p>
-</div>
+<!-- button styling -->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping List</title>
+
+    <style>
+        /* button styling */
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4A743E; 
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #96AE6D; 
+        }
+
+        /* styling for remove button */
+        .remove-btn {
+            background-color: #dc3545; 
+            margin-left: 10px;
+        }
+
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* background styling for the shopping list */
+        #shoppingListContainer {
+            background-color: #F4F3EC; 
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 900px;
+            margin: auto; 
+        }
+
+        /* styling for checkboxes and list items */
+        ul {
+            list-style-type: none; 
+            padding-left: 0;
+        }
+
+        ul li {
+            font-size: 18px;
+            margin: 5px 0;
+        }
+
+        ul li input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        /* strikethrough effect for checked items */
+        .completed {
+            text-decoration: line-through;
+            color: gray; 
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* add item and button container styling */
+        .input-container {
+            display: flex; 
+            justify-content: center; 
+            margin-bottom: 15px; 
+        }
+
+        /* add item field styling */
+        #newItem {
+            flex: 1; 
+            padding: 10px; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            margin-right: 10px; 
+        }
+    </style>
+</head>
+
+<body>
+    <div class="text-center">
+        <h1 class="display-4" style="color: #4A743E;">Shopping List</h1>
+        <br>
+        <div class="input-container">
+            <input type="text" id="newItem" placeholder="Enter item">
+            <button type="button" id="addItemBtn">Add Item</button>
+        </div>
+    </div>
+
+    <div id="shoppingListContainer">
+        <br>
+        <ul id="shoppingList">
+            <!-- test grocery items, will remove later -->
+            <li><input type="checkbox" onchange="toggleCompletion(this)"> Almonds <button class="remove-btn" onclick="removeItem(this)">Remove</button></li>
+            <li><input type="checkbox" onchange="toggleCompletion(this)"> Bread <button class="remove-btn" onclick="removeItem(this)">Remove</button></li>
+            <li><input type="checkbox" onchange="toggleCompletion(this)"> Coconuts <button class="remove-btn" onclick="removeItem(this)">Remove</button></li>
+            <li><input type="checkbox" onchange="toggleCompletion(this)"> Dates <button class="remove-btn" onclick="removeItem(this)">Remove</button></li>
+        </ul>
+    </div>
+
+    <!-- javascript for button/list functionality -->
+    <script>
+        // remove an item from the list
+        function removeItem(element) {
+            element.parentElement.remove();
+        }
+
+        // add a new item to the list
+        document.getElementById("addItemBtn").addEventListener("click", function() {
+            const newItem = document.getElementById("newItem").value;
+
+            if (newItem.trim() !== "") {
+                // create a new list item with a checkbox and remove button
+                const li = document.createElement("li");
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.onchange = function() { toggleCompletion(this); };
+
+                const text = document.createTextNode(newItem);
+
+                const removeBtn = document.createElement("button");
+                removeBtn.textContent = "Remove";
+                removeBtn.classList.add("remove-btn");
+                removeBtn.onclick = function() { removeItem(this); };
+
+                li.appendChild(checkbox);
+                li.appendChild(text);
+                li.appendChild(removeBtn);
+
+                // add the new item to the list
+                document.getElementById("shoppingList").appendChild(li);
+
+                // clear the input field
+                document.getElementById("newItem").value = "";
+            }
+        });
+
+        // toggle completion status of items
+        function toggleCompletion(checkbox) {
+            if (checkbox.checked) {
+                checkbox.parentElement.classList.add("completed");
+            } else {
+                checkbox.parentElement.classList.remove("completed");
+            }
+        }
+    </script>
+</body>
