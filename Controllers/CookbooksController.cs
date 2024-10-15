@@ -21,4 +21,15 @@ public class CookbooksController : Controller
         return View(viewModel);
     }
 
+    [HttpGet]
+    public IActionResult Add()
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult Edit()
+    {
+        return View();
+    }
 }

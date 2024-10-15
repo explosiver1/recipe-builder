@@ -47,4 +47,16 @@ public class RecipeController : Controller
         return View();
     }
 
+    [HttpGet]
+    public IActionResult Look(String selectedRecipe)
+    {
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult Select(String selectedRecipe)
+    {
+        return View();
+    }
+
 }
