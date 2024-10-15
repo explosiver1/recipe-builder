@@ -1,42 +1,33 @@
 @*  This creates a reference called model to the 
     list of models the controller passes to this view.
     Access the data by using keyword model *@
-@model RecipeBuilder.Models.Recipe
-    
+@model RecipeBuilder.ViewModels.CookbooksIndexVM
+
 @{
     ViewData["Title"] = "My Cookbooks";
 }
 
 <div class="text-center">
-    <h1 class="display-4">My Cookbooks</h1>
+    <h1 class="display-4" style="color: #4A743E;">My Cookbooks</h1>
     <p>Let's get ready to cook!</p>
 </div>
 <div class="text-center">
     <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
+            Cookbooks
         </th>
         <th></th>
     </tr>
 
-@* 
-foreach (var item in Model) {
+@foreach (var cookbook in Model.cookbooks) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
+            <a asp-action=Cookbook asp-route-id=@cookbook.Title>@cookbook.Title</a>
         </td>
     </tr>
 }
-*@
+
 
 </table>
 </div>
