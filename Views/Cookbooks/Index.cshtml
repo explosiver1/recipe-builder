@@ -24,14 +24,14 @@
 </div>
 
 <div class="text-center">
-    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for search
+    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for search *@
     <div class="form-group">
         <input type="text" class="form-control" placeholder="Search Recipes..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
     </div>
     <button type="submit" class="btn btn-primary ml-2">Search</button>
-    @*</form>
+    @*</form>*@
 </div>
-Card View Cookbooks
+@*Card View Cookbooks*@
 <div class="row">
     @if (Model.cookbooks != null)
     {
@@ -51,23 +51,5 @@ Card View Cookbooks
     else
     {
         <p>No Recipes Found.</p>
-    }*@
-    <table class="table">
-    <tr>
-        <th>
-            Cookbooks
-        </th>
-        <th></th>
-    </tr>
-
-@foreach (var cookbook in Model.cookbooks) {
-    <tr>
-        <td>
-            <a asp-action=Cookbook asp-route-id=@cookbook.Title>@cookbook.Title</a>
-        </td>
-    </tr>
-}
-</div>
-
-</table>
+    }
 </div>
