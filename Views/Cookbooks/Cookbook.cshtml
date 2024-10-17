@@ -37,28 +37,7 @@
     @*</form>*@
 </div>
 <a asp-controller="Recipe" asp-action="Add" asp-route-cookbookName=@Model.cookbook.Title>Add Recipe</a>
-<div class="text-center">
-    <table class="table">
-    <tr>
-        <th>
-            Recipes
-        </th>
-        <th></th>
-    </tr>
-
-    @if(Model.cookbook.Recipes != null)
-    {
-        @foreach (var recipe in Model.cookbook.Recipes) {
-            <tr>
-                <td>
-                    <a asp-controller=Recipe asp-action=Index asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name>@recipe.Name</a>
-                </td>
-            </tr>
-        }
-    }
-    </table>
-</div>
-@*<div class="row">
+<div class="row">
     @if (Model.cookbook.Recipes !=null)
     {
         @foreach (var recipe in Model.cookbook.Recipes)
@@ -67,7 +46,7 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">@recipe.Name</h5>
-                        <p class="card-text">@recipe.Rating</p>
+                        <p class="card-text">Difficulty: @recipe.Difficulty</p>
                         <a asp-controller=Recipe asp-action=Index asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name>@recipe.Name</a>
                     </div>
                 </div>
@@ -78,5 +57,5 @@
     {
         <p>No Recipes Found.</p>
     }
-</div>*@
+</div>
 </body>
