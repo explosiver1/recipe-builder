@@ -23,6 +23,7 @@ public class DBQueryModel
     //The Merge methods must accept every property that may be held in the respective node and the necessary relationship properties as parameters.
     //Optionals can be added as "type name = 'value'" in the argument list. Not specifying a default value makes it required.
 
+    //DONE
     public async static Task<AuthToken> Authenticate(string username, string password)
     {
         /*
@@ -57,9 +58,32 @@ public class DBQueryModel
         }
     }
 
-    public async Task<Recipe> GetRecipe(string name, string cbName, AuthToken at, string group = "")
+    //TESTING
+    public async Task<Recipe> GetRecipe(string recName, AuthToken at, string group = "")
     {
-        string query = "MATCH (rec:" + at.username + "Recipe {name:'" + name + "'})-[r]->(b)\n " +
+        string name;
+        string startLabel;
+        if (group != "")
+        {
+            bool gTest = await ValidateGroupMembership(group, at);
+            if (gTest)
+            {
+                name = group;
+                startLabel = "Group";
+            }
+            else
+            {
+                Recipe r2 = new Recipe();
+                r2.Name = "ERROR";
+                return r2;
+            }
+        }
+        else
+        {
+            name = recName;
+            startLabel = "User";
+        }
+        string query = "MATCH  (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->()-[:CATALOGUES]->(rec:Recipe {name:'" + name + "'})-[r]->(b)\n " +
                                     //"MATCH (rec)<-[tr]-(c)\n" +
                                     "return rec, r, b \n"; //tr, c\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
@@ -173,17 +197,44 @@ public class DBQueryModel
             //    }
             //}
         }
-
+        List<Tag> tags = await GetTags(name, at);
+        List<string> tagNames = new List<string>();
+        foreach (Tag tag in tags)
+        {
+            tagNames.Add(tag.Name);
+        }
+        //Load names into List<string> on Recipe object.
         //Create and run query on Tags. Or Call GetTags method.
         //Load names into List<string> on Recipe object.
         return r;
     }
 
-    public async Task<bool> DeleteRecipe(string name, AuthToken at)
+    //TESTING
+    public async Task<bool> DeleteRecipe(string recName, AuthToken at, string group = "")
     {
-        string query = "MATCH (rec:" + at.username + "Recipe {name:'" + name + "'})\n " +
+        string name;
+        string startLabel;
+        if (group != "")
+        {
+            bool gTest = await ValidateGroupMembership(group, at);
+            if (gTest)
+            {
+                name = group;
+                startLabel = "Group";
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            name = recName;
+            startLabel = "User";
+        }
+        string query = "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->()-[:CATALOGUES]->(rec:Recipe {name:'" + name + "'})\n " +
             "DELETE rec \n" +
-            "MATCH (n:" + at.username + "Recipe {name:'" + name + "'})\n " +
+            "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->()-[:CATALOGUES]->(n:Recipe {name:'" + name + "'})\n " +
             "return NOT(Count(n) >0) ";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         //response is EagerResult<IReadOnlyList<IRecord>>
@@ -199,9 +250,32 @@ public class DBQueryModel
         }
     }
 
-    public async Task<Cookbook> GetCookbook(string name, AuthToken at)
+    //TESTING
+    public async Task<Cookbook> GetCookbook(string cbName, AuthToken at, string group = "")
     {
-        string query = "MATCH (cb:" + at.username + "Cookbook {name:'" + name + "'})-[r]->(b)\n " +
+        string name;
+        string startLabel;
+        if (group != "")
+        {
+            bool gTest = await ValidateGroupMembership(group, at);
+            if (gTest)
+            {
+                name = group;
+                startLabel = "Group";
+            }
+            else
+            {
+                Cookbook cbk = new Cookbook();
+                cbk.Title = "ERROR";
+                return cbk;
+            }
+        }
+        else
+        {
+            name = cbName;
+            startLabel = "User";
+        }
+        string query = "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})-[r]->(b)\n " +
                                     "return cb, r, b\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
@@ -226,9 +300,6 @@ public class DBQueryModel
                 {
                     cb.Title = "Error";
                 }
-
-
-
                 firstPass = false;
             }
             if (rNode != null)
@@ -251,14 +322,68 @@ public class DBQueryModel
             }
         }
 
-        //Create and run query on Tags. Or Call GetTags method.
-        //Load names into List<string> on Recipe object.
+
         return cb;
     }
 
-    public async Task<List<Tag>> GetTags(string recipeName, AuthToken at)
+    //IN PROGRESS
+    public async Task<bool> DeleteCookbook(string cbName, AuthToken at, string group = "")
     {
-        string query = "MATCH (t:Tag)-[r]->(b:" + at.username + "Recipe {name: " + recipeName + "})\n " +
+        string name;
+        string startLabel;
+        if (group != "")
+        {
+            bool gTest = await ValidateGroupMembership(group, at);
+            if (gTest)
+            {
+                name = group;
+                startLabel = "Group";
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            name = cbName;
+            startLabel = "User";
+        }
+        string query = "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})\n " +
+                                    "DELETE cb\n" +
+                        "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(cbk:Cookbook {name:'" + name + "'})\n " +
+                        "return NOT(Count(cbk) > 0)";
+        var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
+        IReadOnlyList<IRecord> irol = response.Result;
+        var record = irol.First<IRecord>();
+        return record[0].As<bool>();
+    }
+
+    //TESTING
+    private async Task<List<Tag>> GetTags(string recName, AuthToken at, string group = "")
+    {
+        string name;
+        string startLabel;
+        if (group != "")
+        {
+            bool gTest = await ValidateGroupMembership(group, at);
+            if (gTest)
+            {
+                name = group;
+                startLabel = "Group";
+            }
+            else
+            {
+                List<Tag> ltg = new List<Tag>();
+                return ltg;
+            }
+        }
+        else
+        {
+            name = recName;
+            startLabel = "User";
+        }
+        string query = "MATCH (:" + startLabel + ")-[r]->(b:Recipe {name: " + recName + "})\n " +
                                         "return t\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
@@ -280,8 +405,47 @@ public class DBQueryModel
         return lt;
     }
 
-    public async Task<bool> DeleteCookbook(string name, AuthToken at)
+    //TESTING
+    private async Task<bool> DeleteTag(string tagName, string recName, AuthToken at, string group = "")
     {
-        return true;
+        string name;
+        string startLabel;
+        if (group != "")
+        {
+            bool gTest = await ValidateGroupMembership(group, at);
+            if (gTest)
+            {
+                name = group;
+                startLabel = "Group";
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            name = tagName;
+            startLabel = "User";
+        }
+        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(:Cookbook)-[:CATALOGUES]->(:Recipe {name: " + recName + "})<-[:DESCRIBES]-(t:Tag)\n " +
+                                            "DELETE t\n" +
+                                            "MATCH (:User )-[:OWNS]->(:Cookbook)-[:CATALOGUES]->(:Recipe {name: " + recName + "})<-[:DESCRIBES]-(tt:Tag)\n " +
+                                                                                "return NOT(COUNT(tt) > 0)\n";
+        var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
+        IReadOnlyList<IRecord> irol = response.Result;
+        var record = irol.First<IRecord>();
+        return record[0].As<bool>();
+    }
+
+    //TESTING
+    private async Task<bool> ValidateGroupMembership(string group, AuthToken at)
+    {
+        string query = "MATCH (u:User {name:'" + at.username + "'})-[r:MEMBER_OF]->(b:Group {name: " + group + "})\n " +
+                                                "return Count(u) > 0\n";
+        var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
+        IReadOnlyList<IRecord> irol = response.Result;
+        var record = irol.First<IRecord>();
+        return record[0].As<bool>();
     }
 }
