@@ -2,7 +2,6 @@
     ViewData["Title"] = "Shopping List";
 }
 
-<!-- button styling -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,7 +14,7 @@
             padding: 10px 20px;
             font-size: 16px;
             color: white;
-            background-color: #4A743E; 
+            background-color: #4A743E;
             text-align: center;
             text-decoration: none;
             border-radius: 5px;
@@ -25,12 +24,12 @@
         }
 
         button:hover {
-            background-color: #96AE6D; 
+            background-color: #96AE6D;
         }
 
-        /* styling for remove button */
+        /* remove button styling */
         .remove-btn {
-            background-color: #dc3545; 
+            background-color: #dc3545;
             margin-left: 10px;
         }
 
@@ -40,52 +39,66 @@
 
         /* background styling for the shopping list */
         #shoppingListContainer {
-            background-color: #F4F3EC; 
+            background-color: #F4F3EC;
             padding: 20px;
             border-radius: 10px;
             max-width: 900px;
-            margin: auto; 
+            margin: auto;
         }
 
-        /* styling for checkboxes and list items */
+        /* list item styling with flexbox for proper alignment */
         ul {
-            list-style-type: none; 
+            list-style-type: none;
             padding-left: 0;
         }
 
         ul li {
             font-size: 18px;
             margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ensure checkbox and text stay on the left side */
+        .item-left {
+            display: flex;
+            align-items: center;
         }
 
         ul li input[type="checkbox"] {
             margin-right: 10px;
         }
 
-        /* strikethrough effect for checked items */
+        /* button container for Add to Pantry and Remove buttons */
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* strikethrough effect only on text, not buttons */
         .completed {
             text-decoration: line-through;
-            color: gray; 
+            color: gray;
         }
 
         .text-center {
             text-align: center;
         }
 
-        /* add item and button container styling */
+        /* input field styling */
         .input-container {
-            display: flex; 
-            justify-content: center; 
-            margin-bottom: 15px; 
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
         }
 
-        /* add item field styling */
         #newItem {
-            flex: 1; 
-            padding: 10px; 
-            border: 1px solid #ccc; 
-            border-radius: 5px; 
-            margin-right: 10px; 
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
         }
     </style>
 </head>
@@ -103,11 +116,7 @@
     <div id="shoppingListContainer">
         <br>
         <ul id="shoppingList">
-            <!-- test grocery items, will remove later -->
-            <li><input type="checkbox" onchange="toggleCompletion(this)"> Almonds <button class="remove-btn" onclick="removeItem(this)">Remove</button></li>
-            <li><input type="checkbox" onchange="toggleCompletion(this)"> Bread <button class="remove-btn" onclick="removeItem(this)">Remove</button></li>
-            <li><input type="checkbox" onchange="toggleCompletion(this)"> Coconuts <button class="remove-btn" onclick="removeItem(this)">Remove</button></li>
-            <li><input type="checkbox" onchange="toggleCompletion(this)"> Dates <button class="remove-btn" onclick="removeItem(this)">Remove</button></li>
+            <!-- test grocery items -->
         </ul>
     </div>
 
@@ -115,7 +124,13 @@
     <script>
         // remove an item from the list
         function removeItem(element) {
-            element.parentElement.remove();
+            element.parentElement.parentElement.remove(); // remove the entire list item
+        }
+
+        // handle "Add to Pantry" action
+        function addToPantry(item) {
+            alert(item + " added to pantry!");
+            // Here you can handle logic for pantry
         }
 
         // add a new item to the list
@@ -123,23 +138,42 @@
             const newItem = document.getElementById("newItem").value;
 
             if (newItem.trim() !== "") {
-                // create a new list item with a checkbox and remove button
+                // create a new list item with a checkbox, add to pantry button, and remove button
                 const li = document.createElement("li");
+
+                // left section for the checkbox and text
+                const itemLeft = document.createElement("div");
+                itemLeft.classList.add("item-left");
 
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
                 checkbox.onchange = function() { toggleCompletion(this); };
 
-                const text = document.createTextNode(newItem);
+                const textSpan = document.createElement("span");
+                textSpan.textContent = newItem;
+
+                itemLeft.appendChild(checkbox);
+                itemLeft.appendChild(textSpan);
+
+                // button container to hold both "Add to Pantry" and "Remove" buttons
+                const buttonContainer = document.createElement("div");
+                buttonContainer.classList.add("button-container");
+
+                const pantryBtn = document.createElement("button");
+                pantryBtn.textContent = "Add to Pantry";
+                pantryBtn.classList.add("pantry-btn");
+                pantryBtn.onclick = function() { addToPantry(newItem); };
 
                 const removeBtn = document.createElement("button");
                 removeBtn.textContent = "Remove";
                 removeBtn.classList.add("remove-btn");
                 removeBtn.onclick = function() { removeItem(this); };
 
-                li.appendChild(checkbox);
-                li.appendChild(text);
-                li.appendChild(removeBtn);
+                buttonContainer.appendChild(pantryBtn);
+                buttonContainer.appendChild(removeBtn);
+
+                li.appendChild(itemLeft);  // add checkbox and text to the left side
+                li.appendChild(buttonContainer); // add buttons to the right side
 
                 // add the new item to the list
                 document.getElementById("shoppingList").appendChild(li);
@@ -151,10 +185,13 @@
 
         // toggle completion status of items
         function toggleCompletion(checkbox) {
+            const listItem = checkbox.parentElement;  // the parent element containing the checkbox and the text
+            const textSpan = listItem.querySelector("span");  // get the span containing the item text
+
             if (checkbox.checked) {
-                checkbox.parentElement.classList.add("completed");
+                textSpan.classList.add("completed");  // add strikethrough if checkbox is selected
             } else {
-                checkbox.parentElement.classList.remove("completed");
+                textSpan.classList.remove("completed");  // remove strikethrough if checkbox is unselected
             }
         }
     </script>
