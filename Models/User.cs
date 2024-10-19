@@ -122,14 +122,30 @@ namespace RecipeBuilder.Models
                 return;
             }
 
+            if (ShoppingList.Items == null)
+                ShoppingList.Items = new List<Ingredient>(); // Initialize if null
+
             ShoppingList.AddItem(ingredient);
             Console.WriteLine($"{ingredient.Name} has been added to the shopping list.");
-        }//end AddToShoppingList
+        } // end AddToShoppingList
+
+        // Add a cookbook with validation
+        public void AddCookbook(Cookbook cookbook)
+        {
+            if (cookbook == null)
+            {
+                Console.WriteLine("Cookbook cannot be empty.");
+                return;
+            }
+
+            Cookbooks.Add(cookbook);
+            Console.WriteLine($"Cookbook '{cookbook.Title}' added to user.");
+        }//end AddCookbook
 
         // Display the user's cookbooks
         public void DisplayCookbooks()
         {
-            if (Cookbooks.Count == 0)
+            if (Cookbooks == null || Cookbooks.Count == 0)
             {
                 Console.WriteLine("No cookbooks available.");
                 return;
@@ -140,7 +156,7 @@ namespace RecipeBuilder.Models
             {
                 Console.WriteLine($"- {cookbook.Title}");
             }
-        }//end DisplayCookbooks
+        } // end DisplayCookbooks
 
         // Display the user's meal planners
         public void DisplayMealPlanners()
@@ -161,7 +177,7 @@ namespace RecipeBuilder.Models
         // Display the user's shopping list
         public void DisplayShoppingList()
         {
-            if (ShoppingList.Items.Count == 0)
+            if (ShoppingList.Items == null || ShoppingList.Items.Count == 0)
             {
                 Console.WriteLine("Shopping list is empty.");
                 return;
@@ -172,6 +188,6 @@ namespace RecipeBuilder.Models
             {
                 Console.WriteLine($"- {item.Name}");
             }
-        }//end DisplayShoppingList
+        } // end DisplayShoppingList
     }//end User
 }//end namespace RecipeBuilder.Models
