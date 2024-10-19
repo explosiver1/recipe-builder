@@ -1,28 +1,28 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
-using RecipeBuilder.Models.ViewModels;
+using RecipeBuilder.ViewModels;
 
 namespace RecipeBuilder.Controllers;
 
 public class RecipeController : Controller
 {
     [HttpGet]
-    public IActionResult Index(String id)//String userName 
+    public IActionResult Index(String id)//String userName
     {
         // Update recipe= to be set to appropriate dbmodel method
-        RecipeIndexVM viewModel = new RecipeIndexVM{cookbook=RecipeSeedData.GetCookbook(id)};
-        return View(viewModel);
-    }
-    
-    [HttpGet]
-    public IActionResult Add(string cookbookName)//String userName 
-    {
-        RecipeAddVM viewModel = new RecipeAddVM{ cookbookName=cookbookName, recipe=new Recipe()};//userName=userName, 
+        RecipeIndexVM viewModel = new RecipeIndexVM { cookbook = RecipeSeedData.GetCookbook(id) };
         return View(viewModel);
     }
 
-[HttpPost]
+    [HttpGet]
+    public IActionResult Add(string cookbookName)//String userName
+    {
+        RecipeAddVM viewModel = new RecipeAddVM { cookbookName = cookbookName, recipe = new Recipe() };//userName=userName,
+        return View(viewModel);
+    }
+
+    [HttpPost]
     public IActionResult Add(RecipeAddVM recipeVM)
     {
         // Send new recipe data to db
@@ -33,12 +33,12 @@ public class RecipeController : Controller
         if (RecipeSeedData.AddRecipe(recipeVM.cookbookName, recipeVM.recipe))
         {
             return RedirectToAction("Look", recipeVM.cookbookName, recipeVM.recipe.Name);
-            }
-            else
-            {
-                return View(recipeVM.cookbookName);
-            }
-         
+        }
+        else
+        {
+            return View(recipeVM.cookbookName);
+        }
+
     }
 
     [HttpGet]
@@ -50,7 +50,7 @@ public class RecipeController : Controller
     [HttpGet]
     public IActionResult Look(string cookbookName, string recipeName)
     {
-        RecipeLookVM viewModel = new RecipeLookVM{cookbookName=cookbookName, recipe=RecipeSeedData.GetRecipe(cookbookName, recipeName)};//userName=userName, 
+        RecipeLookVM viewModel = new RecipeLookVM { cookbookName = cookbookName, recipe = RecipeSeedData.GetRecipe(cookbookName, recipeName) };//userName=userName,
         return View(viewModel);
     }
 
