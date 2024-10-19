@@ -16,7 +16,10 @@
     <label for="password">Password:</label>
     @*<input asp-for="" class="" />*@
     <input type="password" id="password" name="password"><br><br>
-    @*Authurization needed for sign in redirect*@
-    <a asp-controller="Cookbooks" asp-action="Index">Sign In</a><br><br>
+    <label for="Confpassword">Confirm Password:</label>
+    @*<input asp-for="" class="" />*@
+    <input type="Confpassword" id="Confpassword" name="Confpassword"><br><br>
+    @*After Creation it sends to Login page*@
+    <a asp-controller="Account" asp-action="Login">Sign In</a><br><br>
     <a asp-controller="Home" asp-action="Index">Back</a><br><br>
 </div>

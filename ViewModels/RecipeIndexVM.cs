@@ -6,7 +6,5 @@ namespace RecipeBuilder.ViewModels;
 
 public class RecipeIndexVM()
 {
-    //public required string userName {get;set;}
-    public required string cookbookName {get;set;}
-    public required Recipe recipe {get;set;}
+    public required Cookbook cookbook {get; set;}
 }

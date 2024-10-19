@@ -1,71 +1,52 @@
 @model RecipeBuilder.ViewModels.RecipeIndexVM
 
 @{
-    ViewData["Title"] = @Model.recipe.Name;
+    ViewData["Title"] = "Recipes";
 }
 
-@*<div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex">
-        <form asp-action="" method="get" class="form-inline"> * need to know which model to pull from for Tag search
+        @*<form asp-action="" method="get" class="form-inline"> * need to know which model to pull from for Tag search *@
         <div class="input-group input-group-sm">
             <input type="text" class="form-control" placeholder="Search by Tags..." name="TagSearch" value="@ViewData["CurrentTagFilter"]" style="max-width: 150px;" />
             <div class="input-group-append">
                 <button class="btn btn-primary" type="submit">Search</button>
             </div>
         </div>
-        </form>
+        @*</form>*@
     </div>
     <h2 class="text-center flex-grow-1 display-4" style="margin: 0;">Recipes</h2>
     <a asp-controller="Recipe" asp-action="Add">Create New Recipe</a>
 </div>
 
 <div class="text-center">
-    <form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for general search
+    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for general search*@
     <div class="form-group">
         <input type="text" class="form-control" placeholder="Search Recipes..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
-    </div>
+    </div><br>
     <button type="submit" class="btn btn-primary ml-2">Search</button>
-    </form>
-</div>
+    @*</form>*@
+</div><br>
+
 <div class="row">
-    @if (Model!=null &&Model.Count()>0) *A loop for when we set up with model*
+    @*@if (Model.cookbook.Recipes != null)
     {
-        foreach (var recipe in Model)
-        {
+        @foreach (var recipe in Model.cookbook.Recipes)
+        {*@
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">Recipe1 name</h5>
-                        <p class="card-text">Recipe1 Description</p>
+                        <p class="card-text">Recipe1 Difficulty</p>
                         
                         <a asp-controller="Recipe" asp-action="Look">Recipe1 name</a>
                     </div>
                 </div>
             </div>
-        }
+        @*}
     }
     else
     {
         <p>No Recipes Found.</p>
     }*@
-<div class="text-center">
-    <h1 class="display-4">Recipe: @Model.recipe.Name</h1>
-    <p>Let's get ready to cook!</p>
-    <p>Here are the instructions:</p>
-    <h1 class="display-4">@Model.recipe.Name</h1>
-    <a asp-controller="Recipe" asp-action="Edit" asp-route-cookbookName=@Model.cookbookName asp-route-recipeName=@Model.recipe.Name>Edit Recipe</a>
-    <p>Let's get ready to cook!</p>
-    <p>Cooktime: @Model.recipe.CookTime minutes</p>
-    <p>Difficulty: @Model.recipe.Difficulty</p>
-    <h2>Steps</h2>
-    <ol>
-        @if (@Model.recipe.Instructions !=  null)
-        {
-            @foreach (var step in @Model.recipe.Instructions)
-            {
-                <li>@step</li>
-            }
-        }
-        
-    </ol>
 </div>

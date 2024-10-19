@@ -1,10 +1,84 @@
-@model RecipeBuilder.Models.Recipe
+@model RecipeBuilder.ViewModels.RecipeLookVM
 
 @{
-    ViewData["Title"] = "View Recipe";
+    ViewData["Title"] = @Model.recipe.Name;
 }
 
-<div class="text-center">
-    <h2 class="display-4">Recipe</h2> @*Need to display recipe name*@
-    <p>Let's get ready to cook!</p>
+<div class="container">
+    <div class ="row mb-3">
+        <div class="col-md-4 d-flex align-items-center">
+            <a asp-controller="Recipe" asp-action="Edit" asp-route-cookbookName=@Model.cookbookName asp-route-recipeName=@Model.recipe.Name>Edit Recipe</a>
+        </div>
+        <div class="col-md-8 text-center">
+            <h1 class="display-4" style="margin: 0;">Recipe: @Model.recipe.Name</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <p>Cooktime: @Model.recipe.CookTime minutes</p>
+            <h4>Cooktime:</h4>
+            <ul>
+                <li>@Model.recipe.CookTime minutes</li>
+            </ul>
+            <h4>Difficulty:</h4>
+            <ul>
+                <li>@Model.recipe.Difficulty</li>
+            </ul>
+            <h4>Ingredients:</h4>
+            <ul>
+                @if (@Model.recipe.Ingredients !=  null)
+                {
+                    @foreach (var ing in @Model.recipe.Ingredients)
+                    {
+                        <li>
+                            @ing.Quantity @ing.Unit @ing.Ingredient.Name
+                            <button class="add-to-cart-btn" onclick="addToCart('@ing.Ingredient.Name',this)">Add to Cart</button>
+                        </li>
+                        <br>
+                    }
+                }
+            </ul>
+            @*<h4>Nutrition:</h4>
+            <ul>
+                <li>Nutrition Info</li>
+            </ul>*@
+        </div>
+        <div class="col-md-8">
+            <h4>Instructions:</h4>
+            <ol>
+                @if (@Model.recipe.Instructions !=  null)
+                {
+                    @foreach (var inst in @Model.recipe.Instructions)
+                    {
+                        <li>@inst</li>
+                    }
+                }
+            </ol>
+        </div>
+    </div>
 </div>
+<script>
+    function addToCart(ingName, button){
+        if(button.textContent == "Add to Cart"){
+            button.textContent = "Added";
+            //code needed to add to shopping list
+        } else{
+            button.textContent = "Add to Cart";
+            //code needed to remove from shopping list
+        }
+    }
+</script>
+<style>
+    .add-to-cart-btn {
+        color: white;
+        background-color: #4A743E;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+    .add-to-cart-btn:hover{
+        background-color: #96AE6D;
+    }
+</style>

@@ -1,0 +1,55 @@
+@{
+    ViewData["Title"] = "User Home";
+}
+
+<div class="text-center">
+    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for general search*@
+    <h1 class="display-4" style="color: #4A743E;">Home</h1>
+    @*</form>*@
+</div>
+<div class="row">
+    <h2 class="display-4" style="color: #4A743E;">Cookbooks:</h2>
+    @*@if (Model.cookbook.Recipes != null) Need to know the model names
+    {
+        @foreach (var recipe in Model.cookbook.Recipes)
+        {*@
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">cookbook1 name</h5>
+                        <p class="card-text">cookbook1 Description</p>
+                        
+                        <a asp-controller="Cookbooks" asp-action="Cookbook">cookbook1 name</a>
+                    </div>
+                </div>
+            </div>
+        @*}
+    }
+    else
+    {
+        <p>No Recipes Found.</p>
+    }*@
+</div>
+<div class="row">
+    <h2 class="display-4" style="color: #4A743E;">Recipes:</h2>
+    @*@if (Model.Recipes != null) Need to know the model names
+    {
+        @foreach (var recipe in Model.Recipes)
+        {*@
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Recipe1 name</h5>
+                        <p class="card-text">Recipe1 Difficulty</p>
+                        
+                        <a asp-controller="Recipe" asp-action="Look">Recipe1 name</a>
+                    </div>
+                </div>
+            </div>
+        @*}
+    }
+    else
+    {
+        <p>No Recipes Found.</p>
+    }*@
+</div>
