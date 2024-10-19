@@ -8,10 +8,10 @@ namespace RecipeBuilder.Controllers;
 public class RecipeController : Controller
 {
     [HttpGet]
-    public IActionResult Index(String cookbookName, String recipeName)//String userName 
+    public IActionResult Index(String id)//String userName 
     {
         // Update recipe= to be set to appropriate dbmodel method
-        RecipeIndexVM viewModel = new RecipeIndexVM{cookbookName=cookbookName, recipe=RecipeSeedData.GetRecipe(cookbookName, recipeName)};//userName=userName, 
+        RecipeIndexVM viewModel = new RecipeIndexVM{cookbook=RecipeSeedData.GetCookbook(id)};
         return View(viewModel);
     }
     
@@ -48,9 +48,10 @@ public class RecipeController : Controller
     }
 
     [HttpGet]
-    public IActionResult Look(String selectedRecipe)
+    public IActionResult Look(String cookbookName, String recipeName)
     {
-        return View();
+        RecipeLookVM viewModel = new RecipeLookVM{cookbookName=cookbookName, recipe=RecipeSeedData.GetRecipe(cookbookName, recipeName)};//userName=userName, 
+        return View(viewModel);
     }
 
     [HttpGet]

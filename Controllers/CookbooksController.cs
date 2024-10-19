@@ -28,8 +28,9 @@ public class CookbooksController : Controller
     }
 
     [HttpGet]
-    public IActionResult Edit()
+    public IActionResult Edit(string cookbookName)
     {
-        return View();
+        CookbooksEditVM viewModel = new CookbooksEditVM{ cookbookName=cookbookName, recipe=new Recipe()};//userName=userName, 
+        return View(viewModel);
     }
 }

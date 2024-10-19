@@ -26,17 +26,19 @@
     </div>
     <h2 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">@Model.cookbook.Title Cookbook</h2>
     <hr class="rounded">
-    <a asp-controller="Cookbooks" asp-action="Edit">Edit Cookbook</a>
+    <a asp-controller="Cookbooks" asp-action="Edit" asp-route-cookbookName=@Model.cookbook.Title>Edit Cookbook</a>
 </div>
+
 <div class="text-center">
     @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for search*@
     <div class="form-group">
         <input type="text" class="form-control" placeholder="Search Recipes..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
-    </div>
+    </div><br>
     <button type="submit" class="btn btn-primary ml-2">Search</button>
     @*</form>*@
-</div>
-<a asp-controller="Recipe" asp-action="Add" asp-route-cookbookName=@Model.cookbook.Title>Add Recipe</a>
+</div><br>
+
+@*<a asp-controller="Recipe" asp-action="Add" asp-route-cookbookName=@Model.cookbook.Title>Add Recipe</a>*@
 <div class="row">
     @if (Model.cookbook.Recipes !=null)
     {
@@ -47,7 +49,7 @@
                     <div class="card-body">
                         <h5 class="card-title">@recipe.Name</h5>
                         <p class="card-text">Difficulty: @recipe.Difficulty</p>
-                        <a asp-controller=Recipe asp-action=Index asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name>@recipe.Name</a>
+                        <a asp-controller=Recipe asp-action=Look asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name>@recipe.Name</a>
                     </div>
                 </div>
             </div>
