@@ -26,20 +26,6 @@ public class DBQueryModel
     //DONE
     public async static Task<AuthToken> Authenticate(string username, string password)
     {
-        /*
-            using var session = driver.Session();
-            return session.ExecuteRead(
-                tx =>
-                {
-                    var result = tx.Run("MATCH (u:User {name: '$username', password: '$password'}) \n"
-                        + "WITH COUNT(u) > 0 as exists \n"
-                        + "RETURN exists", username, password);
-                    if (result.Single()[0].As<bool>()) {
-                        return AuthToken(username);
-                    }
-                }
-            )
-            */
         string query = "MATCH (u:User {name: '" + username + "', password: '" + password + "'}) \n"
                                 + "WITH COUNT(u) > 0 as exists \n"
                                 + "RETURN exists";
@@ -101,8 +87,6 @@ public class DBQueryModel
             var recNode = record["rec"].As<INode>();
             var rNode = record["r"].As<INode>();
             var bNode = record["b"].As<INode>();
-            //var trNode = record["tr"].As<INode>();
-            //var cNode = record["c"].As<INode>();
             if (firstPass)
             {
                 //Try-Catching all of them independently since many fields are optional.
@@ -189,13 +173,6 @@ public class DBQueryModel
                         break;
                 }
             }
-            //if (trNode != null)
-            //{
-            //   switch (trNode["type"].As<string>())
-            //   {
-            //
-            //    }
-            //}
         }
         List<Tag> tags = await GetTags(name, at);
         List<string> tagNames = new List<string>();
@@ -203,9 +180,7 @@ public class DBQueryModel
         {
             tagNames.Add(tag.Name);
         }
-        //Load names into List<string> on Recipe object.
-        //Create and run query on Tags. Or Call GetTags method.
-        //Load names into List<string> on Recipe object.
+        r.Tags = tagNames;
         return r;
     }
 
@@ -357,6 +332,39 @@ public class DBQueryModel
         IReadOnlyList<IRecord> irol = response.Result;
         var record = irol.First<IRecord>();
         return record[0].As<bool>();
+    }
+
+    //WIP
+    public async Task<Ingredient> GetIngredient(string ingName, AuthToken at, string group = "")
+    {
+        string name;
+        string startLabel;
+        if (group != "")
+        {
+            bool gTest = await ValidateGroupMembership(group, at);
+            if (gTest)
+            {
+                name = group;
+                startLabel = "Group";
+            }
+            else
+            {
+                Ingredient ingerr = new Ingredient();
+                return ingerr;
+            }
+        }
+        else
+        {
+            name = ingName;
+            startLabel = "User";
+        }
+        string query = "MATCH (:" + startLabel + ")-[r]->(:Ingredient {name: " + ingName + "})\n " +
+                                        "return t\n";
+        var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
+        IReadOnlyList<IRecord> irol = response.Result;
+        var record = irol.First<IRecord>();
+        Ingredient ing = new Ingredient();
+        return ing;
     }
 
     //TESTING
