@@ -38,4 +38,28 @@ public static class CtrlModel
             return new Recipe(); //Update for how to handle recipe addition failure
         }
     }
+
+    /* Returns an alphabetized list of all ingredients a user has */
+    public static List<string> GetIngredients()
+    {
+        List<string> ingredients = ["Oranges","Apples","Bananas", "Pears", "Tomatoes", "Spinach", "Sausage"];
+        return ingredients;
+    }
+
+    public static Dictionary<string, List<string>> GetABCListDict(List<string> myList)
+    {
+        myList.Sort();
+        Dictionary<string, List<string>> myDictionary = new Dictionary<string, List<string>>();
+        foreach (string item in myList)
+        {
+            string firstLetter = item[0].ToString().ToUpper();
+
+            if (!myDictionary.ContainsKey(firstLetter))
+            {
+                myDictionary.Add(firstLetter, new List<string>());
+            }
+            myDictionary[firstLetter].Add(item);
+        }
+        return myDictionary;
+    }
 }

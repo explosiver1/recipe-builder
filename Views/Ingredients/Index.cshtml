@@ -1,3 +1,4 @@
+@model RecipeBuilder.ViewModels.IngredientsIndexVM
 @{
     ViewData["Title"] = "Ingredients";
 }
@@ -86,6 +87,10 @@
     </div>
 
     <div class="alphabet">
+        @foreach (var letter in @Model.ingredientNamesDict.Keys)
+        {
+            <a href="#@letter">@letter</a>
+        }
         <a href="#A">A</a>
         <a href="#B">B</a>
         <a href="#C">C</a>
@@ -116,6 +121,16 @@
     </div>
 
     <div class="ingredients-list">
+        @foreach (var letter in @Model.ingredientNamesDict.Keys)
+        {
+            <h2 id="@letter">@letter</h2>
+            @foreach (var ingredient in @Model.ingredientNamesDict[letter])
+            {
+                <ul>
+                    <li><a href="/Recipe/Index/@ingredient">@ingredient</a></li>
+                </ul>
+            }
+        }
         <h2 id="A">A</h2>
         <ul>
             <!-- links are placeholders, will edit soon -->
@@ -304,10 +319,10 @@
             <li><a href="/recipes/pumpkin">Pumpkin</a></li>
         </ul>
 
-        <h2 id="Q">Q</h2>
+        @* <h2 id="Q">Q</h2>
         <ul>
             <li><a href="/recipes/quinoa">Quinoa</a></li>
-        </ul>
+        </ul> *@
 
         <h2 id="R">R</h2>
         <ul>
