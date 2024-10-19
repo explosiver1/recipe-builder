@@ -32,7 +32,7 @@ public class RecipeController : Controller
         // Update to conditional statement using bool returned from dbmodel whether successful save
         if (RecipeSeedData.AddRecipe(recipeVM.cookbookName, recipeVM.recipe))
         {
-            return RedirectToAction("Index", recipeVM.cookbookName, recipeVM.recipe.Name);
+            return RedirectToAction("Look", recipeVM.cookbookName, recipeVM.recipe.Name);
             }
             else
             {
@@ -48,14 +48,14 @@ public class RecipeController : Controller
     }
 
     [HttpGet]
-    public IActionResult Look(String cookbookName, String recipeName)
+    public IActionResult Look(string cookbookName, string recipeName)
     {
         RecipeLookVM viewModel = new RecipeLookVM{cookbookName=cookbookName, recipe=RecipeSeedData.GetRecipe(cookbookName, recipeName)};//userName=userName, 
         return View(viewModel);
     }
 
     [HttpGet]
-    public IActionResult Select(String selectedRecipe)
+    public IActionResult Select(string selectedRecipe)
     {
         return View();
     }
