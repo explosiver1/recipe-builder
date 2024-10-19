@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
 
-namespace recipe_builder.Controllers;
+namespace RecipeBuilder.Controllers;
 
 public class AccountController : Controller
 {
@@ -13,6 +13,7 @@ public class AccountController : Controller
 
     public IActionResult Login()
     {
+        //Authenticate(string username, string password)
         return View();
     }
     public IActionResult Create()

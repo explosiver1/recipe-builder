@@ -1,14 +1,19 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
+using RecipeBuilder.Controllers;
 
-namespace recipe_builder.Controllers;
+namespace RecipeBuilder.Controllers;
 
 public class IngredientsController : Controller
 {
     public IActionResult Index()
     {
-        return View();
+        List<string> ingredients = ["Pears", "Apples", "Bananas"];
+        // Dictionary<string, List<string>> ingredientNames = new
+        ingredients.Sort();
+        IngredientsIndexVM viewModel = new IngredientsIndexVM{ingredientNames=ingredients};
+        return View(viewModel);
     }
 
     public IActionResult Ingredient()

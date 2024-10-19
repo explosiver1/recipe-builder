@@ -1,8 +1,25 @@
 @{
-    ViewData["Title"] = "Title";
+    ViewData["Title"] = "Create Account";
 }
 
 <div class="text-center">
-    <h1>Heading</h1>
-    <p>Let's get ready to cook!</p>
+    <h1 class="display-4" style="color: #4A743E;">Create Account</h1><br>
+    <label for="username">Username:</label>
+    @*<input asp-for="" class="" />*@
+    <input type="text" id="username" name="username"><br><br>
+    <label for="name">Name:</label>
+    @*<input asp-for="" class="" />*@
+    <input type="text" id="name" name="name"><br><br>
+    <label for="email">Email:</label>
+    @*<input asp-for="" class="" />*@
+    <input type="text" id="email" name="email"><br><br>
+    <label for="password">Password:</label>
+    @*<input asp-for="" class="" />*@
+    <input type="password" id="password" name="password"><br><br>
+    <label for="Confpassword">Confirm Password:</label>
+    @*<input asp-for="" class="" />*@
+    <input type="Confpassword" id="Confpassword" name="Confpassword"><br><br>
+    @*After Creation it sends to Login page*@
+    <a asp-controller="Account" asp-action="Login">Sign In</a><br><br>
+    <a asp-controller="Home" asp-action="Index">Back</a><br><br>
 </div>

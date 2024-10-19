@@ -34,6 +34,21 @@ a {
   box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
 }
 
+.dropdown-toggle {
+  color: #343a40;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.dropdown:hover .dropdown-menu {
+  display: block;
+}
+
 button.accept-policy {
   font-size: 1rem;
   line-height: inherit;

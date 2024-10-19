@@ -1,40 +1,56 @@
 @*  This creates a reference called model to the 
     list of models the controller passes to this view.
     Access the data by using keyword model *@
-@model IEnumerable<recipe_builder.Models.Recipe>
-    
+
+@model RecipeBuilder.ViewModels.CookbooksIndexVM
+
 @{
     ViewData["Title"] = "My Cookbooks";
 }
-
-<div class="text-center">
-    <h1 class="display-4">My Cookbooks</h1>
-    <p>Let's get ready to cook!</p>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex">
+        @*<form asp-action="" method="get" class="form-inline"> * need to know which model to pull from for Tag search*@
+        <div class="input-group input-group-sm">
+            <input type="text" class="form-control" placeholder="Search by Tags..." name="TagSearch" value="@ViewData["CurrentTagFilter"]" style="max-width: 150px;" />
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+        @*</form>*@
+    </div>
+    <h1 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">My Cookbooks</h1>
+    <hr class="rounded">
+    <a asp-controller="Cookbooks" asp-action="Add">Create New Cookbook</a>
 </div>
+
 <div class="text-center">
-    <table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th></th>
-    </tr>
+    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for search *@
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search Recipes..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
+    </div><br>
+    <button type="submit" class="btn btn-primary ml-2">Search</button>
+    @*</form>*@
+</div><br>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-        </td>
-    </tr>
-}
-
-</table>
+@*Card View Cookbooks*@
+<div class="row">
+    @if (Model.cookbooks != null)
+    {
+        @foreach (var cookbook in Model.cookbooks)
+        {
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">@cookbook.Title</h5>
+                        <p class="card-text">Description or Tag</p>
+                        <a asp-action=Cookbook asp-route-id=@cookbook.Title>@cookbook.Title</a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No Recipes Found.</p>
+    }
 </div>

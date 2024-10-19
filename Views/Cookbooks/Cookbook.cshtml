@@ -1,8 +1,63 @@
+@model RecipeBuilder.ViewModels.CookbooksCookbookVM
+
 @{
-    ViewData["Title"] = "Title";
+    ViewData["Title"] = @Model.cookbook.Title;
 }
+               
+<style>
+    body {
+        hr.rounded {
+        border-top: 8px solid #96AE6D;
+        border-radius: 5px;
+        }
+    }
+</style>
+<body>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex">
+        @*<form asp-action="" method="get" class="form-inline"> * need to know which model to pull from for Tag search*@
+        <div class="input-group input-group-sm">
+            <input type="text" class="form-control" placeholder="Search by Tags..." name="TagSearch" value="@ViewData["CurrentTagFilter"]" style="max-width: 150px;" />
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+        @*</form>*@
+    </div>
+    <h2 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">@Model.cookbook.Title Cookbook</h2>
+    <hr class="rounded">
+    <a asp-controller="Cookbooks" asp-action="Edit" asp-route-cookbookName=@Model.cookbook.Title>Edit Cookbook</a>
+</div>
 
 <div class="text-center">
-    <h1>Heading</h1>
-    <p>Let's get ready to cook!</p>
+    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for search*@
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search Recipes..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
+    </div><br>
+    <button type="submit" class="btn btn-primary ml-2">Search</button>
+    @*</form>*@
+</div><br>
+
+@*<a asp-controller="Recipe" asp-action="Add" asp-route-cookbookName=@Model.cookbook.Title>Add Recipe</a>*@
+<div class="row">
+    @if (Model.cookbook.Recipes !=null)
+    {
+        @foreach (var recipe in Model.cookbook.Recipes)
+        {
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">@recipe.Name</h5>
+                        <p class="card-text">Difficulty: @recipe.Difficulty</p>
+                        <a asp-controller=Recipe asp-action=Look asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name>@recipe.Name</a>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No Recipes Found.</p>
+    }
 </div>
+</body>

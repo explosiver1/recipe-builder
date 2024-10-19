@@ -1,8 +1,18 @@
 @{
-    ViewData["Title"] = "Title";
+    ViewData["Title"] = "Log In";
 }
 
 <div class="text-center">
-    <h1>Heading</h1>
-    <p>Let's get ready to cook!</p>
+    <h1 class="display-4" style="color: #4A743E;">Log In</h1><br>
+    <label for="username">Username:</label>
+    @*<input asp-for="" class="" />*@
+    <input type="text" id="username" name="username"><br><br>
+    <label for="password">Password:</label>
+    @*<input asp-for="" class="" />*@
+    <input type="password" id="password" name="password"><br><br>
+
+    <a asp-controller="Account" asp-action="Create">Sign Up</a><br><br>
+    <a asp-controller="Account" asp-action="Recovery">Forgot Password</a><br><br>
+    @*Authurization needed for sign in redirect*@
+    <a asp-controller="Cookbooks" asp-action="Index">Sign In</a><br><br>
 </div>

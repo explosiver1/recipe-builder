@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
 
-namespace recipe_builder.Controllers;
+namespace RecipeBuilder.Controllers;
 
 public class UserController : Controller
 {

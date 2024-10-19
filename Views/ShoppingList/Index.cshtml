@@ -1,0 +1,198 @@
+@{
+    ViewData["Title"] = "Shopping List";
+}
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping List</title>
+
+    <style>
+        /* button styling */
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4A743E;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #96AE6D;
+        }
+
+        /* remove button styling */
+        .remove-btn {
+            background-color: #dc3545;
+            margin-left: 10px;
+        }
+
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* background styling for the shopping list */
+        #shoppingListContainer {
+            background-color: #F4F3EC;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 900px;
+            margin: auto;
+        }
+
+        /* list item styling with flexbox for proper alignment */
+        ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        ul li {
+            font-size: 18px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* ensure checkbox and text stay on the left side */
+        .item-left {
+            display: flex;
+            align-items: center;
+        }
+
+        ul li input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        /* button container for Add to Pantry and Remove buttons */
+        .button-container {
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        /* strikethrough effect only on text, not buttons */
+        .completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        /* input field styling */
+        .input-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        #newItem {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="text-center">
+        <h1 class="display-4" style="color: #4A743E;">Shopping List</h1>
+        <br>
+        <div class="input-container">
+            <input type="text" id="newItem" placeholder="Enter item">
+            <button type="button" id="addItemBtn">Add Item</button>
+        </div>
+    </div>
+
+    <div id="shoppingListContainer">
+        <br>
+        <ul id="shoppingList">
+            <!-- test grocery items -->
+        </ul>
+    </div>
+
+    <!-- javascript for button/list functionality -->
+    <script>
+        // remove an item from the list
+        function removeItem(element) {
+            element.parentElement.parentElement.remove(); // remove the entire list item
+        }
+
+        // handle "Add to Pantry" action
+        function addToPantry(item) {
+            alert(item + " added to pantry!");
+            // Here you can handle logic for pantry
+        }
+
+        // add a new item to the list
+        document.getElementById("addItemBtn").addEventListener("click", function() {
+            const newItem = document.getElementById("newItem").value;
+
+            if (newItem.trim() !== "") {
+                // create a new list item with a checkbox, add to pantry button, and remove button
+                const li = document.createElement("li");
+
+                // left section for the checkbox and text
+                const itemLeft = document.createElement("div");
+                itemLeft.classList.add("item-left");
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.onchange = function() { toggleCompletion(this); };
+
+                const textSpan = document.createElement("span");
+                textSpan.textContent = newItem;
+
+                itemLeft.appendChild(checkbox);
+                itemLeft.appendChild(textSpan);
+
+                // button container to hold both "Add to Pantry" and "Remove" buttons
+                const buttonContainer = document.createElement("div");
+                buttonContainer.classList.add("button-container");
+
+                const pantryBtn = document.createElement("button");
+                pantryBtn.textContent = "Add to Pantry";
+                pantryBtn.classList.add("pantry-btn");
+                pantryBtn.onclick = function() { addToPantry(newItem); };
+
+                const removeBtn = document.createElement("button");
+                removeBtn.textContent = "Remove";
+                removeBtn.classList.add("remove-btn");
+                removeBtn.onclick = function() { removeItem(this); };
+
+                buttonContainer.appendChild(pantryBtn);
+                buttonContainer.appendChild(removeBtn);
+
+                li.appendChild(itemLeft);  // add checkbox and text to the left side
+                li.appendChild(buttonContainer); // add buttons to the right side
+
+                // add the new item to the list
+                document.getElementById("shoppingList").appendChild(li);
+
+                // clear the input field
+                document.getElementById("newItem").value = "";
+            }
+        });
+
+        // toggle completion status of items
+        function toggleCompletion(checkbox) {
+            const listItem = checkbox.parentElement;  // the parent element containing the checkbox and the text
+            const textSpan = listItem.querySelector("span");  // get the span containing the item text
+
+            if (checkbox.checked) {
+                textSpan.classList.add("completed");  // add strikethrough if checkbox is selected
+            } else {
+                textSpan.classList.remove("completed");  // remove strikethrough if checkbox is unselected
+            }
+        }
+    </script>
+</body>
