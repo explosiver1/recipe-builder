@@ -4,7 +4,7 @@ using RecipeBuilder.Models;
 
 namespace RecipeBuilder.ViewModels;
 
-public class RecipeIndexVM()
+public class CookbooksAddVM()
 {
-    public required Cookbook cookbook {get; set;} 
+    public required Cookbook cookbook {get; set;}
 }

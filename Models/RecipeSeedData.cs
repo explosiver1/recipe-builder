@@ -36,7 +36,7 @@ public static class RecipeSeedData
         }
         else
         {
-            return new Cookbook();
+            return new Cookbook(); 
         }
     }
 

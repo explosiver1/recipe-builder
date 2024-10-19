@@ -17,7 +17,7 @@ public class CookbooksController : Controller
     [HttpGet]
     public IActionResult Cookbook(String id)
     {
-        CookbooksCookbookVM viewModel = new CookbooksCookbookVM{cookbook=RecipeSeedData.GetCookbook(id)};
+        CookbooksCookbookVM viewModel = new CookbooksCookbookVM{cookbook=CtrlModel.GetCookbook(id)};
         return View(viewModel);
     }
 

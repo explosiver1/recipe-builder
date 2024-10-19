@@ -4,7 +4,7 @@ using RecipeBuilder.Models;
 
 namespace RecipeBuilder.ViewModels;
 
-public class RecipeIndexVM()
+public class AccountCreateVM()
 {
-    public required Cookbook cookbook {get; set;} 
+    public required String userName {get; set;}
 }
