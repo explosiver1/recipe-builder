@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
-using RecipeBuilder.ViewModels;
+using RecipeBuilder.Models.ViewModels;
 
 namespace RecipeBuilder.Controllers;
 
