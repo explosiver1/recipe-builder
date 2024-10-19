@@ -1,6 +1,4 @@
-
 namespace RecipeBuilder.Models;
-
 public class AuthToken
 {
 

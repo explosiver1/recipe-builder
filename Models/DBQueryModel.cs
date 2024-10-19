@@ -20,11 +20,10 @@ public class DBQueryModel
         qConf = new QueryConfig(database: "neo4j");
     }
 
-    //The Merge methods must accept every property that may be held in the respective node and the necessary relationship properties as parameters.
     //Optionals can be added as "type name = 'value'" in the argument list. Not specifying a default value makes it required.
 
     //DONE
-    public async static Task<AuthToken> Authenticate(string username, string password)
+    public async static Task<bool> Authenticate(string username, string password)
     {
         string query = "MATCH (u:User {name: '" + username + "', password: '" + password + "'}) \n"
                                 + "WITH COUNT(u) > 0 as exists \n"
@@ -33,14 +32,14 @@ public class DBQueryModel
         //response is EagerResult<IReadOnlyList<IRecord>>
         IReadOnlyList<IRecord> irol = response.Result; //The Deconstruct() method has several outbound parameters. Result is one of them, and it can be referenced like a property here. First time I've seen this kind of behavior.'
         var record = irol.First(); //This gets the first IRecord of the list. This should be the only one in this case.
-        if (record[0] != null && record[0].As<bool>())
+        if (record[0] != null) //&& record[0].As<bool>())
         {
             Console.WriteLine(Convert.ToString(record[0].As<bool>()));
-            return new AuthToken(username);
+            return record[0].As<bool>();
         }
         else
         {
-            return new AuthToken("ERROR");
+            return false;
         }
     }
 
@@ -183,6 +182,7 @@ public class DBQueryModel
         r.Tags = tagNames;
         return r;
     }
+
 
     //TESTING
     public async Task<bool> DeleteRecipe(string recName, AuthToken at, string group = "")
