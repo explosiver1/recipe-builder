@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using recipe_builder.Models;
+using RecipeBuilder.Models;
 
 namespace recipe_builder.Controllers;
 
