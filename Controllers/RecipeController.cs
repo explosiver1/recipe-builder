@@ -24,7 +24,7 @@ namespace RecipeBuilder.Controllers
 
             var viewModel = new RecipeIndexVM
             {
-                Cookbook = cookbook
+                cookbook = cookbook
             };
 
             return View(viewModel);
@@ -36,8 +36,8 @@ namespace RecipeBuilder.Controllers
         {
             var viewModel = new RecipeAddVM
             {
-                CookbookName = cookbookName,
-                Recipe = new Recipe() // Initialize an empty recipe
+                cookbookName = cookbookName,
+                recipe = new Recipe() // Initialize an empty recipe
             };
 
             return View(viewModel);
@@ -59,7 +59,7 @@ namespace RecipeBuilder.Controllers
             if (true) // Replace with actual condition when using database
             {
                 // Redirect to the "Look" action to display the newly added recipe
-                return RedirectToAction("Look", new { cookbookName = recipeVM.CookbookName, recipeName = recipeVM.Recipe.Name });
+                return RedirectToAction("Look", new { cookbookName = recipeVM.cookbookName, recipeName = recipeVM.recipe.Name });
             }
             else
             {
@@ -84,7 +84,7 @@ namespace RecipeBuilder.Controllers
 
             var viewModel = new RecipeEditVM
             {
-                Recipe = recipe
+                recipe = recipe
             };
 
             return View(viewModel);
@@ -107,8 +107,8 @@ namespace RecipeBuilder.Controllers
 
             var viewModel = new RecipeLookVM
             {
-                CookbookName = cookbookName,
-                Recipe = recipe
+                cookbookName = cookbookName,
+                recipe = recipe
             };
 
             return View(viewModel);

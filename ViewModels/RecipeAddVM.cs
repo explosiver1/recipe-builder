@@ -9,7 +9,7 @@ namespace RecipeBuilder.ViewModels
         // Uncomment if you need to track the user who is adding the recipe
         // public required string userName { get; set; }
 
-        public required string CookbookName { get; set; } = string.Empty;
-        public required Recipe Recipe { get; set; } = new Recipe();
+        public required string cookbookName { get; set; } = string.Empty;
+        public required Recipe recipe { get; set; } = new Recipe();
     }
 }

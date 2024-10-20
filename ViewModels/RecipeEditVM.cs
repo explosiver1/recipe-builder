@@ -6,6 +6,6 @@ namespace RecipeBuilder.ViewModels
 {
     public class RecipeEditVM
     {
-        public required Recipe Recipe { get; set; } = new Recipe(); // Initialize a new Recipe object
+        public required Recipe recipe { get; set; } = new Recipe(); // Initialize a new Recipe object
     }
 }
