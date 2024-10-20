@@ -17,7 +17,7 @@ public class CookbooksController : Controller
     // For now, return an empty view model or integrate with a database
     CookbooksIndexVM viewModel = new CookbooksIndexVM 
     { 
-        Cookbooks = new List<Cookbook>() // Empty list for now, until data source is implemented
+        cookbooks = new List<Cookbook>() // Empty list for now, until data source is implemented
     };
 
     return View(viewModel);
@@ -40,7 +40,7 @@ public class CookbooksController : Controller
 
     CookbooksCookbookVM viewModel = new CookbooksCookbookVM
     {
-        Cookbook = cookbook
+        cookbook = cookbook
     };
 
         return View(viewModel);
@@ -80,8 +80,8 @@ public class CookbooksController : Controller
 
     var viewModel = new CookbooksEditVM
     {
-        CookbookName = cookbook.Title,
-        Recipe = new Recipe() 
+        cookbookName = cookbook.Title,
+        recipe = new Recipe() 
     };
 
         return View(viewModel);
@@ -100,7 +100,7 @@ public class CookbooksController : Controller
         // var cookbook = RecipeSeedData.cookbooks.FirstOrDefault(c => c.Title == viewModel.CookbookName);
 
         // For now, simulate updating a cookbook (e.g., with a service or database)
-        var cookbook = new Cookbook { Title = viewModel.CookbookName };
+        var cookbook = new Cookbook { Title = viewModel.cookbookName };
 
         if (cookbook == null)
         {
@@ -108,7 +108,7 @@ public class CookbooksController : Controller
         }
 
         // Update the cookbook title
-        cookbook.Title = viewModel.CookbookName;
+        cookbook.Title = viewModel.cookbookName;
 
         return RedirectToAction("Index");
     }

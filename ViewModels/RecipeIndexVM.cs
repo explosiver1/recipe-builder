@@ -6,6 +6,6 @@ namespace RecipeBuilder.ViewModels
 {
     public class RecipeIndexVM
     {
-        public required Cookbook Cookbook { get; set; } = new Cookbook(); // Initialize a new Cookbook object
+        public required Cookbook cookbook { get; set; } = new Cookbook(); // Initialize a new Cookbook object
     }
 }

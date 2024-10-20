@@ -6,10 +6,10 @@ namespace RecipeBuilder.ViewModels;
 
 public class CookbooksCookbookVM
 {
-    public Cookbook Cookbook { get; set; }
+    public Cookbook cookbook { get; set; }
 
     public CookbooksCookbookVM()
     {
-        Cookbook = new Cookbook(); // Initialize to avoid null reference
+        cookbook = new Cookbook(); // Initialize to avoid null reference
     }
 }
