@@ -23,13 +23,14 @@ public class DBQueryModel
     //Optionals can be added as "type name = 'value'" in the argument list. Not specifying a default value makes it required.
 
     // CreateUser()
-    public async Task CreateUserNode(IDriver driver, Dictionary<string, string> userData)
+    // TODO - test results of query and return success/fail boolean
+    public async Task<bool> CreateUserNode(Dictionary<string, string> userData)
     {
         var query = @"
         CREATE (u:User {
-            username: $username, 
-            name: $name, 
-            email: $email, 
+            username: $username,
+            name: $name,
+            email: $email,
             phone: $phone
         })
         ";
@@ -38,22 +39,28 @@ public class DBQueryModel
         var session = driver.AsyncSession();  // Open a session for Neo4j
         try
         {
-            await session.RunAsync(query, new { 
-                username = userData["username"], 
-                name = userData["name"], 
-                email = userData["email"], 
+
+            await session.RunAsync(query, new
+            {
+                username = userData["username"],
+                name = userData["name"],
+                email = userData["email"],
                 phone = userData["phone"]
             });
+            //TODO - test query results
+            //TODO - return bool for success/fail
             Console.WriteLine($"User {userData["username"]} created!");
         }
         finally
         {
             await session.CloseAsync();  // Ensure session is closed after query
         }
+        return true;
     }
 
     // CreatePantry()
-    public async Task CreatePantryNode(IDriver driver, string username)
+    // TODO - return success/fail boolean
+    public async Task<bool> CreatePantryNode(string username)
     {
         var query = @"
         MATCH (user:User{username: $user})
@@ -72,10 +79,13 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+
+        return true;
     }
 
     // CreateCuisine()
-    public async Task CreateCuisineNode(IDriver driver, string cuisine)
+    // TODO - Return success/fail
+    public async Task<bool> CreateCuisineNode(string cuisine)
     {
         var query = @"CREATE (cuisine:Cuisine {name: $cuisineName})";
 
@@ -89,16 +99,19 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+
+        return true;
     }
 
     // CreateRecipe()
-    public async Task CreateRecipeNode(IDriver driver, string username, Dictionary<string, string> recipeData)
+    // TODO - return success/fail
+    public async Task<bool> CreateRecipeNode(string username, Dictionary<string, string> recipeData)
     {
         var query = @"
         MATCH (user:User {username: $user})
         CREATE (recipe:Recipe {
-            name: $recipeName, 
-            title: $title, 
+            name: $recipeName,
+            title: $title,
             description: $description
         })
         CREATE (user)-[:OWNS]->(recipe)
@@ -109,10 +122,11 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { 
+            await session.RunAsync(query, new
+            {
                 user = username,
-                recipeName, 
-                title = recipeData["title"], 
+                recipeName,
+                title = recipeData["title"],
                 description = recipeData["description"]
             });
             Console.WriteLine($"Recipe {recipeName} created!");
@@ -121,10 +135,14 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+
+        return true;
     }
 
     // GetRecipes()
-    public async Task<List<string>> GetRecipeNodes(IDriver driver, string username)
+    // All Recipes a User Owns
+    // TODO - Add Group Parameter
+    public async Task<List<string>> GetRecipeNodeNames(string username)
     {
         var query = @"
         MATCH (user:User {username: $username})-[:OWNS]->(recipe:Recipe)
@@ -154,7 +172,8 @@ public class DBQueryModel
     }
 
     // CreateIngredient()
-    public async Task CreateIngredientNode(IDriver driver, string username, string ingredient)
+    // TODO - return success/fail
+    public async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
         var query = @"CREATE (ingredient:Ingredient {name: $ingredientName})";
 
@@ -170,13 +189,17 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+
+        return true;
     }
 
     // MergeIngredient()
-    public async Task ConnectIngredientNode(IDriver driver, string username, string parent, string ingredient)
+    // TODO - return success/fail
+    // What's going on with the parent parameter?
+    public async Task<bool> ConnectIngredientNode(string username, string parent, string ingredient)
     {
         string query;
-        if(parent.Contains("Pantry"))
+        if (parent.Contains("Pantry"))
         {
             query = @"
             MATCH (parent:Pantry{name:$parentName})
@@ -184,7 +207,7 @@ public class DBQueryModel
             CREATE (parent)-[:STORES]->(ingredient)
             ";
         }
-        else if(parent.Contains("ShopppingList"))
+        else if (parent.Contains("ShoppingList"))
         {
             query = @"
             MATCH (parent:ShoppingList{name:$parentName})
@@ -213,10 +236,14 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+
+        return true;
     }
 
     // CreateCookbookNode()
-    public async Task CreateCookbookNode(IDriver driver, string username, string name)
+    // TODO - return success/fail
+    // TODO - Add Group Parameter
+    public async Task<bool> CreateCookbookNode(string username, string name)
     {
         var query = @"
             MATCH (user:User{username: $user})
@@ -224,7 +251,7 @@ public class DBQueryModel
             CREATE (user)-[:OWNS]->(cookbook)
         ";
 
-        var cookbookName = username + name; 
+        var cookbookName = username + name;
 
         var session = driver.AsyncSession();
         try
@@ -236,10 +263,14 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+
+        return true;
     }
 
     // CreateTool()
-    public async Task CreateToolNode(IDriver driver, string toolName)
+    // TODO - return success/fail
+    // TODO - Match and Connect to User Node
+    public async Task<bool> CreateToolNode(string toolName)
     {
         var query = @"CREATE (tool:Tool {name: $toolName})";
 
@@ -253,10 +284,14 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+
+        return true;
     }
 
     // CreateGroup()
-    public async Task CreateGroupNode(IDriver driver, string group)
+    // TODO - return success/fail
+    // TODO - Take in Username and Connect as Owner
+    public async Task<bool> CreateGroupNode(string group)
     {
         var query = @"CREATE (group:Group {name: $groupName})";
 
@@ -270,10 +305,13 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+        return true;
     }
 
     // CreateShopListNode()
-    public async Task CreateShoppingListNode(IDriver driver, string username)
+    // TODO - return success/fail
+    // TODO - Match and Connect to User Node
+    public async Task<bool> CreateShoppingListNode(string username)
     {
         var query = @"CREATE (shoppinglist:ShoppingList {name: $shoppinglistName})";
         var shoppingListName = username + "ShoppingList";
@@ -288,10 +326,14 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+
+        return true;
     }
 
     // CreateMealNode()
-    public async Task CreateMealNode(IDriver driver, string username, string meal)
+    // TODO - return success/fail
+    // TODO - Match to User/Group First
+    public async Task<bool> CreateMealNode(string username, string meal)
     {
         var query = @"
         CREATE (meal:Meal {
@@ -311,10 +353,14 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+
+        return true;
     }
 
     // MergeMealNode()
-    public async Task ConnectMealNode(IDriver driver, string username, string meal, string recipe)
+    // TODO - return success/fail
+    // TODO - Match to User/Group First
+    public async Task<bool> ConnectMealNode(string username, string meal, string recipe)
     {
         var query = @"
         MATCH (meal:Meal{name:$mealName})
@@ -334,10 +380,14 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+
+        return true;
     }
 
     // CreateStepNode()
-    public async Task CreateStepNode(IDriver driver, string username, Dictionary<string, object> stepData, string recipe)
+    // TODO - success/fail
+    // TODO - Match to User/Group First
+    public async Task<bool> CreateStepNode(string username, Dictionary<string, object> stepData, string recipe)
     {
         var query = @"
         MATCH (recipe:Recipe {name: $recipeName})
@@ -353,10 +403,11 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { 
-                description = stepData["description"], 
-                stepNumber = stepData["step_number"], 
-                recipeName 
+            await session.RunAsync(query, new
+            {
+                description = stepData["description"],
+                stepNumber = stepData["step_number"],
+                recipeName
             });
             Console.WriteLine($"Step {stepData["step_number"]} created for {recipeName}!");
         }
@@ -364,10 +415,13 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+        return true;
     }
 
     // CreateTagNode()
-    public async Task CreateTagNode(IDriver driver, string tag, string recipe, string username)
+    // TODO - return success/fail
+    // TODO - Match Recipe to User/Group First
+    public async Task<bool> CreateTagNode(string tag, string recipe, string username)
     {
         var query = @"
         MATCH (recipe:Recipe {name: $recipeName})
@@ -387,6 +441,8 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+
+        return true;
     }
 
 
