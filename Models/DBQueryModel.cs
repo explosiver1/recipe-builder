@@ -20,11 +20,378 @@ public class DBQueryModel
         qConf = new QueryConfig(database: "neo4j");
     }
 
-    //The Merge methods must accept every property that may be held in the respective node and the necessary relationship properties as parameters.
     //Optionals can be added as "type name = 'value'" in the argument list. Not specifying a default value makes it required.
 
+    // CreateUser()
+    public async Task CreateUserNode(IDriver driver, Dictionary<string, string> userData)
+    {
+        var query = @"
+        CREATE (u:User {
+            username: $username, 
+            name: $name, 
+            email: $email, 
+            phone: $phone
+        })
+        ";
+
+        // Run the query with the parameters
+        var session = driver.AsyncSession();  // Open a session for Neo4j
+        try
+        {
+            await session.RunAsync(query, new { 
+                username = userData["username"], 
+                name = userData["name"], 
+                email = userData["email"], 
+                phone = userData["phone"]
+            });
+            Console.WriteLine($"User {userData["username"]} created!");
+        }
+        finally
+        {
+            await session.CloseAsync();  // Ensure session is closed after query
+        }
+    }
+
+    // CreatePantry()
+    public async Task CreatePantryNode(IDriver driver, string username)
+    {
+        var query = @"
+        MATCH (user:User{username: $user})
+        CREATE (pantry:Pantry {name: $pantryName})
+        CREATE (user)-[:OWNS]->(pantry)
+        ";
+        var pantryName = username + "Pantry";
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { pantryName, user = username });
+            Console.WriteLine($"Pantry node {pantryName} created!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    // CreateCuisine()
+    public async Task CreateCuisineNode(IDriver driver, string cuisine)
+    {
+        var query = @"CREATE (cuisine:Cuisine {name: $cuisineName})";
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { cuisineName = cuisine });
+            Console.WriteLine($"Cuisine node {cuisine} created!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    // CreateRecipe()
+    public async Task CreateRecipeNode(IDriver driver, string username, Dictionary<string, string> recipeData)
+    {
+        var query = @"
+        MATCH (user:User {username: $user})
+        CREATE (recipe:Recipe {
+            name: $recipeName, 
+            title: $title, 
+            description: $description
+        })
+        CREATE (user)-[:OWNS]->(recipe)
+        ";
+
+        var recipeName = username + recipeData["name"];
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { 
+                user = username,
+                recipeName, 
+                title = recipeData["title"], 
+                description = recipeData["description"]
+            });
+            Console.WriteLine($"Recipe {recipeName} created!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    // GetRecipes()
+    public async Task<List<string>> GetRecipeNodes(IDriver driver, string username)
+    {
+        var query = @"
+        MATCH (user:User {username: $username})-[:OWNS]->(recipe:Recipe)
+        RETURN recipe.name AS recipeName
+        ";
+
+        var session = driver.AsyncSession();
+        var recipeNames = new List<string>();
+
+        try
+        {
+            var result = await session.RunAsync(query, new { username });
+
+            await result.ForEachAsync(record =>
+            {
+                recipeNames.Add(record["recipeName"].As<string>());
+            });
+
+            Console.WriteLine($"Found {recipeNames.Count} recipes for user {username}!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+
+        return recipeNames;
+    }
+
+    // CreateIngredient()
+    public async Task CreateIngredientNode(IDriver driver, string username, string ingredient)
+    {
+        var query = @"CREATE (ingredient:Ingredient {name: $ingredientName})";
+
+        var ingredientName = username + ingredient;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { ingredientName });
+            Console.WriteLine($"Ingredient node {ingredient} created!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    // MergeIngredient()
+    public async Task ConnectIngredientNode(IDriver driver, string username, string parent, string ingredient)
+    {
+        string query;
+        if(parent.Contains("Pantry"))
+        {
+            query = @"
+            MATCH (parent:Pantry{name:$parentName})
+            MATCH (ingredient:Ingredient{name:$ingredientName})
+            CREATE (parent)-[:STORES]->(ingredient)
+            ";
+        }
+        else if(parent.Contains("ShopppingList"))
+        {
+            query = @"
+            MATCH (parent:ShoppingList{name:$parentName})
+            MATCH (ingredient:Ingredient{name:$ingredientName})
+            CREATE (parent)-[:PLANS_TO_BUY]->(ingredient)
+            ";
+        }
+        else
+        {
+            query = @"
+            MATCH (parent:Recipe{name:$parentName})
+            MATCH (ingredient:Ingredient{name:$ingredientName})
+            CREATE (parent)-[:MADE_WITH]->(ingredient)
+            ";
+        }
+        var parentName = username + parent;
+        var ingredientName = username + ingredient;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { parentName, ingredientName });
+            Console.WriteLine($"Parent node {parentName} connected to {ingredient}!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    // CreateCookbookNode()
+    public async Task CreateCookbookNode(IDriver driver, string username, string name)
+    {
+        var query = @"
+            MATCH (user:User{username: $user})
+            CREATE (cookbook:Cookbook {name: $cookbookName})
+            CREATE (user)-[:OWNS]->(cookbook)
+        ";
+
+        var cookbookName = username + name; 
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { cookbookName });
+            Console.WriteLine($"Cookbook node {cookbookName} created!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    // CreateTool()
+    public async Task CreateToolNode(IDriver driver, string toolName)
+    {
+        var query = @"CREATE (tool:Tool {name: $toolName})";
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { toolName });
+            Console.WriteLine($"Tool {toolName} created!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    // CreateGroup()
+    public async Task CreateGroupNode(IDriver driver, string group)
+    {
+        var query = @"CREATE (group:Group {name: $groupName})";
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { groupName = group });
+            Console.WriteLine($"Group node {group} created!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    // CreateShopListNode()
+    public async Task CreateShoppingListNode(IDriver driver, string username)
+    {
+        var query = @"CREATE (shoppinglist:ShoppingList {name: $shoppinglistName})";
+        var shoppingListName = username + "ShoppingList";
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { shoppinglistName = shoppingListName });
+            Console.WriteLine($"Shopping List node {shoppingListName} created!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    // CreateMealNode()
+    public async Task CreateMealNode(IDriver driver, string username, string meal)
+    {
+        var query = @"
+        CREATE (meal:Meal {
+            name: $mealName,
+            title: $meal
+        })
+        ";
+        var mealName = username + meal;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { mealName, meal });
+            Console.WriteLine($"Meal node {mealName} created!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    // MergeMealNode()
+    public async Task ConnectMealNode(IDriver driver, string username, string meal, string recipe)
+    {
+        var query = @"
+        MATCH (meal:Meal{name:$mealName})
+        MATCH (recipe:Recipe{name:$recipeName})
+        CREATE (meal)-[:MADE_WITH]->(recipe)
+        ";
+        var mealName = username + meal;
+        var recipeName = username + recipe;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { mealName, recipeName });
+            Console.WriteLine($"Meal node {mealName} connected to {recipe}!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    // CreateStepNode()
+    public async Task CreateStepNode(IDriver driver, string username, Dictionary<string, object> stepData, string recipe)
+    {
+        var query = @"
+        MATCH (recipe:Recipe {name: $recipeName})
+        CREATE (step:Step {
+            description: $description,
+            step_number: $stepNumber
+        })
+        CREATE (recipe)-[:HAS_STEP]->(step)
+        ";
+
+        var recipeName = username + recipe;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { 
+                description = stepData["description"], 
+                stepNumber = stepData["step_number"], 
+                recipeName 
+            });
+            Console.WriteLine($"Step {stepData["step_number"]} created for {recipeName}!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    // CreateTagNode()
+    public async Task CreateTagNode(IDriver driver, string tag, string recipe, string username)
+    {
+        var query = @"
+        MATCH (recipe:Recipe {name: $recipeName})
+        CREATE (tag:Tag {name: $tagName})
+        CREATE (recipe)-[:TAGGED_WITH]->(tag)
+        ";
+
+        var recipeName = username + recipe;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            await session.RunAsync(query, new { tagName = tag, recipeName });
+            Console.WriteLine($"Tag {tag} created and connected to {recipeName}!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+
     //DONE
-    public async static Task<AuthToken> Authenticate(string username, string password)
+    public async static Task<bool> Authenticate(string username, string password)
     {
         string query = "MATCH (u:User {name: '" + username + "', password: '" + password + "'}) \n"
                                 + "WITH COUNT(u) > 0 as exists \n"
@@ -33,14 +400,14 @@ public class DBQueryModel
         //response is EagerResult<IReadOnlyList<IRecord>>
         IReadOnlyList<IRecord> irol = response.Result; //The Deconstruct() method has several outbound parameters. Result is one of them, and it can be referenced like a property here. First time I've seen this kind of behavior.'
         var record = irol.First(); //This gets the first IRecord of the list. This should be the only one in this case.
-        if (record[0] != null && record[0].As<bool>())
+        if (record[0] != null) //&& record[0].As<bool>())
         {
             Console.WriteLine(Convert.ToString(record[0].As<bool>()));
-            return new AuthToken(username);
+            return record[0].As<bool>();
         }
         else
         {
-            return new AuthToken("ERROR");
+            return false;
         }
     }
 
@@ -183,6 +550,7 @@ public class DBQueryModel
         r.Tags = tagNames;
         return r;
     }
+
 
     //TESTING
     public async Task<bool> DeleteRecipe(string recName, AuthToken at, string group = "")
