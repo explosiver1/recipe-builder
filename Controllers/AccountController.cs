@@ -22,22 +22,23 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login(string username, string password)
+    public async Task<IActionResult> Login([FromBody] string username, [FromBody] string password)
     {
+        Console.WriteLine("Logging in with " + username + ", " + password);
         //TODO - Sanitize UI
         bool isAuthTokenValid = await DBQueryModel.Authenticate(username, password);
         if (isAuthTokenValid)
         {
-            HttpContext.Session.SetString("user", username);
-            HttpContext.Session.SetString("password", password);
-            HttpContext.Session.SetString("creation", DateTime.UtcNow.ToString());
-            HttpContext.Session.SetString("expiration", DateTime.UtcNow.AddHours(0.5f).ToString());
-            return RedirectToAction("Home", "Private");
+            AuthToken at = new AuthToken(username);
+            HttpContext.Session.SetString("authToken", JsonConvert.SerializeObject(at));
+            return Ok(new { message = "Login Successful!" });
         }
         else
         {
-            HttpContext.Session.SetString("user", "ERROR");
-            return View(new AccountLoginVM { authValid = false });
+            Console.WriteLine("Login Failed");
+            return BadRequest(new { message = "Invalid username or password." });
+            //HttpContext.Session.SetString("user", "ERROR");
+            //return View(new AccountLoginVM { authValid = false });
         }
     }
 
@@ -45,6 +46,29 @@ public class AccountController : Controller
     {
         return View();
     }
+
+    [HttpPost]
+    public async Task<IActionResult> Create(string username, string password, string name, string email, string phone)
+    {
+        //TODO - Sanitize UI
+        Dictionary<string, string> userData = new Dictionary<string, string>();
+        userData["username"] = username;
+        userData["password"] = password;
+        userData["name"] = name;
+        userData["email"] = email;
+        userData["phone"] = phone;
+        bool creationSuccess = await DBQueryModel.CreateUserNode(userData);
+
+        if (creationSuccess)
+        {
+            return Ok();
+        }
+        else
+        {
+            return Unauthorized();
+        }
+    }
+
     public IActionResult Recovery()
     {
         return View();
