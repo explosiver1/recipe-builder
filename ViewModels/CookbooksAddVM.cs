@@ -2,9 +2,11 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using RecipeBuilder.Models;
 
-namespace RecipeBuilder.ViewModels;
-
-public class CookbooksAddVM()
+namespace RecipeBuilder.ViewModels
 {
-    public required Cookbook cookbook {get; set;}
+    public class CookbooksAddVM
+    {
+        public string CookbookTitle { get; set; } = string.Empty;
+        public List<Recipe> Recipes { get; set; } = new List<Recipe>();
+    }
 }

@@ -4,7 +4,12 @@ using RecipeBuilder.Models;
 
 namespace RecipeBuilder.ViewModels;
 
-public class CookbooksCookbookVM()
+public class CookbooksCookbookVM
 {
-    public required Cookbook cookbook {get; set;}
+    public Cookbook Cookbook { get; set; }
+
+    public CookbooksCookbookVM()
+    {
+        Cookbook = new Cookbook(); // Initialize to avoid null reference
+    }
 }
