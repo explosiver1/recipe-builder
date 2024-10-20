@@ -2,9 +2,14 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using RecipeBuilder.Models;
 
-namespace RecipeBuilder.ViewModels;
 
-public class CookbooksIndexVM()
+namespace RecipeBuilder.ViewModels
 {
-    public required List<Cookbook> cookbooks {get; set;}
+    public class CookbooksIndexVM
+    {
+        public List<Cookbook> Cookbooks { get; set; } = new List<Cookbook>();
+
+        // Nullable property for UserId
+        public string? UserId { get; set; }
+    }
 }
