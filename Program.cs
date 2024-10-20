@@ -27,6 +27,8 @@ app.UseForwardedHeaders();
 
 app.UseRouting();
 
+app.UseSession();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(

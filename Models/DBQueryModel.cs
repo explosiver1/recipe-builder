@@ -24,14 +24,15 @@ public class DBQueryModel
 
     // CreateUser()
     // TODO - test results of query and return success/fail boolean
-    public async Task<bool> CreateUserNode(Dictionary<string, string> userData)
+    public static async Task<bool> CreateUserNode(Dictionary<string, string> userData)
     {
         var query = @"
         CREATE (u:User {
             username: $username,
             name: $name,
             email: $email,
-            phone: $phone
+            phone: $phone,
+            password: $password
         })
         ";
 
@@ -45,7 +46,8 @@ public class DBQueryModel
                 username = userData["username"],
                 name = userData["name"],
                 email = userData["email"],
-                phone = userData["phone"]
+                phone = userData["phone"],
+                password = userData["password"]
             });
             //TODO - test query results
             //TODO - return bool for success/fail
@@ -463,6 +465,7 @@ public class DBQueryModel
         }
         else
         {
+            Console.WriteLine("DBQueryModel Authenticate Failed");
             return false;
         }
     }

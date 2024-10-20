@@ -3,16 +3,52 @@
 }
 
 <div class="text-center">
+    <form id="loginForm" onsubmit="return false;">
     <h1 class="display-4" style="color: #4A743E;">Log In</h1><br>
-    <label for="username">Username:</label>
-    @*<input asp-for="" class="" />*@
-    <input type="text" id="username" name="username"><br><br>
-    <label for="password">Password:</label>
-    @*<input asp-for="" class="" />*@
-    <input type="password" id="password" name="password"><br><br>
+     <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
 
     <a asp-controller="Account" asp-action="Create">Sign Up</a><br><br>
     <a asp-controller="Account" asp-action="Recovery">Forgot Password</a><br><br>
     @*Authurization needed for sign in redirect*@
-    <a asp-controller="Cookbooks" asp-action="Index">Sign In</a><br><br>
+    <!--a asp-controller="Cookbooks" asp-action="Index">Sign In</a><br><br-->
+    <button type="submit">Sign In</button>
+    </form>
 </div>
+
+<div id="message"></div>
+
+@section Scripts {
+    <script>
+        document.getElementById("loginForm").onsubmit = async function (event) {
+            event.preventDefault(); // I've been told I need this. Not sure why yet.
+
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            try {
+                const response = await fetch('/Account/Login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById("message").innerText = "Login successful!";
+                    // Redirect To User Home Page
+                } else {
+                    const error = await response.json();
+                    document.getElementById("message").innerText = "Login failed: " + error.message;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById("message").innerText = "An error occurred. Please try again.";
+            }
+        };
+    </script>
+}
