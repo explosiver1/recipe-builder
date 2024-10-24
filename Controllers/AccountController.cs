@@ -50,25 +50,33 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create(string username, string password, string name, string email, string phone)
+    public async Task<IActionResult> Create(CreateAccountModel cam)
     {
         //TODO - Sanitize UI
         Dictionary<string, string> userData = new Dictionary<string, string>();
-        userData["username"] = username;
-        userData["password"] = password;
-        userData["name"] = name;
-        userData["email"] = email;
-        userData["phone"] = phone;
-        bool creationSuccess = await DBQueryModel.CreateUserNode(userData);
+        userData["username"] = cam.username;
+        userData["password"] = cam.password;
+        userData["name"] = cam.name;
+        userData["email"] = cam.email;
+        userData["phone"] = cam.phoneNumber;
+        bool creationSuccess;
+        try
+        {
+            creationSuccess = await DBQueryModel.CreateUserNode(userData);
+            if (creationSuccess)
+            {
+                return Ok(new { message = "Account creation successful" });
+            }
+            else
+            {
+                return BadRequest(new { message = "Account creation failed" });
+            }
+        }
+        catch
+        {
+            return BadRequest(new { message = "Database access failure" });
+        }
 
-        if (creationSuccess)
-        {
-            return Ok();
-        }
-        else
-        {
-            return Unauthorized();
-        }
     }
 
     public IActionResult Recovery()
