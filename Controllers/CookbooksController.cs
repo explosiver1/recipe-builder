@@ -17,7 +17,7 @@ public class CookbooksController : Controller
     // For now, return an empty view model or integrate with a database
     CookbooksIndexVM viewModel = new CookbooksIndexVM 
     { 
-        cookbooks = new List<Cookbook>() // Empty list for now, until data source is implemented
+        cookbooks = CtrlModel.GetCookbookList()// Empty list for now, until data source is implemented
     };
 
     return View(viewModel);
@@ -46,6 +46,11 @@ public class CookbooksController : Controller
         return View(viewModel);
     }
 
+    [HttpGet]
+    public IActionResult Add()
+    {
+        return View();
+    }
     // Add method (POST): Handles form submission to create a new cookbook
     [HttpPost]
     public IActionResult Add(Cookbook newCookbook)
