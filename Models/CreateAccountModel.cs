@@ -1,4 +1,4 @@
-using RecipeBuilder.Models;
+namespace RecipeBuilder.Models;
 
 public class CreateAccountModel()
 {
