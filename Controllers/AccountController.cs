@@ -22,8 +22,10 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Login([FromBody] string username, [FromBody] string password)
+    public async Task<IActionResult> Login(LoginModel lm)
     {
+        string username = lm.Username;
+        string password = lm.Password;
         Console.WriteLine("Logging in with " + username + ", " + password);
         //TODO - Sanitize UI
         bool isAuthTokenValid = await DBQueryModel.Authenticate(username, password);
@@ -73,5 +75,6 @@ public class AccountController : Controller
     {
         return View();
     }
+
 
 }
