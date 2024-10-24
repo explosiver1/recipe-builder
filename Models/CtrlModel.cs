@@ -7,6 +7,13 @@ Since multiple controllers need to call the same queries, this allows one method
 rather than multiple */
 public static class CtrlModel
 {
+    public static List<Cookbook>  GetCookbookList()//string userName)
+    
+    {
+        List<Cookbook> cookbookList = RecipeSeedData.cookbooks;// Update to be DBQueryModel Function Call
+        return cookbookList;
+    }
+
     /* Fetch Cookbook from DB by name & return to controller */
     public static Cookbook  GetCookbook(string cookbookName)
     {

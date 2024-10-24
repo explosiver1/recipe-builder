@@ -17,6 +17,12 @@ namespace RecipeBuilder.Models
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string Description { get; set; } = string.Empty;
 
+        /* Serving size stored as a dictionary with key of unit & 
+            value of int amount so amount can be mathematically updated with scaling*/
+        public Dictionary<String, int> servingSize = new Dictionary<string, int>();
+        public int numServings;
+        public List<String> equipment;
+
         [Required(ErrorMessage = "At least one ingredient is required.")]
         public List<IngredientDetail> Ingredients { get; set; } = new List<IngredientDetail>();
 
@@ -42,6 +48,7 @@ namespace RecipeBuilder.Models
             Ingredients = new List<IngredientDetail>();
             Instructions = new List<string>();
             Tags = new List<string>();
+            servingSize = new Dictionary<string, int>();
         }
 
         // Methods

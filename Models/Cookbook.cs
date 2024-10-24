@@ -3,6 +3,7 @@ namespace RecipeBuilder.Models
     public class Cookbook
     {
         public string Title { get; set; }
+        public string Description {get; set;}
         public List<Recipe> Recipes { get; set; }
 
         // Blank constructor initializing to default values
