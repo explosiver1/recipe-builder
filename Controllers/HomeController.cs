@@ -32,6 +32,10 @@ public class HomeController : Controller
 
     public IActionResult Private()
     {
-        return View();
+        HomePrivateVM viewModel = new HomePrivateVM();
+        viewModel.cookbooks = CtrlModel.GetCookbookList();
+        viewModel.recipes = CtrlModel.GetRecipeList();
+        
+        return View(viewModel);
     }
 }

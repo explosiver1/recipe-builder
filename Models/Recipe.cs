@@ -21,7 +21,7 @@ namespace RecipeBuilder.Models
             value of int amount so amount can be mathematically updated with scaling*/
         public Dictionary<String, int> servingSize = new Dictionary<string, int>();
         public int numServings;
-        public List<String> equipment;
+        public List<String> Equipment;
 
         [Required(ErrorMessage = "At least one ingredient is required.")]
         public List<IngredientDetail> Ingredients { get; set; } = new List<IngredientDetail>();
@@ -37,7 +37,10 @@ namespace RecipeBuilder.Models
         [Range(1, 5, ErrorMessage = "Difficulty must be between 1 and 5.")]
         public int Difficulty { get; set; }
 
-        [Range(1, 600, ErrorMessage = "Cook time must be between 1 and 600 minutes.")]
+        [Range(0, 600, ErrorMessage = "Prep time must be between 0 and 600 minutes.")]
+        public int PrepTime { get; set; }
+
+        [Range(0, 600, ErrorMessage = "Cook time must be between 0 and 600 minutes.")]
         public int CookTime { get; set; }
 
         // Blank Constructor
@@ -45,6 +48,7 @@ namespace RecipeBuilder.Models
         {
             Name = string.Empty;
             Description = string.Empty;
+            Equipment = new List<string>();
             Ingredients = new List<IngredientDetail>();
             Instructions = new List<string>();
             Tags = new List<string>();

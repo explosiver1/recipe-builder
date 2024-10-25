@@ -9,7 +9,7 @@ public class IngredientsController : Controller
 {
     public IActionResult Index()
     {
-        List<string> ingredients = CtrlModel.GetIngredients();
+        List<string> ingredients = CtrlModel.GetIngredientNameList();
         Dictionary<string, List<string>> ingredientNames = CtrlModel.GetABCListDict(ingredients);
 
         IngredientsIndexVM viewModel = new IngredientsIndexVM{ingredientNamesDict = ingredientNames};

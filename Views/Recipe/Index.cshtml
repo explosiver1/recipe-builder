@@ -86,24 +86,22 @@
 </div><br>
 
 <div class="row">
-    @*@if (Model.cookbook.Recipes != null)
+    @if (Model.recipes != null)
     {
-        @foreach (var recipe in Model.cookbook.Recipes)
-        {*@
+        @foreach (var recipe in Model.recipes)
+        {
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="card-title">Recipe1 name</h5>
-                        <p class="card-text">Recipe1 Difficulty</p>
-                        
-                        <a asp-controller="Recipe" asp-action="Look">Recipe1 name</a>
+                        <h5 class="card-title">@recipe.Name</h5>            
+                        <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe.Name>@recipe.Name</a>
                     </div>
                 </div>
             </div>
-        @*}
+        }
     }
     else
     {
         <p>No Recipes Found.</p>
-    }*@    
+    }    
 </div>

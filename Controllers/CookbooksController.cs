@@ -27,22 +27,13 @@ public class CookbooksController : Controller
     [HttpGet]
     public IActionResult Cookbook(string id)
     {
-    // Uncomment the following line if you want to use seed data
-    // var cookbook = RecipeSeedData.cookbooks.FirstOrDefault(c => c.Id == id);
+        var cookbookModel = CtrlModel.GetCookbook(id);
+        if (cookbookModel == null)
+        {
+            return NotFound(); // Handle case where no cookbook is found
+        }
 
-    // For now, set cookbook to null or fetch from a database
-    var cookbook = new Cookbook { Title = "Sample Cookbook", Recipes = new List<Recipe>() };
-
-    if (cookbook == null)
-    {
-        return NotFound(); // Handle case where no cookbook is found
-    }
-
-    CookbooksCookbookVM viewModel = new CookbooksCookbookVM
-    {
-        cookbook = cookbook
-    };
-
+        CookbooksCookbookVM viewModel = new CookbooksCookbookVM {cookbook = cookbookModel};
         return View(viewModel);
     }
 
