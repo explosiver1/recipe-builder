@@ -1,26 +1,63 @@
-@*  This creates a reference called model to the 
-    list of models the controller passes to this view.
-    Access the data by using keyword model *@
-
 @model RecipeBuilder.ViewModels.CookbooksIndexVM
 
 @{
     ViewData["Title"] = "My Cookbooks";
 }
+
+<style>
+    /* styling for title */
+    h1 {
+        color: #4A743E;
+    }
+
+    /* button styling */
+    .btn-custom {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #4A743E; 
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-custom:hover {
+        background-color: #96AE6D;
+    }
+
+    /* search button styling */
+    .btn-search {
+        background-color: #4A743E;
+        color: white;
+    }
+
+    .btn-search:hover {
+        background-color: #96AE6D;
+    }
+
+    /* align buttons side by side */
+    .input-group .btn {
+        margin-left: 10px;
+    }
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex">
         @*<form asp-action="" method="get" class="form-inline"> * need to know which model to pull from for Tag search*@
         <div class="input-group input-group-sm">
             <input type="text" class="form-control" placeholder="Search by Tags..." name="TagSearch" value="@ViewData["CurrentTagFilter"]" style="max-width: 150px;" />
             <div class="input-group-append">
-                <button class="btn btn-primary" type="submit">Search</button>
+                <button class="btn btn-search" type="submit">Search</button>
             </div>
         </div>
         @*</form>*@
     </div>
     <h1 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">My Cookbooks</h1>
     <hr class="rounded">
-    <a asp-controller="Cookbooks" asp-action="Add">Create New Cookbook</a>
+    <a asp-controller="Cookbooks" asp-action="Add" class="btn btn-custom">Create New Cookbook</a>
 </div>
 
 <div class="text-center">
@@ -28,11 +65,11 @@
     <div class="form-group">
         <input type="text" class="form-control" placeholder="Search Recipes..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
     </div><br>
-    <button type="submit" class="btn btn-primary ml-2">Search</button>
+    <button type="submit" class="btn btn-search ml-2">Search</button>
     @*</form>*@
 </div><br>
 
-@*Card View Cookbooks*@
+@*Card View Cookbooks*@ 
 <div class="row">
     @if (Model.cookbooks != null)
     {
@@ -43,7 +80,7 @@
                     <div class="card-body">
                         <h5 class="card-title">@cookbook.Title</h5>
                         <p class="card-text">Description or Tag</p>
-                        <a asp-action=Cookbook asp-route-id=@cookbook.Title>@cookbook.Title</a>
+                        <a asp-action="Cookbook" asp-route-id="@cookbook.Title">@cookbook.Title</a>
                     </div>
                 </div>
             </div>

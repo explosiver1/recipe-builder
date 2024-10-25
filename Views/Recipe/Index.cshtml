@@ -4,27 +4,84 @@
     ViewData["Title"] = "Recipes";
 }
 
+<style>
+    h1 {
+        color: #4A743E;
+        text-align: center;
+    }
+
+    /* button styling */
+    .btn-custom {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #4A743E; 
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-custom:hover {
+        background-color: #96AE6D;
+    }
+
+    /* create button styling */
+    .btn-create {
+        background-color: #4A743E;
+        color: white;
+    }
+
+    .btn-create:hover {
+        background-color: #96AE6D;
+    }
+
+    /* search button styling */
+    .btn-search {
+        background-color: #4A743E;
+        color: white;
+    }
+
+    .btn-search:hover {
+        background-color: #96AE6D;
+    }
+
+    /* align buttons side by side */
+    .button-container {
+        display: inline-block;
+        margin: 0 10px; 
+    }
+
+    .input-group .btn {
+        margin-left: 10px;
+    }
+</style>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex">
         @*<form asp-action="" method="get" class="form-inline"> * need to know which model to pull from for Tag search *@
         <div class="input-group input-group-sm">
             <input type="text" class="form-control" placeholder="Search by Tags..." name="TagSearch" value="@ViewData["CurrentTagFilter"]" style="max-width: 150px;" />
             <div class="input-group-append">
-                <button class="btn btn-primary" type="submit">Search</button>
+                <button class="btn btn-search" type="submit">Search</button>
             </div>
         </div>
         @*</form>*@
     </div>
-    <h2 class="text-center flex-grow-1 display-4" style="margin: 0;">Recipes</h2>
-    <a asp-controller="Recipe" asp-action="Add">Create New Recipe</a>
+    <h1 class="text-center flex-grow-1 display-4" style="margin: 0;">Recipes</h1>
+    <div class="button-container">
+        <a asp-controller="Recipe" asp-action="Add" class="btn btn-create">Create New Recipe</a>
+    </div>
 </div>
 
 <div class="text-center">
-    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for general search*@
+    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for general search*@ 
     <div class="form-group">
         <input type="text" class="form-control" placeholder="Search Recipes..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
     </div><br>
-    <button type="submit" class="btn btn-primary ml-2">Search</button>
+    <button type="submit" class="btn btn-search ml-2">Search</button>
     @*</form>*@
 </div><br>
 
@@ -48,5 +105,5 @@
     else
     {
         <p>No Recipes Found.</p>
-    }*@
+    }*@    
 </div>

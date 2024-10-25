@@ -1,8 +1,185 @@
-@{
+@{ 
     ViewData["Title"] = "Daily Meal Planner";
 }
 
-<div class="text-center">
-    <h1>Heading</h1>
-    <p>Let's get ready to cook!</p>
-</div>
+<!-- styles for page -->
+<style>
+
+    h1 {
+        color: #4A743E;
+        text-align: center;
+    }
+
+    hr.rounded {
+        border-top: 8px solid #96AE6D;
+        border-radius: 5px;
+        width: 80%; /* adjust width for centering */
+        margin: 0 auto; 
+    }
+
+    .meal-entry {
+        display: flex;
+        align-items: center;
+        justify-content: center; /* center meal entry */
+        margin-bottom: 10px;
+        position: relative; /* pop-up positioning */
+    }
+
+    .meal-label {
+        font-weight: bold;
+        margin-right: 10px;
+        width: 60px;
+        text-align: right;
+    }
+
+    input[type="text"] {
+        width: 400px;
+        padding: 8px;
+        margin-right: 10px;
+        box-sizing: border-box;
+        border: 2px solid #96AE6D;
+        border-radius: 4px;
+    }
+
+    .plus-button {
+        background-color: #96AE6D;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        transition: background-color 0.2s;
+        margin-left: 10px; 
+    }
+
+    .plus-button:hover {
+        background-color: #4A743E;
+    }
+
+    /* styling pop-up menu */
+    .popup-menu {
+        display: none; 
+        position: absolute;
+        left: 100%; 
+        background-color: #f9f9f9;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        padding: 12px 16px;
+        z-index: 1;
+        margin-left: 10px; 
+        border-radius: 5px; 
+    }
+
+    .meal-entry:hover .popup-menu {
+        display: block; /* show menu when hovering over meal entry */
+    }
+
+    .popup-menu a {
+        display: block;
+        padding: 8px 0;
+        color: #4A743E;
+        text-decoration: none;
+    }
+
+    .popup-menu a:hover {
+        text-decoration: underline;
+    }
+
+    /* button to add more meals */
+    .add-meal-btn {
+        background-color: #4A743E;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 40px; 
+        text-decoration: none;
+    }
+
+    .add-meal-btn:hover {
+        background-color: #96AE6D;
+    }
+
+    /* center the meal list */
+    #meal-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center; 
+        margin-top: 20px;
+    }
+
+    /* margin for buttons */
+    .button-container {
+        margin-bottom: 40px;
+    }
+
+</style>
+
+<body>
+    <h1 class="display-4">Daily Meal Planner</h1>
+    <hr class="rounded">
+    <br>
+    <!-- button for creating meals and meal schedule -->
+    <div class="button-container" style="text-align: center;">
+        <a asp-controller="Meals" asp-action="Create" class="add-meal-btn">Create Meals</a>
+        <a asp-controller="MealPlanner" asp-action="Plan" class="add-meal-btn">Meal Schedule</a>
+    </div>
+
+    <!-- meal entries -->
+    <div id="meal-list">
+        <!-- meal entry #1 -->
+        <div class="meal-entry">
+            <span class="meal-label">Meal 1:</span>
+            <input type="text" placeholder="Enter meal 1">
+            <button class="plus-button" onclick="togglePopupMenu(this)">+</button>
+            
+            <!-- pop-up menu for the plus button -->
+            <div class="popup-menu">
+                <a asp-controller="Meals" asp-action="Index">Add Meal</a><br>
+                <a asp-controller="Recipe" asp-action="Index">Add Recipe</a><br>
+                <a href="#">Add Note</a>
+            </div>
+        </div>
+
+        <!-- additional meal entries will be added here -->
+    </div>
+
+    <!-- button to add more meals -->
+    <button class="add-meal-btn" onclick="addMeal()">Add Another Meal</button>
+
+    <!-- javascript to handle adding new meals and toggling popup -->
+    <script>
+        function addMeal() {
+            var mealList = document.getElementById('meal-list');
+            var mealCount = mealList.getElementsByClassName('meal-entry').length + 1;
+
+            // create a new meal entry
+            var newMeal = document.createElement('div');
+            newMeal.className = 'meal-entry';
+            newMeal.innerHTML = `
+                <span class="meal-label">Meal ` + mealCount + `:</span>
+                <input type="text" placeholder="Enter meal ` + mealCount + `">
+                <button class="plus-button" onclick="togglePopupMenu(this)">+</button>
+                <div class="popup-menu">
+                    <a asp-controller="Meals" asp-action="Index">Add Meal</a><br>
+                    <a asp-controller="Cookbooks" asp-action="Index">Add Recipe</a><br>
+                    <a href="#">Add Note</a>
+                </div>
+            `;
+
+            // add new meal entry to meal list
+            mealList.appendChild(newMeal);
+        }
+
+        // toggle the popup menu visibility
+        function togglePopupMenu(button) {
+            var popupMenu = button.nextElementSibling;
+            popupMenu.style.display = popupMenu.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
