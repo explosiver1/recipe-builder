@@ -1,8 +1,119 @@
 @{
-    ViewData["Title"] = "Create Meals";
+    ViewData["Title"] = "Create Meal";
 }
 
-<div class="text-center">
-    <h1>Heading</h1>
-    <p>Let's get ready to cook!</p>
-</div>
+<style>
+
+    h1 {
+        color: #4A743E;
+        text-align: center;
+    }
+
+    hr.rounded {
+        border-top: 8px solid #96AE6D;
+        border-radius: 5px;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        margin: 8px 0;
+        box-sizing: border-box;
+        border: 2px solid #96AE6D;
+        border-radius: 4px;
+    }
+
+    .add-recipes {
+        background-color: #96AE6D;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .add-recipes:hover {
+        background-color: #4A743E;
+    }
+
+    .recipes-section {
+        display: flex;
+        align-items: flex-start;
+        margin-top: 10px;
+    }
+
+    /* styling the recipes list box */
+    .recipes-list {
+        background-color: #E9E9E9;
+        padding: 20px;
+        border-radius: 10px;
+        margin-left: 20px;
+        flex-grow: 1;
+    }
+
+    .recipes-list ul {
+        list-style-type: disc; /* bulleted list */
+        padding-left: 20px;
+        margin: 0;
+    }
+
+    .recipes-list a {
+        color: #4A743E;
+        text-decoration: none;
+        font-weight: normal; 
+    }
+
+    .recipes-list a:hover {
+        text-decoration: underline;
+    }
+
+    .recipes-added-label {
+        margin-top: 10px; 
+        font-weight: normal; 
+    }
+
+    /* button is aligned at the same height as label */
+    .add-recipes {
+        margin-top: 20px; 
+    }
+
+</style>
+
+<body>
+    <h1 class="display-4" style="color: #4A743E;">Create Meal</h1>
+    <hr class="rounded">
+
+    <!-- meal name -->
+    <div>
+        <label for="mealname">Name:</label>
+        <input type="text" id="mealname" name="mealname" placeholder="Enter meal name"><br><br>
+    </div>
+
+    <!-- meal description -->
+    <div>
+        <label for="description">Description:</label>
+        <input type="text" id="description" name="description" placeholder="Enter meal description"><br><br>
+    </div>
+
+    <!-- recipes added label -->
+    <div>
+        <label for="recipes" class="recipes-added-label">Recipes Added:</label>
+    </div>
+
+    <!-- add recipes button & recipes list box -->
+    <div class="recipes-section">
+        <!-- add recipes button -->
+        <div>
+                <a asp-controller="Recipe" asp-action="Index">Add Recipe</a><br><br>
+        </div>
+
+        <div class="recipes-list">
+            <ul>
+                <!-- add recipes and connect model here -->
+            </ul>
+        </div>
+    </div>
+</body>
