@@ -16,8 +16,10 @@ public class DBQueryModel
     //static constructor for initialization.
     static DBQueryModel()
     {
+        Console.WriteLine("Creating Driver...");
         driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         qConf = new QueryConfig(database: "neo4j");
+        Console.WriteLine("Driver Created.");
     }
 
     //Optionals can be added as "type name = 'value'" in the argument list. Not specifying a default value makes it required.
@@ -451,6 +453,7 @@ public class DBQueryModel
     //DONE
     public async static Task<bool> Authenticate(string username, string password)
     {
+        Console.WriteLine("Authenticating " + username + " with " + password);
         string query = "MATCH (u:User {name: '" + username + "', password: '" + password + "'}) \n"
                                 + "WITH COUNT(u) > 0 as exists \n"
                                 + "RETURN exists";
