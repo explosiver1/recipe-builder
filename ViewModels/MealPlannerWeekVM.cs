@@ -1,10 +1,10 @@
-using System;
 using System.ComponentModel.DataAnnotations;
 using RecipeBuilder.Models;
 
-namespace RecipeBuilder.ViewModels;
-
-public class MealPlannerWeekVM()
+namespace RecipeBuilder.ViewModels
 {
-    public MealPlanner mealPlanner { get; set; } = new MealPlanner();
+    public class MealPlannerWeekVm
+    {
+        public MealPlanner mealPlanner { get; set; } = new MealPlanner();
+    }
 }

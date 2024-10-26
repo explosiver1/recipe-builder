@@ -7,8 +7,10 @@ Since multiple controllers need to call the same queries, this allows one method
 rather than multiple */
 public static class CtrlModel
 {
+    private static ShoppingList shoppingList = new ShoppingList();
+    private static List<Ingredient> pantryItems = new List<Ingredient>();
+
     public static List<Cookbook>  GetCookbookList()//string userName)
-    
     {
         List<Cookbook> cookbookList = SeedData.GetCookbookList();// Update to be DBQueryModel Function Call
         return cookbookList;
@@ -75,6 +77,106 @@ public static class CtrlModel
     {
         List<string> ingredients = ["Oranges","Apples","Bananas", "Pears", "Tomatoes", "Spinach", "Sausage"];
         return ingredients;
+    }
+
+    // Retrieves all items in the shopping list
+    public static List<Ingredient> GetShoppingListItems()
+    {
+        return shoppingList.Items ?? new List<Ingredient>();
+    }
+
+    // Adds an ingredient to the shopping list
+    public static void AddItemToShoppingList(Ingredient ingredient)
+    {
+        if (ingredient == null) return;
+            
+        if (shoppingList.Items == null)
+        {
+            shoppingList.Items = new List<Ingredient>();
+        }
+
+        if (!shoppingList.Items.Contains(ingredient))
+        {
+            shoppingList.Items.Add(ingredient);
+            Console.WriteLine($"{ingredient.Name} added to the shopping list.");
+        }
+        else
+        {
+            Console.WriteLine($"{ingredient.Name} is already in the shopping list.");
+        }
+    }
+
+    // Removes an ingredient from the shopping list
+    public static void RemoveItemFromShoppingList(Ingredient ingredient)
+    {
+        if (ingredient == null || shoppingList.Items == null || !shoppingList.Items.Contains(ingredient))
+        {
+            Console.WriteLine("Ingredient not found in the shopping list.");
+            return;
+        }
+
+        shoppingList.Items.Remove(ingredient);
+        Console.WriteLine($"{ingredient.Name} removed from the shopping list.");
+    }
+
+    // Checks off an ingredient in the shopping list (can also remove it if desired)
+    public static void CheckItemOffShoppingList(Ingredient ingredient)
+    {
+        if (ingredient == null || shoppingList.Items == null || !shoppingList.Items.Contains(ingredient))
+        {
+            Console.WriteLine("Ingredient not found in the shopping list.");
+            return;
+        }
+
+        shoppingList.Items.Remove(ingredient);
+        Console.WriteLine($"{ingredient.Name} checked off the shopping list.");
+    }
+
+    // Retrieves an ingredient by name from the shopping list, allowing a nullable return
+    public static Ingredient? GetIngredientByName(string name)
+    {
+    if (shoppingList.Items == null) return null;
+
+    return shoppingList.Items.FirstOrDefault(i => i.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false);
+    }
+
+    // Retrieve all pantry items
+    public static List<Ingredient> GetPantryItems()
+    {
+        return pantryItems;
+    }
+
+    // Add an ingredient to the pantry
+    public static void AddItemToPantry(Ingredient ingredient)
+    {
+        if (ingredient == null || string.IsNullOrEmpty(ingredient.Name)) 
+        {
+            Console.WriteLine("Cannot add ingredient without a name.");
+            return;
+        }
+
+        if (!pantryItems.Any(i => i.Name == ingredient.Name))
+        {
+            pantryItems.Add(ingredient);
+            Console.WriteLine($"{ingredient.Name} added to the pantry.");
+        }
+        else
+        {
+            Console.WriteLine($"{ingredient.Name} is already in the pantry.");
+        }
+    }
+
+    // Remove an ingredient from the pantry
+    public static void RemoveItemFromPantry(Ingredient ingredient)
+    {
+        if (ingredient == null || !pantryItems.Contains(ingredient))
+        {
+            Console.WriteLine("Ingredient not found in the pantry.");
+            return;
+        }
+
+        pantryItems.Remove(ingredient);
+        Console.WriteLine($"{ingredient.Name} removed from the pantry.");
     }
 
     public static Dictionary<string, List<string>> GetABCListDict(List<string> myList)
