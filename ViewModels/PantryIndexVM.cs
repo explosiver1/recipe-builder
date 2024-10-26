@@ -1,17 +1,17 @@
 using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 using RecipeBuilder.Models;
 
 namespace RecipeBuilder.ViewModels
 {
-    public class ShoppingListIndexVM
+    public class PantryIndexVM
     {
         public List<Ingredient> items { get; set; }
 
-        // Constructor initializes items to an empty list
-        public ShoppingListIndexVM()
+        public PantryIndexVM()
         {
             items = new List<Ingredient>();
         }
+        
     }
 }

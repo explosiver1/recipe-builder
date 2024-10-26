@@ -1,10 +1,11 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using RecipeBuilder.Models;
 
 namespace RecipeBuilder.ViewModels
 {
-    public class MealPlannerDailyVm
+    public class ShoppingListEditVM
     {
-        public MealPlanner mealPlanner { get; set; } = new MealPlanner();
+        public Ingredient ingredient { get; set; }
     }
 }

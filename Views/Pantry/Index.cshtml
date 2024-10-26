@@ -62,6 +62,8 @@
     <div id="pantryContainer">
         <br>
         <ul>
+            <!-- Static items commented out for reference -->
+            <!--
             <li>Almonds 
                 <a href="#">Add Item To Shopping List</a> 
                 <a href="#" onclick="removeItem(event)">Remove</a>
@@ -78,6 +80,17 @@
                 <a href="#">Add Item To Shopping List</a> 
                 <a href="#" onclick="removeItem(event)">Remove</a>
             </li>
+            -->
+
+            <!-- Dynamic list generated from PantryIndexVM model -->
+        @foreach (var item in Model.items)
+            {
+                <li>
+                    @item.Name 
+                    <a asp-action="AddItemFromShoppingList" asp-route-itemName="@item.Name">Add Item To Shopping List</a> 
+                    <a asp-action="Remove" asp-route-itemName="@item.Name">Remove</a>
+                </li>
+            }
         </ul>
     </div>
 </body>
