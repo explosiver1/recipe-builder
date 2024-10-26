@@ -21,11 +21,11 @@
     <div class="form-group">
     <a asp-controller="Account" asp-action="Create">Sign Up</a>
     <a asp-controller="Account" asp-action="Recovery">Forgot Password</a>
-        <button type="submit" class="btn btn-primary">Sign In</button>
+        <button id="loginSubmit" type="submit" class="btn btn-primary">Sign In</button>
     </div>
 </form>
 </div>
 
-
-<div id="message"></div>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

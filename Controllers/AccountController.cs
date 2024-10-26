@@ -33,12 +33,13 @@ public class AccountController : Controller
         {
             AuthToken at = new AuthToken(username);
             HttpContext.Session.SetString("authToken", JsonConvert.SerializeObject(at));
-            return Ok(new { message = "Login Successful!" });
+            return RedirectToAction("Private", "Home");
         }
         else
         {
             Console.WriteLine("Login Failed");
-            return BadRequest(new { message = "Invalid username or password." });
+            //lm.Response = "Error, login failed.";
+            return View();
             //HttpContext.Session.SetString("user", "ERROR");
             //return View(new AccountLoginVM { authValid = false });
         }
