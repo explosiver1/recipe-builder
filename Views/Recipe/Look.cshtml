@@ -7,7 +7,7 @@
 <div class="container">
     <div class ="row mb-3">
         <div class="col-md-4 d-flex align-items-center">
-            <a asp-controller="Recipe" asp-action="Edit" asp-route-cookbookName=@Model.cookbookName asp-route-recipeName=@Model.recipe.Name>Edit Recipe</a>
+            <a asp-controller="Recipe" asp-action="Edit" asp-route-recipeName=@Model.recipe.Name>Edit Recipe</a>
         </div>
         <div class="col-md-8 text-center">
             <h1 class="display-4" style="margin: 0;">Recipe: @Model.recipe.Name</h1>
@@ -15,10 +15,17 @@
     </div>
     <div class="row">
         <div class="col-md-4">
-            <p>Cooktime: @Model.recipe.CookTime minutes</p>
+            <h4>Prep Time:</h4>
+            <ul>
+                <li>@Model.recipe.PrepTime minutes</li>
+            </ul>
             <h4>Cooktime:</h4>
             <ul>
                 <li>@Model.recipe.CookTime minutes</li>
+            </ul>
+            <h4>Rating:</h4>
+            <ul>
+                <li>@Model.recipe.Rating</li>
             </ul>
             <h4>Difficulty:</h4>
             <ul>

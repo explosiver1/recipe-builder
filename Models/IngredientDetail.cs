@@ -4,26 +4,28 @@ namespace RecipeBuilder.Models
     {
         // Attributes
         public Ingredient Ingredient { get; set; }
-        public float Quantity { get; set; }
+        public string Qualifier { get; set; }
+        public double Quantity { get; set; }
         public string Unit { get; set; }
 
         // Blank constructor initializing default values
         public IngredientDetail()
         {
             Ingredient = new Ingredient();
+            Qualifier = string.Empty;
             Quantity = 0;
             Unit = string.Empty;
         }//end Blank Constructor
 
         // Methods
         // Get quantity
-        public float GetQuantity()
+        public double GetQuantity()
         {
             return Quantity;
         }
 
         // Set quantity with validation
-        public void SetQuantity(float newQuantity)
+        public void SetQuantity(double newQuantity)
         {
             if (newQuantity <= 0)
             {

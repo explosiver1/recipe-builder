@@ -10,25 +10,49 @@ public static class CtrlModel
     public static List<Cookbook>  GetCookbookList()//string userName)
     
     {
-        List<Cookbook> cookbookList = RecipeSeedData.cookbooks;// Update to be DBQueryModel Function Call
+        List<Cookbook> cookbookList = SeedData.GetCookbookList();// Update to be DBQueryModel Function Call
         return cookbookList;
     }
 
     /* Fetch Cookbook from DB by name & return to controller */
-    public static Cookbook  GetCookbook(string cookbookName)
+    public static Cookbook?  GetCookbook(string cookbookName)
     {
-        Cookbook cookbookObj = RecipeSeedData.GetCookbook(cookbookName);// Update to be DBQueryModel Function Call
+        Cookbook? cookbookObj = SeedData.GetCookbook(cookbookName);// Update to be DBQueryModel Function Call
         return cookbookObj;
     }
 
+    public static List<Recipe>  GetRecipeList()//string userName)
+    
+    {
+        List<Recipe> recipeList = SeedData.GetRecipeList();// Update to be DBQueryModel Function Call
+        return recipeList;
+    }
 
     /* Fetch recipe from DB by name & return it to controller */
-    public static Recipe GetRecipe(string cookbookName, string recipeName)
+    public static Recipe? GetRecipe(string recipeName)
     {
         // Will need updated to match DBQueryModel's Method & Parameters
         //Recipe recipe = DBQueryModel.GetRecipe(recipeName);
-        Recipe recipe = RecipeSeedData.GetRecipe(cookbookName, recipeName);
+        Recipe? recipe = SeedData.GetRecipe(recipeName);
         return recipe;
+    }
+
+    public static List<Ingredient> GetIngredientList()
+    {
+        List<Ingredient> myIngredients = SeedData.GetIngredientList();
+        return myIngredients;
+    }
+
+    public static List<string> GetIngredientNameList()
+    {
+        List<string> myIngredients = SeedData.GetIngredientNameList();
+        return myIngredients;
+    }
+
+    public static List<Recipe> GetRecipesForIngredient(string IngredientName)
+    {
+        List<Recipe> recipesWithIngredient = SeedData.GetRecipesForIngredient(IngredientName);
+        return recipesWithIngredient;
     }
 
     // Send recipe data from user to DB (& return recipe to the controller?)

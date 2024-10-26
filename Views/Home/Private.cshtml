@@ -1,3 +1,5 @@
+@model RecipeBuilder.ViewModels.HomePrivateVM
+
 @{
     ViewData["Title"] = "User Home";
 }
@@ -9,47 +11,46 @@
 </div>
 <div class="row">
     <h2 class="display-4" style="color: #4A743E;">Cookbooks:</h2>
-    @*@if (Model.cookbook.Recipes != null) Need to know the model names
+    @if (Model.cookbooks.Count != 0)
     {
-        @foreach (var recipe in Model.cookbook.Recipes)
-        {*@
+        @foreach (var cookbook in Model.cookbooks)
+        {
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="card-title">cookbook1 name</h5>
-                        <p class="card-text">cookbook1 Description</p>
-                        
-                        <a asp-controller="Cookbooks" asp-action="Cookbook">cookbook1 name</a>
+                        <h5 class="card-title">@cookbook.Title</h5>
+                        <p class="card-text">@cookbook.Description</p>
+                     
+                        <a asp-controller="Cookbooks" asp-action="Cookbook" asp-route-id=@cookbook.Title>@cookbook.Title</a>
                     </div>
                 </div>
             </div>
-        @*}
+       }
     }
     else
     {
-        <p>No Recipes Found.</p>
-    }*@
+        <p>No Cookbooks Found.</p>
+    }
 </div>
 <div class="row">
     <h2 class="display-4" style="color: #4A743E;">Recipes:</h2>
-    @*@if (Model.Recipes != null) Need to know the model names
+    @if (Model.recipes.Count != 0)
     {
-        @foreach (var recipe in Model.Recipes)
-        {*@
+        @foreach (var recipe in Model.recipes)
+        {
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h5 class="card-title">Recipe1 name</h5>
-                        <p class="card-text">Recipe1 Difficulty</p>
+                        <h5 class="card-title">@recipe.Name</h5>
                         
-                        <a asp-controller="Recipe" asp-action="Look">Recipe1 name</a>
+                        <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe.Name>@recipe.Name</a>
                     </div>
                 </div>
             </div>
-        @*}
+        }
     }
     else
     {
         <p>No Recipes Found.</p>
-    }*@
+    }
 </div>

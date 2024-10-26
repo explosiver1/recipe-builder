@@ -7,26 +7,23 @@ namespace RecipeBuilder.Controllers
 {
     public class RecipeController : Controller
     {
-        // Index method: Displays a list of recipes in a specific cookbook
+        // Index method: Displays full list of user's recipes 
         [HttpGet]
-        public IActionResult Index(string id)
+        public IActionResult Index(string? id)
         {
-            // Uncomment the following line if you want to use seed data
-            // var cookbook = RecipeSeedData.GetCookbook(id);
+            List<Recipe> recipeList;
+            RecipeIndexVM viewModel = new RecipeIndexVM();
 
-            // For now, use a placeholder or fetch from a database
-            var cookbook = new Cookbook { Title = "Sample Cookbook", Recipes = new List<Recipe>() };
-
-            if (cookbook == null)
+            if (id == null)
             {
-                return NotFound();
+                recipeList = CtrlModel.GetRecipeList();    
             }
-
-            var viewModel = new RecipeIndexVM
+            else
             {
-                cookbook = cookbook
-            };
-
+                recipeList = CtrlModel.GetRecipesForIngredient(id);
+            }
+            
+            viewModel.recipes = recipeList;
             return View(viewModel);
         }
 
@@ -92,23 +89,18 @@ namespace RecipeBuilder.Controllers
 
         // Look method (GET): Displays a specific recipe in a specific cookbook
         [HttpGet]
-        public IActionResult Look(string cookbookName, string recipeName)
+        public IActionResult Look(string recipeName)
         {
-            // Uncomment the following line if you want to use seed data
-            // var recipe = RecipeSeedData.GetRecipe(cookbookName, recipeName);
-
-            // For now, use a placeholder or fetch from a database
-            var recipe = new Recipe { Name = recipeName, Description = "Sample Description" };
-
-            if (recipe == null)
+            Recipe? recipeModel = SeedData.GetRecipe(recipeName);
+    
+            if (recipeModel == null)
             {
                 return NotFound();
             }
 
             var viewModel = new RecipeLookVM
             {
-                cookbookName = cookbookName,
-                recipe = recipe
+                recipe = recipeModel
             };
 
             return View(viewModel);
