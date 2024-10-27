@@ -4,10 +4,22 @@
 
 <!-- styles for page -->
 <style>
-
     h1 {
         color: #4A743E;
         text-align: center;
+        margin-top: 0;
+        padding-top: 0; 
+    }
+
+    body {
+        background-color: #ffffff; 
+        color: #333; 
+        margin: 0;
+        padding: 0; 
+    }
+
+    .text-center {
+        text-align: center; 
     }
 
     hr.rounded {
@@ -15,6 +27,7 @@
         border-radius: 5px;
         width: 80%; /* adjust width for centering */
         margin: 0 auto; 
+        margin-top: 10px; 
     }
 
     .meal-entry {
@@ -117,69 +130,70 @@
     .button-container {
         margin-bottom: 40px;
     }
-
 </style>
 
 <body>
-    <h1 class="display-4">Daily Meal Planner</h1>
-    <hr class="rounded">
-    <br>
-    <!-- button for creating meals and meal schedule -->
-    <div class="button-container" style="text-align: center;">
-        <a asp-controller="Meals" asp-action="Create" class="add-meal-btn">Create Meals</a>
-        <a asp-controller="MealPlanner" asp-action="Plan" class="add-meal-btn">Meal Schedule</a>
-    </div>
-
-    <!-- meal entries -->
-    <div id="meal-list">
-        <!-- meal entry #1 -->
-        <div class="meal-entry">
-            <span class="meal-label">Meal 1:</span>
-            <input type="text" placeholder="Enter meal 1">
-            <button class="plus-button" onclick="togglePopupMenu(this)">+</button>
-            
-            <!-- pop-up menu for the plus button -->
-            <div class="popup-menu">
-                <a asp-controller="Meals" asp-action="Index">Add Meal</a><br>
-                <a asp-controller="Recipe" asp-action="Index">Add Recipe</a><br>
-                <a href="#">Add Note</a>
-            </div>
+    <div class="container">
+        <h1 class="display-4">Daily Meal Planner</h1>
+        <hr class="rounded">
+        <br>
+        <!-- button for creating meals and meal schedule -->
+        <div class="button-container" style="text-align: center;">
+            <a asp-controller="Meals" asp-action="Create" class="add-meal-btn">Create Meals</a>
+            <a asp-controller="MealPlanner" asp-action="Plan" class="add-meal-btn">Meal Schedule</a>
         </div>
 
-        <!-- additional meal entries will be added here -->
-    </div>
-
-    <!-- button to add more meals -->
-    <button class="add-meal-btn" onclick="addMeal()">Add Another Meal</button>
-
-    <!-- javascript to handle adding new meals and toggling popup -->
-    <script>
-        function addMeal() {
-            var mealList = document.getElementById('meal-list');
-            var mealCount = mealList.getElementsByClassName('meal-entry').length + 1;
-
-            // create a new meal entry
-            var newMeal = document.createElement('div');
-            newMeal.className = 'meal-entry';
-            newMeal.innerHTML = `
-                <span class="meal-label">Meal ` + mealCount + `:</span>
-                <input type="text" placeholder="Enter meal ` + mealCount + `">
+        <!-- meal entries -->
+        <div id="meal-list">
+            <!-- meal entry #1 -->
+            <div class="meal-entry">
+                <span class="meal-label">Meal 1:</span>
+                <input type="text" placeholder="Enter meal 1">
                 <button class="plus-button" onclick="togglePopupMenu(this)">+</button>
+                
+                <!-- pop-up menu for the plus button -->
                 <div class="popup-menu">
                     <a asp-controller="Meals" asp-action="Index">Add Meal</a><br>
-                    <a asp-controller="Cookbooks" asp-action="Index">Add Recipe</a><br>
+                    <a asp-controller="Recipe" asp-action="Index">Add Recipe</a><br>
                     <a href="#">Add Note</a>
                 </div>
-            `;
+            </div>
 
-            // add new meal entry to meal list
-            mealList.appendChild(newMeal);
-        }
+            <!-- additional meal entries will be added here -->
+        </div>
 
-        // toggle the popup menu visibility
-        function togglePopupMenu(button) {
-            var popupMenu = button.nextElementSibling;
-            popupMenu.style.display = popupMenu.style.display === 'block' ? 'none' : 'block';
-        }
-    </script>
+        <!-- button to add more meals -->
+        <button class="add-meal-btn" onclick="addMeal()">Add Another Meal</button>
+
+        <!-- javascript to handle adding new meals and toggling popup -->
+        <script>
+            function addMeal() {
+                var mealList = document.getElementById('meal-list');
+                var mealCount = mealList.getElementsByClassName('meal-entry').length + 1;
+
+                // create a new meal entry
+                var newMeal = document.createElement('div');
+                newMeal.className = 'meal-entry';
+                newMeal.innerHTML = `
+                    <span class="meal-label">Meal ` + mealCount + `:</span>
+                    <input type="text" placeholder="Enter meal ` + mealCount + `">
+                    <button class="plus-button" onclick="togglePopupMenu(this)">+</button>
+                    <div class="popup-menu">
+                        <a asp-controller="Meals" asp-action="Index">Add Meal</a><br>
+                        <a asp-controller="Cookbooks" asp-action="Index">Add Recipe</a><br>
+                        <a href="#">Add Note</a>
+                    </div>
+                `;
+
+                // add new meal entry to meal list
+                mealList.appendChild(newMeal);
+            }
+
+            // toggle the popup menu visibility
+            function togglePopupMenu(button) {
+                var popupMenu = button.nextElementSibling;
+                popupMenu.style.display = popupMenu.style.display === 'block' ? 'none' : 'block';
+            }
+        </script>
+    </div>
 </body>

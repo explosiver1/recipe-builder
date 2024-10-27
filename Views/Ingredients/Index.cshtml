@@ -3,8 +3,12 @@
     ViewData["Title"] = "Ingredients";
 }
 
-<head>
-    <style>
+<style>
+        h1 {
+        color: #4A743E;
+        text-align: center;
+        }
+
         body {
             background-color: #ffffff; 
             color: #333; 
@@ -14,11 +18,6 @@
 
         .text-center {
             text-align: center; 
-        }
-
-        .display-4 {
-            font-size: 2.5em; 
-            color: #4A743E; 
         }
 
         .search-container {
@@ -74,13 +73,11 @@
             text-decoration: none; 
             color: #4A743E; 
         }
-    </style>
-</head>
+</style>
 
 <body>
     <div class="text-center">
         <h1 class="display-4">Ingredients</h1>
-        <br>
         <div class="search-container">
             <input type="text" id="ingredientSearch" placeholder="Search" oninput="scrollToIngredient()">
         </div>

@@ -1,8 +1,135 @@
-@{
-    ViewData["Title"] = "Weekly Meal Planner";
+@{ 
+    ViewData["Title"] = "Weekly Meal Planner"; 
 }
 
-<div class="text-center">
-    <h1>Heading</h1>
-    <p>Let's get ready to cook!</p>
-</div>
+<!-- styling for page -->
+<style>
+    h1 {
+        color: #4A743E;
+        text-align: center;
+        margin-top: 0;
+        padding-top: 0;
+    }
+
+    body {
+        background-color: #ffffff; 
+        color: #333; 
+        margin: 0;
+        padding: 0; 
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0; 
+    }
+
+    hr.rounded {
+        border-top: 8px solid #96AE6D;
+        border-radius: 5px;
+        width: 80%;
+        margin: 0 auto;
+        margin-top: 10px; 
+    }
+
+    /* button styling */
+    .button {
+        background-color: #4A743E;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+        background-color: #96AE6D;
+    }
+
+    .schedule {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
+    }
+
+    .day {
+        background-color: #F5F5F5;
+        border-radius: 5px;
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .schedule-title {
+        font-size: 1.5em;
+        margin: 10px 0;
+        color: #4A743E;
+    }
+
+    .button-container {
+        margin-bottom: 40px;
+        text-align: center; 
+    }
+</style>
+
+<body>
+    <div class="container">
+        <h1 class="display-4">Weekly Meal Planner</h1>
+        <hr class="rounded">
+        <br>
+        <div class="button-container">
+            <a asp-controller="MealPlanner" asp-action="Plan" class="button">Meal Schedule</a>
+        </div>
+        
+        <div class="schedule">
+            <div class="day">
+                <h2 class="schedule-title">Monday</h2>
+                <p>Omelets</p>
+                <p>Tuna Salad</p>
+                <p>Steak, Mashed Potatoes, Mac and Cheese</p>
+            </div>
+            <div class="day">
+                <h2 class="schedule-title">Tuesday</h2>
+                <p>Omelets</p>
+                <p>Tuna Salad</p>
+                <p>Steak, Mashed Potatoes, Mac and Cheese</p>
+            </div>
+            <div class="day">
+                <h2 class="schedule-title">Wednesday</h2>
+                <p>Omelets</p>
+                <p>Tuna Salad</p>
+                <p>Steak, Mashed Potatoes, Mac and Cheese</p>
+            </div>
+            <div class="day">
+                <h2 class="schedule-title">Thursday</h2>
+                <p>Omelets</p>
+                <p>Tuna Salad</p>
+                <p>Steak, Mashed Potatoes, Mac and Cheese</p>
+            </div>
+            <div class="day">
+                <h2 class="schedule-title">Friday</h2>
+                <p>Omelets</p>
+                <p>Tuna Salad</p>
+                <p>Steak, Mashed Potatoes, Mac and Cheese</p>
+            </div>
+            <div class="day">
+                <h2 class="schedule-title">Saturday</h2>
+                <p>Omelets</p>
+                <p>Tuna Salad</p>
+                <p>Steak, Mashed Potatoes, Mac and Cheese</p>
+            </div>
+            <div class="day">
+                <h2 class="schedule-title">Sunday</h2>
+                <p>Omelets</p>
+                <p>Tuna Salad</p>
+                <p>Steak, Mashed Potatoes, Mac and Cheese</p>
+            </div>
+        </div>
+    </div>
+</body>

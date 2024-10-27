@@ -2,11 +2,82 @@
     ViewData["Title"] = "Recovery";
 }
 
-<div class="text-center">
-    <h1 class="display-4" style="color: #4A743E;">Recovery</h2>
-    <label for="email">Email:</label>
-    @*<input asp-for="" class="" />*@
-    <input type="text" id="email" name="email"><br><br>
-    @*Authurization needed for recovery redirect*@
-    <a asp-controller="Home" asp-action="Index">Send Email</a><br><br>
-</div>
+<head>
+    <style>
+        h1 {
+            color: #4A743E;
+            text-align: center;
+            margin-top: 0; 
+            padding-top: 0;
+        }
+
+        .schedule-title {
+            font-size: 1.5em;
+            margin: 10px 0;
+            color: #4A743E;
+            text-align: left; 
+        }
+
+        body {
+            background-color: #ffffff; 
+            color: #333; 
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0; 
+        }
+
+        #button a {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4A743E; 
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        #button a:hover {
+            background-color: #96AE6D;
+        }
+
+        .button-container {
+            display: inline-block;
+            margin: 0 10px; 
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .form-group {
+            text-align: left; 
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="text-center">
+            <h1 class="display-4">Recovery</h1>
+            <div class="form-group">
+                <h2 class="schedule-title">Email</h2>
+                <input type="text" id="email" name="email" class="form-control" placeholder="Enter your email" />
+            </div>
+            <div class="button-container" id="button">
+                <a asp-controller="Home" asp-action="Index">Send Email</a> 
+            </div>
+        </div>
+    </div>
+
+    <div id="message"></div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+</body>

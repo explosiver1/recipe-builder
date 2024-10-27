@@ -4,28 +4,98 @@
 
 @model RecipeBuilder.Models.LoginModel
 
-<div class="text-center">
+<!-- button styling -->
+<head>
+    <style>
+        h1 {
+            color: #4A743E;
+            text-align: center;
+            margin-top: 0; /* Remove top margin */
+            padding-top: 0; /* Remove top padding */
+        }
 
+        /* New style for h2 */
+        .schedule-title {
+            font-size: 1.5em;
+            margin: 10px 0;
+            color: #4A743E;
+            text-align: left; /* Align text to the left */
+        }
 
-    <form method="post" asp-controller="Account" asp-action="Login" id="form">
-    <div class="form-group">
-        <label asp-for="Username">Username</label>
-        <input type="text" asp-for="Username" class="form-control" id="username" placeholder="Enter your username" />
-        <span asp-validation-for="Username" class="text-danger"></span>
+        body {
+            background-color: #ffffff; 
+            color: #333; 
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0; 
+        }
+
+        #button a {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4A743E; 
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        #button a:hover {
+            background-color: #96AE6D;
+        }
+
+        /* to make buttons side by side */
+        .button-container {
+            display: inline-block;
+            margin: 0 10px; 
+        }
+
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="text-center">
+            <h1 class="display-4">Log In</h1> <!-- Title -->
+            <form method="post" asp-controller="Account" asp-action="Login" id="form">
+                <div class="form-group">
+                    <h2 class="schedule-title">Username</h2> <!-- Title styled similar to h2 -->
+                    <input type="text" asp-for="Username" class="form-control" id="username" placeholder="Enter your username" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+                <br>
+                <div class="form-group">
+                    <h2 class="schedule-title">Password</h2> <!-- Title styled similar to h2 -->
+                    <input type="password" asp-for="Password" class="form-control" id="password" placeholder="Enter your password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <br>
+                <div class="form-group">
+                    <div class="button-container" id="button">
+                        <a asp-controller="Account" asp-action="Create">Sign Up</a>
+                    </div>
+                    <div class="button-container" id="button">
+                        <a asp-controller="Account" asp-action="Recovery">Forgot Password</a>
+                    </div>
+                    <div class="button-container" id="button">
+                        <a href="#" onclick="document.getElementById('form').submit();">Sign In</a> <!-- Sign In button -->
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label asp-for="Password">Password</label>
-        <input type="password" asp-for="Password" class="form-control" id="password" placeholder="Enter your password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="form-group">
-    <a asp-controller="Account" asp-action="Create">Sign Up</a>
-    <a asp-controller="Account" asp-action="Recovery">Forgot Password</a>
-        <button type="submit" class="btn btn-primary">Sign In</button>
-    </div>
-</form>
-</div>
 
-
-<div id="message"></div>
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <div id="message"></div>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+</body>
