@@ -39,6 +39,8 @@ public static class CtrlModel
         return recipe;
     }
 
+    
+
     public static List<Ingredient> GetIngredientList()
     {
         List<Ingredient> myIngredients = SeedData.GetIngredientList();

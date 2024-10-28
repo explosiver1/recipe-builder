@@ -25,66 +25,45 @@ public class DBQueryModel
     //Optionals can be added as "type name = 'value'" in the argument list. Not specifying a default value makes it required.
 
     // CreateUser()
-    // TODO - test results of query and return success/fail boolean
-    public static async Task<bool> CreateUserNode(Dictionary<string, string> userData)
+    // TODO - test results of query
+    public static async Task<bool> CreateUserNode(string username, string name, string email, string phone, string password)
     {
         var query = @"
-        CREATE (u:User {
-            username: $username,
-            name: $name,
-            email: $email,
-            phone: $phone,
-            password: $password
-        })
-        ";
+            CREATE (u:User {
+                username: $username,
+                name: $name,
+                email: $email,
+                phone: $phone,
+                password: $password
+            })
+            RETURN NOT(COUNT(u) > 0)
+            ";
 
-        // Run the query with the parameters
-        var session = driver.AsyncSession();  // Open a session for Neo4j
-        try
-        {
-
-            await session.RunAsync(query, new
-            {
-                username = userData["username"],
-                name = userData["name"],
-                email = userData["email"],
-                phone = userData["phone"],
-                password = userData["password"]
-            });
-            //TODO - test query results
-            //TODO - return bool for success/fail
-            Console.WriteLine($"User {userData["username"]} created!");
-        }
-        finally
-        {
-            await session.CloseAsync();  // Ensure session is closed after query
-        }
-        return true;
-    }
-
-    // CreatePantry()
-    // TODO - return success/fail boolean
-    public async Task<bool> CreatePantryNode(string username)
-    {
-        var query = @"
-        MATCH (user:User{username: $user})
-        CREATE (pantry:Pantry {name: $pantryName})
-        CREATE (user)-[:OWNS]->(pantry)
-        ";
-        var pantryName = username + "Pantry";
-
+        // Opens a session for Neo4j
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { pantryName, user = username });
-            Console.WriteLine($"Pantry node {pantryName} created!");
+            // Run the query with parameters and put results in var
+            var response = await session.RunAsync(query, new { username, name, email, phone, password });
+            
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+            
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool userCreated = records.Any() && records.First()[0].As<bool>();
+            
+            return userCreated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
         }
         finally
         {
+            // Ensures the session is closed
             await session.CloseAsync();
         }
-
-        return true;
     }
 
     // CreateCuisine()
@@ -109,39 +88,47 @@ public class DBQueryModel
 
     // CreateRecipe()
     // TODO - return success/fail
-    public async Task<bool> CreateRecipeNode(string username, Dictionary<string, string> recipeData)
+    public async Task<bool> CreateRecipeNode(string username, string recipe, string title, string description)
     {
         var query = @"
-        MATCH (user:User {username: $user})
-        CREATE (recipe:Recipe {
-            name: $recipeName,
-            title: $title,
-            description: $description
-        })
-        CREATE (user)-[:OWNS]->(recipe)
+            MATCH (user:User {username: $username})
+            CREATE (recipe:Recipe {
+                name: $recipeName,
+                title: $title,
+                description: $description
+            })
+            CREATE (user)-[:OWNS]->(recipe)
+            RETURN NOT(COUNT(recipe) > 0)
         ";
 
-        var recipeName = username + recipeData["name"];
-
+        var recipeName = username + recipe;
+        
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new
-            {
-                user = username,
-                recipeName,
-                title = recipeData["title"],
-                description = recipeData["description"]
-            });
+            var response = await session.RunAsync(query, new { username, recipeName, title, description});
+
+            // Pulls all responses from the query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record and gets the first record which should be the bool response
+            bool recipeCreated = records.Any() && records.First()[0].As<bool>();
+            
             Console.WriteLine($"Recipe {recipeName} created!");
+            return recipeCreated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
         }
         finally
         {
+            // Ensures the session is closed
             await session.CloseAsync();
         }
-
-        return true;
     }
+
 
     // GetRecipes()
     // All Recipes a User Owns
