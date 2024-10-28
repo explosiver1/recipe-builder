@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
 
 namespace RecipeBuilder.Models
 {
@@ -21,25 +22,40 @@ namespace RecipeBuilder.Models
             Username = string.Empty;
             Email = string.Empty;
             Password = string.Empty;
+
+            // These aren't needed in database for User node but may be used in functions idk
             Cookbooks = new List<Cookbook>();
             MealPlanners = new List<MealPlanner>();
             ShoppingList = new ShoppingList();
         }//end Blank Constructor
 
-        // Placeholder: Method for future database integration when creating a user
-        public void CreateUser()
+        // Authtoken is used to pass username value
+        public bool CreateUser(AuthToken at, string name, string email, string phone, string password)
         {
-            bool useDatabase = false;  // Change this when Neo4j is ready
+            // bool useDatabase = false;  // Change this when Neo4j is ready
 
-            if (useDatabase)
+            // if (useDatabase)
+            // {
+            //     Console.WriteLine("Creating user in the Neo4j database...");
+            // }
+            // else
+            // {
+            //     Console.WriteLine($"User {Username} created in-memory.");
+            // }
+
+            // Ensures user is validated before running query
+            if (!at.Validate())
             {
-                Console.WriteLine("Creating user in the Neo4j database...");
+                Console.WriteLine("Authentication failed. Invalid or expired token.");
+                return false;
             }
             else
             {
-                Console.WriteLine($"User {Username} created in-memory.");
+                // Passing the dictionary might be easier but all variable makes it more readable...
+                bool userCreated = DBQueryModel.CreateUserNode(at.username, name, email, phone, password);
+                return userCreated;
             }
-        }//end CreateUser
+        }
 
         // Create a new cookbook and add it to the user's list
         public void CreateCookbook(string title)
