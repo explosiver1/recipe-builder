@@ -24,6 +24,18 @@
             <textarea asp-for="recipe.Ingredients" class="form-control"></textarea>
         </div>
         <div class="form-group">
+            <label asp-for="recipe.numServings">Number of Servings:</label>
+            <input asp-for="recipe.numServings" class="form-control"/><br>
+        </div>
+        <div class="form-group">
+            <label asp-for="recipe.servingSize">Serving Size:</label>
+            <input asp-for="recipe.servingSize" class="form-control"/><br>
+        </div>
+        <div class="form-group">
+            <label asp-for="recipe.Equipment">Tools/Equipment Needed:</label>
+            <textarea asp-for="recipe.Equipment" class="form-control"></textarea><br>
+        </div>
+        <div class="form-group">
             <label asp-for="recipe.Instructions">Instructions:</label>
             <textarea asp-for="recipe.Instructions" class="form-control"></textarea>
         </div>
