@@ -186,6 +186,7 @@ namespace RecipeBuilder.Models
             Console.WriteLine($"Meal planners for {Username}:");
             foreach (var mealPlanner in MealPlanners)
             {
+
                 Console.WriteLine($"- Scheduled Meals: {mealPlanner.ScheduledMeals.Count}");
             }
         }//end DisplayMealPlanners

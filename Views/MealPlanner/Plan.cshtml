@@ -2,18 +2,120 @@
     ViewData["Title"] = "Meal Schedule";
 }
 
+<!-- CSS for page -->
 <style>
+    h1 {
+        color: #4A743E;
+        text-align: center;
+        margin-top: 0; 
+        padding-top: 0; 
+    }
+
     body {
-        hr.rounded {
+        background-color: #ffffff; 
+        color: #333; 
+        margin: 0;
+        padding: 0; ]
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0; 
+    }
+
+    hr.rounded {
         border-top: 8px solid #96AE6D;
         border-radius: 5px;
-        }
+        width: 80%; 
+        margin: 0 auto; 
+        margin-top: 10px;
+    }
+
+    .button {
+        background-color: #4A743E;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 40px; 
+        text-decoration: none;
+    }
+
+    .button:hover {
+        background-color: #96AE6D;
+    }
+
+    .schedule {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
+    }
+
+    .day {
+        background-color: #F5F5F5;
+        border-radius: 5px;
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .schedule-title {
+        font-size: 1.5em;
+        margin: 10px 0;
+        color: #4A743E;
     }
 </style>
-<body>
-    <div class="text-center">
-    <h1 class="display-4" style="color: #4A743E;">Meal Schedule</h1>
-        <hr class="rounded">
-    </div>
 
+<body>
+    <div class="container">
+        <h1 class="display-4">Meal Schedule</h1>
+        <hr class="rounded">
+        <br>
+        <h2 class="schedule-title">Daily Schedule</h2>
+        <div class="schedule">
+            <div class="day">
+                <p>Meal 1 Recipes</p>
+            </div>
+            <div class="day">
+                <p>Meal 2 Recipes</p>
+            </div>
+            <div class="day">
+                <p>Meal 3 Recipes</p>
+            </div>
+            <div class="day">
+                <p>Meal 4 Recipes</p>
+            </div>
+        </div>
+
+        <h2 class="schedule-title">Weekly Schedule</h2>
+        <div class="schedule">
+            <div class="day">
+                <p>Day 1 Recipes</p>
+            </div>
+            <div class="day">
+                <p>Day 2 Recipes</p>
+            </div>
+            <div class="day">
+                <p>Day 3 Recipes</p>
+            </div>
+            <div class="day">
+                <p>Day 4 Recipes</p>
+            </div>
+            <div class="day">
+                <p>Day 5 Recipes</p>
+            </div>
+            <div class="day">
+                <p>Day 6 Recipes</p>
+            </div>
+            <div class="day">
+                <p>Day 7 Recipes</p>
+            </div>
+        </div>
+    </div>
 </body>
