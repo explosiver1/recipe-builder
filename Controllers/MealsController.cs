@@ -9,12 +9,20 @@ public class MealsController : Controller
 {
     public IActionResult Index()
     {
-        return View();
+        MealsIndexVM mealVM = new MealsIndexVM();
+        mealVM.meals = CtrlModel.getMeals();
+        return View(mealVM);
     }
 
     public IActionResult Create()
     {
         return View();
     }
-
+    
+    // public IActionResult Look()
+    // {
+    //     MealsLookVM mealVM = new MealsLookVM();
+    //     mealVM.meal = CtrlModel.getMeal();
+    //     return View();
+    // }
 }

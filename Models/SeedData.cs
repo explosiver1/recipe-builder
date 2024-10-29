@@ -122,6 +122,13 @@ public static class SeedData
     /* SHOPPING LIST DATA */
     /* PANTRY DATA */
     /* MEALS DATA */
+    private static List<MealSet> meals = [cookieMeal];
+    private static MealSet cookieMeal = new MealSet{
+        Name = "Cookies",
+        Description = "Cookie Monster's Favorite Meal.",
+        Recipes = [ChocolateChipCookies, SugarCookies]
+        };
+        
     /* USER DATA */
     // private static ;
 
@@ -196,6 +203,22 @@ public static class SeedData
         return null;
     }
     
+    public static List<MealSet> getMeals()
+    {
+        return meals;
+    }
+    
+    public static MealSet? getMeal(string mealName)
+    {
+        foreach (MealSet meal in meals)
+        {
+            if (meal.Name == mealName)
+            {
+                return meal;
+            }
+        }
+        return null;
+    }
 
     
 

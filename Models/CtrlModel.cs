@@ -199,4 +199,16 @@ public static class CtrlModel
         }
         return myDictionary;
     }
+
+    /* Returns list of all user's saved meals */
+    public static List<MealSet> getMeals()
+    {
+        List<MealSet> mealSet = SeedData.getMeals();
+        return mealSet;
+    }
+
+    public static MealSet? getMeal(string mealName)
+    {
+        return SeedData.getMeal(mealName);
+    }
 }
