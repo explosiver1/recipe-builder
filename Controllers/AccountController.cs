@@ -53,6 +53,12 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateAccountModel cam)
     {
+        Console.WriteLine("Creating Account with parameters: \n" +
+         "username: " + cam.username + "\n" +
+         "password: " + cam.password + "\n" +
+         "email: " + cam.email + "\n" +
+         "phoneNumber: " + cam.phoneNumber + "\n" +
+         "name: " + cam.name);
         //TODO - Sanitize UI
         Dictionary<string, string> userData = new Dictionary<string, string>();
         userData["username"] = cam.username;
@@ -63,7 +69,7 @@ public class AccountController : Controller
         bool creationSuccess;
         try
         {
-            creationSuccess = await DBQueryModel.CreateUserNode(username: userData["username"], name: userData["name"],email:userData["email"],phone:userData["phone"], password:userData["password"]); 
+            creationSuccess = await DBQueryModel.CreateUserNode(username: userData["username"], name: userData["name"], email: userData["email"], phone: userData["phone"], password: userData["password"]);
             if (creationSuccess)
             {
                 return Ok(new { message = "Account creation successful" });
