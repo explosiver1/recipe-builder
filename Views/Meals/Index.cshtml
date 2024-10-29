@@ -1,8 +1,86 @@
+@model RecipeBuilder.ViewModels.MealsIndexVM
+
 @{
     ViewData["Title"] = "Create Meal";
 }
 
+<style>
+    /* styling for title */
+    h1 {
+        color: #4A743E;
+    }
+
+    /* button styling */
+    .btn-custom {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #4A743E; 
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-custom:hover {
+        background-color: #96AE6D;
+    }
+
+    /* search button styling */
+    .btn-search {
+        background-color: #4A743E;
+        color: white;
+    }
+
+    .btn-search:hover {
+        background-color: #96AE6D;
+    }
+
+    /* align buttons side by side */
+    .input-group .btn {
+        margin-left: 10px;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div style="width: 120px;"></div>
+    <h1 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">My Meals</h1>
+    <hr class="rounded">
+    <a asp-controller="Meals" asp-action="Create" class="btn btn-custom">Create New Meal</a>
+</div>
 <div class="text-center">
-    <h1>Heading</h1>
-    <p>Let's get ready to cook!</p>
+    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for search *@
+    <div class="form-group">
+        <input type="text" class="form-control" placeholder="Search Recipes..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
+    </div><br>
+    <button type="submit" class="btn btn-search ml-2">Search</button>
+    @*</form>*@
+</div><br>
+
+<div class="row">
+    @if (Model.meal != null)
+    {
+        @*@foreach (var meals in Model.meal)
+        {
+            <div class="col-md-4">
+                @*<div class="card mb-4"> Meals Card View
+                    <div class="card-body">
+                        <h5 class="card-title">@meals.Title</h5>
+                        <p class="card-text">Description</p>
+                        <a asp-action="" asp-route-id="@meals.Title">@meals.Title</a>
+                    </div>
+                </div>
+                <div class="button-container"> Button (Name only)
+                    <a asp-action="" asp-route-id=@meals.Title class="btn btn-custom">@meals</a>
+                </div>
+            </div>
+        }*@
+        <p> Here we display the all the meals</p>
+    }
+    else
+    {
+        <p>No Meals Found.</p>
+    }
 </div>

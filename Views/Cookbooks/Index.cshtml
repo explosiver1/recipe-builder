@@ -45,16 +45,7 @@
 </style>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="d-flex">
-        @*<form asp-action="" method="get" class="form-inline"> * need to know which model to pull from for Tag search*@
-        <div class="input-group input-group-sm">
-            <input type="text" class="form-control" placeholder="Search by Tags..." name="TagSearch" value="@ViewData["CurrentTagFilter"]" style="max-width: 150px;" />
-            <div class="input-group-append">
-                <button class="btn btn-search" type="submit">Search</button>
-            </div>
-        </div>
-        @*</form>*@
-    </div>
+    <div style="width: 120px;"></div>
     <h1 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">My Cookbooks</h1>
     <hr class="rounded">
     <a asp-controller="Cookbooks" asp-action="Add" class="btn btn-custom">Create New Cookbook</a>
@@ -69,19 +60,21 @@
     @*</form>*@
 </div><br>
 
-@*Card View Cookbooks*@ 
 <div class="row">
-    @if (Model.cookbooks != null)
+    @if (Model.cookbooks != null && Model.cookbooks.Any())
     {
         @foreach (var cookbook in Model.cookbooks)
         {
             <div class="col-md-4">
-                <div class="card mb-4">
+                @*<div class="card mb-4"> Cookbook Card View
                     <div class="card-body">
                         <h5 class="card-title">@cookbook.Title</h5>
                         <p class="card-text">Description or Tag</p>
                         <a asp-action="Cookbook" asp-route-id="@cookbook.Title">@cookbook.Title</a>
                     </div>
+                </div>*@
+                <div class="button-container">
+                    <a asp-action="Cookbook" asp-route-id=@cookbook.Title class="btn btn-custom">@cookbook.Title</a>
                 </div>
             </div>
         }

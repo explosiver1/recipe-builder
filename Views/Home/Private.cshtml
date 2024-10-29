@@ -3,6 +3,24 @@
 @{
     ViewData["Title"] = "User Home";
 }
+<style>
+    .btn-custom {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #4A743E; 
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-custom:hover {
+        background-color: #96AE6D;
+    }
+</style>
 
 <div class="text-center">
     @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for general search*@
@@ -16,14 +34,15 @@
         @foreach (var cookbook in Model.cookbooks)
         {
             <div class="col-md-4">
-                <div class="card mb-4">
+                @*<div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">@cookbook.Title</h5>
                         <p class="card-text">@cookbook.Description</p>
                      
                         <a asp-controller="Cookbooks" asp-action="Cookbook" asp-route-id=@cookbook.Title>@cookbook.Title</a>
                     </div>
-                </div>
+                </div>*@
+                <a asp-controller="Cookbooks" asp-action="Cookbook" asp-route-id=@cookbook.Title class="btn-custom">@cookbook.Title</a>
             </div>
        }
     }
@@ -39,13 +58,14 @@
         @foreach (var recipe in Model.recipes)
         {
             <div class="col-md-4">
-                <div class="card mb-4">
+                @*<div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">@recipe.Name</h5>
                         
                         <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe.Name>@recipe.Name</a>
                     </div>
-                </div>
+                </div>*@
+                <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe.Name class="btn-custom">@recipe.Name</a>
             </div>
         }
     }

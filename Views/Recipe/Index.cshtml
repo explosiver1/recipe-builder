@@ -86,16 +86,19 @@
 </div><br>
 
 <div class="row">
-    @if (Model.recipes != null)
+    @if (Model.recipes != null && Model.recipes.Any())
     {
         @foreach (var recipe in Model.recipes)
         {
             <div class="col-md-4">
-                <div class="card mb-4">
+                @*<div class="card mb-4"> Recipe Card View
                     <div class="card-body">
                         <h5 class="card-title">@recipe.Name</h5>            
                         <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe.Name>@recipe.Name</a>
                     </div>
+                </div>*@
+                <div class="button-container">
+                    <a asp-controller="Recipe" asp-action="Add" asp-route-recipeName=@recipe.Name class="btn btn-create">@recipe.Name</a>
                 </div>
             </div>
         }
