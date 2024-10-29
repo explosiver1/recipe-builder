@@ -63,7 +63,7 @@ public class AccountController : Controller
         bool creationSuccess;
         try
         {
-            creationSuccess = await DBQueryModel.CreateUserNode(userData);
+            creationSuccess = await DBQueryModel.CreateUserNode(username: userData["username"], name: userData["name"],email:userData["email"],phone:userData["phone"], password:userData["password"]); 
             if (creationSuccess)
             {
                 return Ok(new { message = "Account creation successful" });

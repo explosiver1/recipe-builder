@@ -13,8 +13,10 @@ namespace RecipeBuilder.Models
 
         // User can have multiple of each of these
         public List<Cookbook> Cookbooks { get; set; } = new List<Cookbook>();
-        public List<MealPlanner> MealPlanners { get; set; } = new List<MealPlanner>();
+        public List<Recipe> recipes { get; set; } = new List<Recipe>();
+        public List<MealPlanner> MealPlanners { get; set; } = new List<MealPlanner>(); //If we change the nature of MealPlanner, we won't need this as a list
         public ShoppingList ShoppingList { get; set; } = new ShoppingList();
+        public Pantry pantry { get; set; } = new Pantry();
 
         // Blank constructor initializing default values
         public User()
@@ -52,7 +54,8 @@ namespace RecipeBuilder.Models
             else
             {
                 // Passing the dictionary might be easier but all variable makes it more readable...
-                bool userCreated = DBQueryModel.CreateUserNode(at.username, name, email, phone, password);
+                //.Result added to change Task<bool> to bool; unsure if this is right fix or if this method as a whole also needs to be async
+                bool userCreated = DBQueryModel.CreateUserNode(at.username, name, email, phone, password).Result;
                 return userCreated;
             }
         }
