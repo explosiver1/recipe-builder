@@ -28,6 +28,7 @@ public class DBQueryModel
     // TODO - test results of query
     public static async Task<bool> CreateUserNode(string username, string name, string email, string phone, string password)
     {
+        Console.WriteLine("Creating user...");
         var query = @"
             CREATE (u:User {
                 username: $username,
@@ -43,15 +44,16 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
+            Console.WriteLine("Executing Query...");
             // Run the query with parameters and put results in var
             var response = await session.RunAsync(query, new { username, name, email, phone, password });
-            
+
             // Pulls all responses from query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
-            
+
             // Checks if there is a record && gets the first record which should be the bool response
             bool userCreated = records.Any() && records.First()[0].As<bool>();
-            
+            Console.WriteLine("Returning Result: " + userCreated);
             return userCreated;
         }
         catch (Exception ex)
@@ -102,18 +104,18 @@ public class DBQueryModel
         ";
 
         var recipeName = username + recipe;
-        
+
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { username, recipeName, title, description});
+            var response = await session.RunAsync(query, new { username, recipeName, title, description });
 
             // Pulls all responses from the query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
 
             // Checks if there is a record and gets the first record which should be the bool response
             bool recipeCreated = records.Any() && records.First()[0].As<bool>();
-            
+
             Console.WriteLine($"Recipe {recipeName} created!");
             return recipeCreated;
         }
