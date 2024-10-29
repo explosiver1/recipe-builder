@@ -87,7 +87,7 @@ public class DBQueryModel
     }
 
     // CreateRecipe()
-    // TODO - return success/fail
+    // TODO - test results/add group authentication
     public async Task<bool> CreateRecipeNode(string username, string recipe, string title, string description)
     {
         var query = @"
