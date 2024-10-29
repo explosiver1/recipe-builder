@@ -3,11 +3,13 @@ namespace RecipeBuilder.Models
     public class MealPlanner
     {
         public List<MealSet> ScheduledMeals { get; set; }
+        //public MPMonth ScheduledMeals {get; set;}
 
         // Blank constructor initializing to default values
         public MealPlanner()
         {
             ScheduledMeals = new List<MealSet>();
+            //ScheduledMeals = new MPMonth();
         } // end Blank Constructor
 
         // Schedule a meal with validation

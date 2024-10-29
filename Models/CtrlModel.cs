@@ -10,6 +10,8 @@ public static class CtrlModel
     private static ShoppingList shoppingList = new ShoppingList();
     private static List<Ingredient> pantryItems = new List<Ingredient>();
 
+    /* GET METHODS */
+
     public static List<Cookbook>  GetCookbookList()//string userName)
     {
         List<Cookbook> cookbookList = SeedData.GetCookbookList();// Update to be DBQueryModel Function Call
