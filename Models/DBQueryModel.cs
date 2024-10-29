@@ -36,7 +36,7 @@ public class DBQueryModel
                 phone: $phone,
                 password: $password
             })
-            RETURN NOT(COUNT(u) > 0)
+            RETURN COUNT(u) > 0
             ";
 
         // Opens a session for Neo4j
@@ -98,7 +98,7 @@ public class DBQueryModel
                 description: $description
             })
             CREATE (user)-[:OWNS]->(recipe)
-            RETURN NOT(COUNT(recipe) > 0)
+            RETURN COUNT(recipe) > 0
         ";
 
         var recipeName = username + recipe;
