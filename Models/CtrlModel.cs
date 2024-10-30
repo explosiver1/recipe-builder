@@ -207,7 +207,7 @@ public static class CtrlModel
         return mealSet;
     }
 
-    public static MealSet? getMeal(string mealName)
+    public static MealSet getMeal(string mealName)
     {
         return SeedData.getMeal(mealName);
     }
