@@ -34,30 +34,8 @@ namespace RecipeBuilder.Models
         // Authtoken is used to pass username value
         public bool CreateUser(AuthToken at, string name, string email, string phone, string password)
         {
-            // bool useDatabase = false;  // Change this when Neo4j is ready
-
-            // if (useDatabase)
-            // {
-            //     Console.WriteLine("Creating user in the Neo4j database...");
-            // }
-            // else
-            // {
-            //     Console.WriteLine($"User {Username} created in-memory.");
-            // }
-
-            // Ensures user is validated before running query
-            if (!at.Validate())
-            {
-                Console.WriteLine("Authentication failed. Invalid or expired token.");
-                return false;
-            }
-            else
-            {
-                // Passing the dictionary might be easier but all variable makes it more readable...
-                //.Result added to change Task<bool> to bool; unsure if this is right fix or if this method as a whole also needs to be async
-                bool userCreated = DBQueryModel.CreateUserNode(at.username, name, email, phone, password).Result;
-                return userCreated;
-            }
+            bool userCreated = DBQueryModel.CreateUserNode(at.username, name, email, phone, password).Result;
+            return userCreated;
         }
 
         // Create a new cookbook and add it to the user's list

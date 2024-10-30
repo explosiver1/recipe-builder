@@ -55,6 +55,23 @@ namespace RecipeBuilder.Models
             servingSize = new Dictionary<string, int>();
         }
 
+        public bool CreateRecipe(AuthToken at, string recipe, string title, string description)
+        {
+                        
+            if (!at.Validate())
+            {
+                Console.WriteLine("Authentication failed. Invalid or expired token.");
+                return false;
+            }
+            else
+            {
+                // Passing the dictionary might be easier but all variable makes it more readable...
+                //.Result added to change Task<bool> to bool; unsure if this is right fix or if this method as a whole also needs to be async
+                bool recipeCreated = DBQueryModel.CreateRecipeNode(at.username, recipe, title, description).Result;
+                return recipeCreated;
+            }
+        }
+
         // Methods
         public void AddIngredient(IngredientDetail ingredientDetail)
         {
