@@ -443,7 +443,7 @@ public class DBQueryModel
     public async static Task<bool> Authenticate(string username, string password)
     {
         Console.WriteLine("Authenticating " + username + " with " + password);
-        string query = "MATCH (u:User {name: '" + username + "', password: '" + password + "'}) \n"
+        string query = "MATCH (u:User {username: '" + username + "', password: '" + password + "'}) \n"
                                 + "WITH COUNT(u) > 0 as exists \n"
                                 + "RETURN exists";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();

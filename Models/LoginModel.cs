@@ -7,5 +7,7 @@ public class LoginModel()
 
     public string Password { get; set; }
 
+    public string msg { get; set; }
+
     //public string Response { get; set; }
 }

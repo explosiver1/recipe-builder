@@ -15,8 +15,9 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult Login()
+    public IActionResult Login(string msg = "")
     {
+        //msg is status message. Needs to be added to ViewModel before rendering View.
         //Authenticate(string username, string password)
         return View();
     }
@@ -72,11 +73,11 @@ public class AccountController : Controller
             creationSuccess = await DBQueryModel.CreateUserNode(username: userData["username"], name: userData["name"], email: userData["email"], phone: userData["phone"], password: userData["password"]);
             if (creationSuccess)
             {
-                return Ok(new { message = "Account creation successful" });
+                return RedirectToAction("Login");
             }
             else
             {
-                return BadRequest(new { message = "Account creation failed" });
+                return View();
             }
         }
         catch
