@@ -17,7 +17,7 @@ namespace RecipeBuilder.Models
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string Description { get; set; } = string.Empty;
 
-        /* Serving size stored as a dictionary with key of unit & 
+        /* Serving size stored as a dictionary with key of unit &
             value of int amount so amount can be mathematically updated with scaling*/
         public Dictionary<String, int> servingSize = new Dictionary<string, int>();
         public int numServings;
@@ -57,7 +57,7 @@ namespace RecipeBuilder.Models
 
         public bool CreateRecipe(AuthToken at, string recipe, string title, string description)
         {
-                        
+
             if (!at.Validate())
             {
                 Console.WriteLine("Authentication failed. Invalid or expired token.");
@@ -67,7 +67,7 @@ namespace RecipeBuilder.Models
             {
                 // Passing the dictionary might be easier but all variable makes it more readable...
                 //.Result added to change Task<bool> to bool; unsure if this is right fix or if this method as a whole also needs to be async
-                bool recipeCreated = DBQueryModel.CreateRecipeNode(at.username, recipe, title, description).Result;
+                bool recipeCreated = false; //DBQueryModel.CreateRecipeNode(at.username, recipe, title, description).Result;
                 return recipeCreated;
             }
         }
