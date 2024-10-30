@@ -1,7 +1,7 @@
 @model RecipeBuilder.ViewModels.MealsIndexVM
 
 @{
-    ViewData["Title"] = "Create Meal";
+    ViewData["Title"] = "Meals";
 }
 
 <style>
@@ -60,27 +60,28 @@
 </div><br>
 
 <div class="row">
-    @if (Model.meal != null)
-    {
-        @*@foreach (var meals in Model.meal)
+    @if (Model.meals.Count != 0)
+    { 
+        @* @foreach (var meal in Model.meals)
         {
             <div class="col-md-4">
-                @*<div class="card mb-4"> Meals Card View
+                <p>@meal.Name</p>
+                <div class="card mb-4"> Meals Card View
                     <div class="card-body">
-                        <h5 class="card-title">@meals.Title</h5>
+                        <h5 class="card-title">@meal.Name</h5>
                         <p class="card-text">Description</p>
-                        <a asp-action="" asp-route-id="@meals.Title">@meals.Title</a>
+                        <a asp-action="Look" asp-route-id="@meal.Name">@meal.Name</a>
                     </div>
                 </div>
-                <div class="button-container"> Button (Name only)
-                    <a asp-action="" asp-route-id=@meals.Title class="btn btn-custom">@meals</a>
+                <div class="button-container">
+                    <a asp-action="Look" asp-route-id=@meal.Name class="btn btn-custom">@meal.Name</a>
                 </div>
             </div>
-        }*@
+        } *@
         <p> Here we display the all the meals</p>
     }
     else
     {
         <p>No Meals Found.</p>
-    }
+    } 
 </div>
