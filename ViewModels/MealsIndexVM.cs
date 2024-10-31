@@ -6,5 +6,5 @@ namespace RecipeBuilder.ViewModels;
 
 public class MealsIndexVM()
 {
-    public MealSet meal { get; set; } = new MealSet();
+    public List<MealSet> meals { get; set; } = new List<MealSet>();
 }
