@@ -2,7 +2,7 @@
     ViewData["Title"] = "Log In";
 }
 
-@model RecipeBuilder.Models.LoginModel
+@model RecipeBuilder.Models.LoginModel?
 
 <!-- button styling -->
 <head>
@@ -23,8 +23,8 @@
         }
 
         body {
-            background-color: #ffffff; 
-            color: #333; 
+            background-color: #ffffff;
+            color: #333;
             margin: 0;
             padding: 0;
         }
@@ -32,7 +32,7 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0; 
+            padding: 0;
         }
 
         #button a {
@@ -40,7 +40,7 @@
             padding: 10px 20px;
             font-size: 16px;
             color: white;
-            background-color: #4A743E; 
+            background-color: #4A743E;
             text-align: center;
             text-decoration: none;
             border-radius: 5px;
@@ -55,7 +55,7 @@
         /* to make buttons side by side */
         .button-container {
             display: inline-block;
-            margin: 0 10px; 
+            margin: 0 10px;
         }
 
         .text-center {
@@ -96,7 +96,14 @@
         </div>
     </div>
 
-    <div id="message"></div>
+    <div>
+        @if (Model != null)
+        {
+            @if (Model.msg != "")
+            {
+            <p>@Model.msg</p>
+            }
+        }
+    </div>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 </body>
-
