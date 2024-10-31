@@ -19,6 +19,13 @@ public class AccountController : Controller
     {
         //msg is status message. Needs to be added to ViewModel before rendering View.
         //Authenticate(string username, string password)
+        if (msg != "")
+        {
+            LoginModel lm = new LoginModel();
+            lm.msg = msg;
+            return View(lm);
+        }
+
         return View();
     }
 
@@ -40,7 +47,7 @@ public class AccountController : Controller
         {
             Console.WriteLine("Login Failed");
             //lm.Response = "Error, login failed.";
-            return View();
+            return Login("Login Failed");
             //HttpContext.Session.SetString("user", "ERROR");
             //return View(new AccountLoginVM { authValid = false });
         }
