@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
 using RecipeBuilder.ViewModels;
+using Newtonsoft.Json;
 
 namespace RecipeBuilder.Controllers;
 
@@ -11,16 +12,24 @@ public class CookbooksController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-    // Uncomment the following line if you want to use seed data
-    // CookbooksIndexVM viewModel = new CookbooksIndexVM { Cookbooks = RecipeSeedData.cookbooks };
+        // Uncomment the following line if you want to use seed data
+        // CookbooksIndexVM viewModel = new CookbooksIndexVM { Cookbooks = RecipeSeedData.cookbooks };
+        AuthToken at;
+        // For now, return an empty view model or integrate with a database
+        CookbooksIndexVM viewModel = new CookbooksIndexVM();
+        //cookbooks = CtrlModel.GetCookbookList()// Empty list for now, until data source is implemented
+        try
+        {
 
-    // For now, return an empty view model or integrate with a database
-    CookbooksIndexVM viewModel = new CookbooksIndexVM 
-    { 
-        cookbooks = CtrlModel.GetCookbookList()// Empty list for now, until data source is implemented
-    };
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            viewModel.cookbooks = DBQueryModel.GetCookbooks(at).Result;
+        }
+        catch
+        {
+            Console.WriteLine("Error Getting Cookbooks");
+        }
 
-    return View(viewModel);
+        return View(viewModel);
     }
 
     // Cookbook method: Displays a specific cookbook by ID
@@ -33,7 +42,7 @@ public class CookbooksController : Controller
             return NotFound(); // Handle case where no cookbook is found
         }
 
-        CookbooksCookbookVM viewModel = new CookbooksCookbookVM {cookbook = cookbookModel};
+        CookbooksCookbookVM viewModel = new CookbooksCookbookVM { cookbook = cookbookModel };
         return View(viewModel);
     }
 
@@ -63,22 +72,22 @@ public class CookbooksController : Controller
     [HttpGet]
     public IActionResult Edit(string cookbookName)
     {
-    // Uncomment the following line if you want to use seed data
-    // var cookbook = RecipeSeedData.cookbooks.FirstOrDefault(c => c.Title == cookbookName);
+        // Uncomment the following line if you want to use seed data
+        // var cookbook = RecipeSeedData.cookbooks.FirstOrDefault(c => c.Title == cookbookName);
 
-    // For now, return a dummy cookbook object or fetch from a database
-    var cookbook = new Cookbook { Title = cookbookName, Recipes = new List<Recipe>() };
+        // For now, return a dummy cookbook object or fetch from a database
+        var cookbook = new Cookbook { Title = cookbookName, Recipes = new List<Recipe>() };
 
-    if (cookbook == null)
-    {
-        return NotFound(); // If no cookbook found
-    }
+        if (cookbook == null)
+        {
+            return NotFound(); // If no cookbook found
+        }
 
-    var viewModel = new CookbooksEditVM
-    {
-        cookbookName = cookbook.Title,
-        recipe = new Recipe() 
-    };
+        var viewModel = new CookbooksEditVM
+        {
+            cookbookName = cookbook.Title,
+            recipe = new Recipe()
+        };
 
         return View(viewModel);
     }

@@ -58,6 +58,20 @@ public class AccountController : Controller
         return View();
     }
 
+    public IActionResult Create(string msg = "")
+    {
+        if (msg != "")
+        {
+            CreateAccountModel cam = new CreateAccountModel();
+            cam.msg = msg;
+            return View(cam);
+        }
+        else
+        {
+            return View();
+        }
+    }
+
     [HttpPost]
     public async Task<IActionResult> Create(CreateAccountModel cam)
     {
@@ -84,12 +98,12 @@ public class AccountController : Controller
             }
             else
             {
-                return View();
+                return Create("Account Creation Error");
             }
         }
         catch
         {
-            return BadRequest(new { message = "Database access failure" });
+            return Create("Account Creation Error");
         }
 
     }
