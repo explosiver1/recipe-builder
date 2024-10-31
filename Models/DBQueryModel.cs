@@ -70,7 +70,7 @@ public class DBQueryModel
 
     // CreateCuisine()
     // TODO - Return success/fail
-    public async Task<bool> CreateCuisineNode(string cuisine)
+    public static async Task<bool> CreateCuisineNode(string cuisine)
     {
         var query = @"CREATE (cuisine:Cuisine {name: $cuisineName})";
 
@@ -90,7 +90,7 @@ public class DBQueryModel
 
     // CreateRecipe()
     // TODO - test results/add group authentication
-    public async Task<bool> CreateRecipeNode(string username, string recipe, string title, string description)
+    public static async Task<bool> CreateRecipeNode(string username, string recipe, string title, string description)
     {
         var query = @"
             MATCH (user:User {username: $username})
@@ -135,7 +135,7 @@ public class DBQueryModel
     // GetRecipes()
     // All Recipes a User Owns
     // TODO - Add Group Parameter
-    public async Task<List<string>> GetRecipeNodeNames(string username)
+    public static async Task<List<string>> GetRecipeNodeNames(string username)
     {
         var query = @"
         MATCH (user:User {username: $username})-[:OWNS]->(recipe:Recipe)
@@ -166,7 +166,7 @@ public class DBQueryModel
 
     // CreateIngredient()
     // TODO - return success/fail
-    public async Task<bool> CreateIngredientNode(string username, string ingredient)
+    public static async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
         var query = @"CREATE (ingredient:Ingredient {name: $ingredientName})";
 
@@ -189,7 +189,7 @@ public class DBQueryModel
     // MergeIngredient()
     // TODO - return success/fail
     // What's going on with the parent parameter?
-    public async Task<bool> ConnectIngredientNode(string username, string parent, string ingredient)
+    public static async Task<bool> ConnectIngredientNode(string username, string parent, string ingredient)
     {
         string query;
         if (parent.Contains("Pantry"))
@@ -236,7 +236,7 @@ public class DBQueryModel
     // CreateCookbookNode()
     // TODO - return success/fail
     // TODO - Add Group Parameter
-    public async Task<bool> CreateCookbookNode(string username, string name)
+    public static async Task<bool> CreateCookbookNode(string username, string name)
     {
         var query = @"
             MATCH (user:User{username: $user})
@@ -263,7 +263,7 @@ public class DBQueryModel
     // CreateTool()
     // TODO - return success/fail
     // TODO - Match and Connect to User Node
-    public async Task<bool> CreateToolNode(string toolName)
+    public static async Task<bool> CreateToolNode(string toolName)
     {
         var query = @"CREATE (tool:Tool {name: $toolName})";
 
@@ -284,7 +284,7 @@ public class DBQueryModel
     // CreateGroup()
     // TODO - return success/fail
     // TODO - Take in Username and Connect as Owner
-    public async Task<bool> CreateGroupNode(string group)
+    public static async Task<bool> CreateGroupNode(string group)
     {
         var query = @"CREATE (group:Group {name: $groupName})";
 
@@ -304,7 +304,7 @@ public class DBQueryModel
     // CreateShopListNode()
     // TODO - return success/fail
     // TODO - Match and Connect to User Node
-    public async Task<bool> CreateShoppingListNode(string username)
+    public static async Task<bool> CreateShoppingListNode(string username)
     {
         var query = @"CREATE (shoppinglist:ShoppingList {name: $shoppinglistName})";
         var shoppingListName = username + "ShoppingList";
@@ -326,7 +326,7 @@ public class DBQueryModel
     // CreateMealNode()
     // TODO - return success/fail
     // TODO - Match to User/Group First
-    public async Task<bool> CreateMealNode(string username, string meal)
+    public static async Task<bool> CreateMealNode(string username, string meal)
     {
         var query = @"
         CREATE (meal:Meal {
@@ -353,7 +353,7 @@ public class DBQueryModel
     // MergeMealNode()
     // TODO - return success/fail
     // TODO - Match to User/Group First
-    public async Task<bool> ConnectMealNode(string username, string meal, string recipe)
+    public static async Task<bool> ConnectMealNode(string username, string meal, string recipe)
     {
         var query = @"
         MATCH (meal:Meal{name:$mealName})
@@ -380,7 +380,7 @@ public class DBQueryModel
     // CreateStepNode()
     // TODO - success/fail
     // TODO - Match to User/Group First
-    public async Task<bool> CreateStepNode(string username, Dictionary<string, object> stepData, string recipe)
+    public static async Task<bool> CreateStepNode(string username, Dictionary<string, object> stepData, string recipe)
     {
         var query = @"
         MATCH (recipe:Recipe {name: $recipeName})
@@ -414,7 +414,7 @@ public class DBQueryModel
     // CreateTagNode()
     // TODO - return success/fail
     // TODO - Match Recipe to User/Group First
-    public async Task<bool> CreateTagNode(string tag, string recipe, string username)
+    public static async Task<bool> CreateTagNode(string tag, string recipe, string username)
     {
         var query = @"
         MATCH (recipe:Recipe {name: $recipeName})
@@ -720,8 +720,46 @@ public class DBQueryModel
         return cb;
     }
 
+    public static async Task<List<Cookbook>> GetCookbooks(AuthToken at, string group = "")
+    {
+        string name;
+        string startLabel;
+        List<Cookbook> cbks = new List<Cookbook>();
+        if (group != "")
+        {
+            bool gTest = await ValidateGroupMembership(group, at);
+            if (gTest)
+            {
+                name = group;
+                startLabel = "Group";
+            }
+            else
+            {
+                //List<Cookbook> cbks = new List<Cookbook>();
+                return cbks;
+            }
+        }
+        else
+        {
+            name = at.username;
+            startLabel = "User";
+        }
+        string query = "MATCH (:" + startLabel + " {name:'" + name + "'})-[:OWNS]->(cb:Cookbook)\n " +
+                                    "return cb\n";
+        var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
+        IReadOnlyList<IRecord> irol = response.Result;
+        foreach (IRecord record in irol)
+        {
+            //We only add the name because there are no
+            Cookbook cb = new Cookbook();
+            cb.Title = record["name"].As<string>();
+            cbks.Add(cb);
+        }
+        return cbks;
+    }
+
     //IN PROGRESS
-    public async Task<bool> DeleteCookbook(string cbName, AuthToken at, string group = "")
+    public static async Task<bool> DeleteCookbook(string cbName, AuthToken at, string group = "")
     {
         string name;
         string startLabel;
@@ -754,7 +792,7 @@ public class DBQueryModel
     }
 
     //WIP
-    public async Task<Ingredient> GetIngredient(string ingName, AuthToken at, string group = "")
+    public static async Task<Ingredient> GetIngredient(string ingName, AuthToken at, string group = "")
     {
         string name;
         string startLabel;
@@ -787,7 +825,7 @@ public class DBQueryModel
     }
 
     //TESTING
-    private async Task<List<Tag>> GetTags(string recName, AuthToken at, string group = "")
+    private static async Task<List<Tag>> GetTags(string recName, AuthToken at, string group = "")
     {
         string name;
         string startLabel;
@@ -833,7 +871,7 @@ public class DBQueryModel
     }
 
     //TESTING
-    private async Task<bool> DeleteTag(string tagName, string recName, AuthToken at, string group = "")
+    private static async Task<bool> DeleteTag(string tagName, string recName, AuthToken at, string group = "")
     {
         string name;
         string startLabel;
@@ -866,7 +904,7 @@ public class DBQueryModel
     }
 
     //TESTING
-    private async Task<bool> ValidateGroupMembership(string group, AuthToken at)
+    private static async Task<bool> ValidateGroupMembership(string group, AuthToken at)
     {
         string query = "MATCH (u:User {name:'" + at.username + "'})-[r:MEMBER_OF]->(b:Group {name: " + group + "})\n " +
                                                 "return Count(u) > 0\n";
