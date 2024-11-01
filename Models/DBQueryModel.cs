@@ -645,7 +645,7 @@ public class DBQueryModel
     }
 
     //TESTING
-    public async Task<Cookbook> GetCookbook(string cbName, AuthToken at, string group = "")
+    public static async Task<Cookbook> GetCookbook(string cbName, AuthToken at, string group = "")
     {
         string name;
         string startLabel;
@@ -744,7 +744,7 @@ public class DBQueryModel
             name = at.username;
             startLabel = "User";
         }
-        string query = "MATCH (:" + startLabel + " {name:'" + name + "'})-[:OWNS]->(cb:Cookbook)\n " +
+        string query = "MATCH (:" + startLabel + " {username:'" + name + "'})-[:OWNS]->(cb:Cookbook)\n " +
                                     "return cb\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
