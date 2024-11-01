@@ -44,35 +44,66 @@ namespace RecipeBuilder.Controllers
         [HttpPost]
         public IActionResult Add(RecipeAddVM recipeVM)
         {
+            Console.WriteLine("POST Add action hit"); // Logging to console
             if (!ModelState.IsValid)
             {
+                Console.WriteLine("Model validation failed:");
+                foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    Console.WriteLine(error.ErrorMessage);
+                }
                 return View(recipeVM); // Return the form with validation errors
             }
 
-            // Uncomment the following line if you want to save to seed data
-            // if (RecipeSeedData.AddRecipe(recipeVM.CookbookName, recipeVM.Recipe))
+            // Parse Tags
+            recipeVM.recipe.Tags = recipeVM.TagsInput.Split(',')
+                                        .Select(tag => tag.Trim())
+                                        .Where(tag => !string.IsNullOrEmpty(tag))
+                                        .ToList();
 
-            // For now, simulate saving to a database
-            if (true) // Replace with actual condition when using database
+            // Parse Ingredients
+            recipeVM.recipe.Ingredients = recipeVM.IngredientsInput.Split('\n')
+                                        .Select(line => new IngredientDetail { Name = line.Trim() })
+                                        .Where(ingredient => !string.IsNullOrEmpty(ingredient.Name))
+                                        .ToList();
+
+            // Parse Serving Size (assuming a format like "cup, 2")
+            var servingSizeParts = recipeVM.ServingSizeInput.Split(',');
+            if (servingSizeParts.Length == 2)
             {
-                // Redirect to the "Look" action to display the newly added recipe
-                return RedirectToAction("Look", new { cookbookName = recipeVM.cookbookName, recipeName = recipeVM.recipe.Name });
+                string unit = servingSizeParts[0].Trim();
+                if (int.TryParse(servingSizeParts[1].Trim(), out int amount))
+                {
+                    recipeVM.recipe.servingSize = new Dictionary<string, int> { { unit, amount } };
+                }
             }
-            else
-            {
-                return View(recipeVM); // Return the form with errors if save fails
-            }
+
+            // Parse Equipment
+            recipeVM.recipe.Equipment = recipeVM.EquipmentInput.Split(',')
+                                        .Select(tool => tool.Trim())
+                                        .Where(tool => !string.IsNullOrEmpty(tool))
+                                        .ToList();
+
+            // Parse Instructions
+            recipeVM.recipe.Instructions = recipeVM.InstructionsInput.Split('\n')
+                                        .Select(instruction => instruction.Trim())
+                                        .Where(instruction => !string.IsNullOrEmpty(instruction))
+                                        .ToList();
+
+            // ** Add the recipe to SeedData here **
+            SeedData.GetRecipeList().Add(recipeVM.recipe);
+
+            // Redirect to Look
+            Debug.WriteLine($"Redirecting to Look with recipeName: {recipeVM.recipe.Name}");
+            return RedirectToAction("Look", new { recipeName = recipeVM.recipe.Name });
         }
 
         // Edit method (GET): Display the form to edit an existing recipe
         [HttpGet]
         public IActionResult Edit(string cookbookName, string recipeName)
         {
-            // Uncomment the following line if you want to use seed data
-            // var recipe = RecipeSeedData.GetRecipe(cookbookName, recipeName);
-
-            // For now, create a placeholder or fetch from a database
-            var recipe = new Recipe { Name = recipeName, Description = "Sample Description" };
+            // Get the recipe data (replace with actual fetch logic)
+            var recipe = SeedData.GetRecipe(recipeName);
 
             if (recipe == null)
             {
@@ -81,7 +112,12 @@ namespace RecipeBuilder.Controllers
 
             var viewModel = new RecipeEditVM
             {
-                recipe = recipe
+                recipe = recipe,
+                TagsInput = string.Join(", ", recipe.Tags),
+                IngredientsInput = string.Join("\n", recipe.Ingredients.Select(i => $"{i.Quantity} {i.Unit} {i.Ingredient.Name}")),
+                ServingSizeInput = recipe.servingSize != null ? string.Join(", ", recipe.servingSize.Select(kv => $"{kv.Key}, {kv.Value}")) : "",
+                EquipmentInput = string.Join(", ", recipe.Equipment),
+                InstructionsInput = string.Join("\n", recipe.Instructions)
             };
 
             return View(viewModel);
@@ -92,9 +128,11 @@ namespace RecipeBuilder.Controllers
         public IActionResult Look(string recipeName)
         {
             Recipe? recipeModel = SeedData.GetRecipe(recipeName);
+            Debug.WriteLine(recipeModel != null ? $"Recipe found: {recipeModel.Name}" : "Recipe not found");
     
             if (recipeModel == null)
             {
+                Debug.WriteLine("Recipe not found");
                 return NotFound();
             }
 

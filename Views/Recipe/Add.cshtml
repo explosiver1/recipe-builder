@@ -32,40 +32,69 @@
     <form asp-action="Add" method="post">
         <div class="form-group">
             <label asp-for="recipe.Name" class="control-label">Recipe Name:</label>
-            <input asp-for="recipe.Name" class="form-control" /><br>
+            <input asp-for="recipe.Name" class="form-control" />
             <span asp-validation-for="recipe.Name" class="text-danger"></span>
+            <br>
         </div>
+
         <div class="form-group">
-            <label asp-for="recipe.Tags">Tags:</label>
-            <input asp-for="recipe.Tags" class="form-control" /><br>
+            <label asp-for="recipe.Description" class="control-label">Description:</label>
+            <textarea asp-for="recipe.Description" class="form-control"></textarea>
+            <span asp-validation-for="recipe.Description" class="text-danger"></span>
+            <br>
         </div>
+
+        <div class="form-group">
+            <label>Tags (comma-separated):</label>
+            <input asp-for="TagsInput" class="form-control" />
+            <span asp-validation-for="TagsInput" class="text-danger"></span>
+            <br>
+        </div>
+
         <div class="form-group">
             <label asp-for="recipe.Difficulty">Difficulty:</label>
-            <textarea asp-for="recipe.Difficulty" class="form-control"></textarea><br>
+            <input asp-for="recipe.Difficulty" class="form-control" />
+            <span asp-validation-for="recipe.Difficulty" class="text-danger"></span>
+            <br>
         </div>
+
         <div class="form-group">
-            <label asp-for="recipe.Ingredients">Ingredients:</label>
-            <textarea asp-for="recipe.Ingredients" class="form-control"></textarea><br>
+            <label>Ingredients (one per line):</label>
+            <textarea asp-for="IngredientsInput" class="form-control"></textarea>
+            <span asp-validation-for="IngredientsInput" class="text-danger"></span>
+            <br>
         </div>
+
         <div class="form-group">
             <label asp-for="recipe.numServings">Number of Servings:</label>
-            <input asp-for="recipe.numServings" class="form-control"/><br>
+            <input asp-for="recipe.numServings" class="form-control" />
+            <span asp-validation-for="recipe.numServings" class="text-danger"></span>
+            <br>
         </div>
+
         <div class="form-group">
-            <label asp-for="recipe.servingSize">Serving Size:</label>
-            <input asp-for="recipe.servingSize" class="form-control"/><br>
+            <label>Serving Size (e.g., "cup, 2"):</label>
+            <input asp-for="ServingSizeInput" class="form-control" />
+            <span asp-validation-for="ServingSizeInput" class="text-danger"></span>
+            <br>
         </div>
+
         <div class="form-group">
-            <label asp-for="recipe.Equipment">Tools/Equipment Needed:</label>
-            <textarea asp-for="recipe.Equipment" class="form-control"></textarea><br>
+            <label>Tools/Equipment Needed (comma-separated):</label>
+            <input asp-for="EquipmentInput" class="form-control" />
+            <span asp-validation-for="EquipmentInput" class="text-danger"></span>
+            <br>
         </div>
+
         <div class="form-group">
-            <label asp-for="recipe.Instructions">Instructions:</label>
-            <textarea asp-for="recipe.Instructions" class="form-control"></textarea><br>
+            <label>Instructions (one per line):</label>
+            <textarea asp-for="InstructionsInput" class="form-control"></textarea>
+            <span asp-validation-for="InstructionsInput" class="text-danger"></span>
+            <br>
         </div>
+
         <div class="text-center">
             <button type="submit" class="btn btn-custom">Submit</button>
         </div>
     </form>
 </div>
-

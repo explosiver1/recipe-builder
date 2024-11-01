@@ -7,6 +7,7 @@ namespace RecipeBuilder.Models
         public string Qualifier { get; set; }
         public double Quantity { get; set; }
         public string Unit { get; set; }
+        public string Name { get; set; }
 
         // Blank constructor initializing default values
         public IngredientDetail()
