@@ -1,0 +1,101 @@
+@model RecipeBuilder.ViewModels.MealsLookVM
+
+@{
+    ViewData["Title"] = @Model.meal.Name;
+}
+<style>
+    .fixed-header{
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background-color: #ccc;
+        padding: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+    .recipe-link{
+        margin: 0 10px;
+        color: #4A743E;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .recipe-link:hover {
+        color: #96AE6D; 
+    }
+    .content{
+        padding-top: 60px;
+    }
+</style>
+<div class="fixed-header">
+    <h1 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">@Model.meal.Name</h1>
+    @if(@Model.meal.Recipes != null && @Model.meal.Recipes.Any())
+    {
+        @foreach(Recipe recipe in @Model.meal.Recipes)
+        {
+            <div class="col-md-4">
+                <a class="recipe-link" href="#@recipe.Name">@recipe.Name</a>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No Recipes Found.</p>
+    }
+</div>
+<body>
+    <div class="row content">
+        @if(@Model.meal.Recipes != null && @Model.meal.Recipes.Any())
+        {
+            @foreach(Recipe recipe in @Model.meal.Recipes)
+            {
+                <h3 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">@recipe.Name</h3>
+                <div class="col-md-4">
+                    <h4>Prep Time:</h4>
+                    <ul>
+                        <li>@recipe.PrepTime minutes</li>
+                    </ul>
+                    <h4>Cooktime:</h4>
+                    <ul>
+                        <li>@recipe.CookTime minutes</li>
+                    </ul>
+                    <h4>Rating:</h4>
+                    <ul>
+                        <li>@recipe.Rating</li>
+                    </ul>
+                    <h4>Difficulty:</h4>
+                    <ul>
+                        <li>@recipe.Difficulty</li>
+                    </ul>
+                    <h4>Ingredients:</h4>
+                    <ul>
+                        @if (@recipe.Ingredients !=  null)
+                        {
+                            @foreach (var ing in @recipe.Ingredients)
+                            {
+                                <li>
+                                    @ing.Quantity @ing.Unit @ing.Ingredient.Name
+                                </li><br>
+                            }
+                        }
+                    </ul>
+                </div>
+                <div class="col-md-8">
+                    <h4>Instructions:</h4>
+                    <ol>
+                        @if (@recipe.Instructions !=  null)
+                        {
+                            @foreach (var inst in @recipe.Instructions)
+                            {
+                                <li>@inst</li>
+                            }
+                        }
+                    </ol>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No Recipes Found.</p>
+        }
+    </div>
+</body>

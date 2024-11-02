@@ -29,11 +29,10 @@ namespace RecipeBuilder.Controllers
 
         // Add method (GET): Display the form to create a new recipe
         [HttpGet]
-        public IActionResult Add(string cookbookName)
+        public IActionResult Add()
         {
             var viewModel = new RecipeAddVM
             {
-                cookbookName = cookbookName,
                 recipe = new Recipe() // Initialize an empty recipe
             };
 

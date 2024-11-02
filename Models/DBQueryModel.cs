@@ -25,20 +25,19 @@ public class DBQueryModel
     //Optionals can be added as "type name = 'value'" in the argument list. Not specifying a default value makes it required.
 
     // CreateUser()
-    // TODO - test results of query
     public static async Task<bool> CreateUserNode(string username, string name, string email, string phone, string password)
     {
         Console.WriteLine("Creating user...");
         var query = @"
-            CREATE (u:User {
-                username: $username,
-                name: $name,
-                email: $email,
-                phone: $phone,
-                password: $password
-            })
+            MERGE (u:User {username: $username})
+            ON CREATE SET 
+                u.name = $name,
+                u.email = $email,
+                u.phone = $phone,
+                u.password = $password
             RETURN COUNT(u) > 0
-            ";
+        ";
+
 
         // Opens a session for Neo4j
         var session = driver.AsyncSession();
@@ -90,16 +89,17 @@ public class DBQueryModel
 
     // CreateRecipe()
     // TODO - test results/add group authentication
-    public static async Task<bool> CreateRecipeNode(string username, string recipe, string title, string description)
+    public static async Task<bool> CreateRecipeNode(string username, string recipe, string description, string difficulty, string servings, string servingsize)
     {
         var query = @"
-            MATCH (user:User {username: $username})
-            CREATE (recipe:Recipe {
-                name: $recipeName,
-                title: $title,
-                description: $description
-            })
-            CREATE (user)-[:OWNS]->(recipe)
+            MATCH (user:User {username: $user})
+            MERGE (recipe:Recipe {name: $recipeName})
+            ON CREATE SET 
+                recipe.description = $description
+                recipe.difficulty = $difficulty
+                recipe.servings = $servings
+                recipe.servingsize = $servingsize
+            MERGE (user)-[:OWNS]->(recipe)
             RETURN COUNT(recipe) > 0
         ";
 
@@ -108,7 +108,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { username, recipeName, title, description });
+            var response = await session.RunAsync(query, new { username, recipeName, description, difficulty, servings, servingsize});
 
             // Pulls all responses from the query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
@@ -168,22 +168,37 @@ public class DBQueryModel
     // TODO - return success/fail
     public static async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
-        var query = @"CREATE (ingredient:Ingredient {name: $ingredientName})";
+        var query = @"
+            MERGE (ingredient:Ingredient {name: $ingredientName})
+            RETURN COUNT(ingredient) > 0
+            ";
 
         var ingredientName = username + ingredient;
 
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { ingredientName });
+            var response = await session.RunAsync(query, new { ingredientName });
             Console.WriteLine($"Ingredient node {ingredient} created!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool ingredientCreated = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + ingredientCreated);
+            return ingredientCreated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
         }
         finally
         {
+            // Ensures the session is closed
             await session.CloseAsync();
         }
-
-        return true;
     }
 
     // MergeIngredient()
@@ -225,6 +240,11 @@ public class DBQueryModel
             await session.RunAsync(query, new { parentName, ingredientName });
             Console.WriteLine($"Parent node {parentName} connected to {ingredient}!");
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
         finally
         {
             await session.CloseAsync();
@@ -236,12 +256,15 @@ public class DBQueryModel
     // CreateCookbookNode()
     // TODO - return success/fail
     // TODO - Add Group Parameter
-    public static async Task<bool> CreateCookbookNode(string username, string name)
+    public static async Task<bool> CreateCookbookNode(string username, string name, string description)
     {
         var query = @"
-            MATCH (user:User{username: $user})
-            CREATE (cookbook:Cookbook {name: $cookbookName})
-            CREATE (user)-[:OWNS]->(cookbook)
+            MATCH (user:User{username: $username})
+            MERGE (cookbook:Cookbook {name: $cookbookName})
+            ON CREATE SET
+                cookbook.description = $description
+            MERGE (user)-[:OWNS]->(cookbook)
+            RETURN COUNT(cookbook) > 0
         ";
 
         var cookbookName = username + name;
@@ -249,15 +272,26 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { cookbookName });
+            var response = await session.RunAsync(query, new { username, cookbookName, description });
             Console.WriteLine($"Cookbook node {cookbookName} created!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool cookbookCreated = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + cookbookCreated);
+            return cookbookCreated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
         }
         finally
         {
             await session.CloseAsync();
         }
-
-        return true;
     }
 
     // CreateTool()
@@ -265,62 +299,89 @@ public class DBQueryModel
     // TODO - Match and Connect to User Node
     public static async Task<bool> CreateToolNode(string toolName)
     {
-        var query = @"CREATE (tool:Tool {name: $toolName})";
+        var query = @"
+            MERGE (tool:Tool {name: $toolName})
+            RETURN COUNT(tool) > 0
+        ";
 
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { toolName });
+            var response = await session.RunAsync(query, new { toolName });
             Console.WriteLine($"Tool {toolName} created!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool toolCreated = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + toolCreated);
+            return toolCreated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
         }
         finally
         {
             await session.CloseAsync();
         }
-
-        return true;
     }
 
     // CreateGroup()
-    // TODO - return success/fail
-    // TODO - Take in Username and Connect as Owner
-    public static async Task<bool> CreateGroupNode(string group)
-    {
-        var query = @"CREATE (group:Group {name: $groupName})";
+    // public static async Task<bool> CreateGroupNode(string group)
+    // {
+    //     var query = @"CREATE (group:Group {name: $groupName})";
 
-        var session = driver.AsyncSession();
-        try
-        {
-            await session.RunAsync(query, new { groupName = group });
-            Console.WriteLine($"Group node {group} created!");
-        }
-        finally
-        {
-            await session.CloseAsync();
-        }
-        return true;
-    }
+    //     var session = driver.AsyncSession();
+    //     try
+    //     {
+    //         await session.RunAsync(query, new { groupName = group });
+    //         Console.WriteLine($"Group node {group} created!");
+    //     }
+    //     finally
+    //     {
+    //         await session.CloseAsync();
+    //     }
+    //     return true;
+    // }
 
     // CreateShopListNode()
     // TODO - return success/fail
     // TODO - Match and Connect to User Node
     public static async Task<bool> CreateShoppingListNode(string username)
     {
-        var query = @"CREATE (shoppinglist:ShoppingList {name: $shoppinglistName})";
-        var shoppingListName = username + "ShoppingList";
+        var query = @"
+            MATCH (user:User{username: $username})
+            MERGE (shopList:ShoppingList {name: $shopListName})
+            RETURN COUNT(shopList) > 0
+            ";
+        var shopListName = username + "ShoppingList";
 
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { shoppinglistName = shoppingListName });
-            Console.WriteLine($"Shopping List node {shoppingListName} created!");
+            var response = await session.RunAsync(query, new { username, shopListName});
+            Console.WriteLine($"Shopping List node {shopListName} created!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool shopListCreated = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + shopListCreated);
+            return shopListCreated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
         }
         finally
         {
             await session.CloseAsync();
         }
-
-        return true;
     }
 
     // CreateMealNode()
@@ -369,6 +430,11 @@ public class DBQueryModel
             await session.RunAsync(query, new { mealName, recipeName });
             Console.WriteLine($"Meal node {mealName} connected to {recipe}!");
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
         finally
         {
             await session.CloseAsync();
@@ -404,6 +470,11 @@ public class DBQueryModel
             });
             Console.WriteLine($"Step {stepData["step_number"]} created for {recipeName}!");
         }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
         finally
         {
             await session.CloseAsync();
@@ -418,8 +489,9 @@ public class DBQueryModel
     {
         var query = @"
         MATCH (recipe:Recipe {name: $recipeName})
-        CREATE (tag:Tag {name: $tagName})
-        CREATE (recipe)-[:TAGGED_WITH]->(tag)
+        MERGE (tag:Tag {name: $tag})
+        MERGE (recipe)-[:TAGGED_WITH]->(tag)
+        RETURN COUNT(tag) > 0
         ";
 
         var recipeName = username + recipe;
@@ -427,8 +499,14 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { tagName = tag, recipeName });
+            var response = await session.RunAsync(query, new { tag, recipeName });
             Console.WriteLine($"Tag {tag} created and connected to {recipeName}!");
+            
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
         }
         finally
         {
