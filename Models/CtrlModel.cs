@@ -207,7 +207,7 @@ public static class CtrlModel
     /* Returns list of all user's saved meals */
     public static List<MealSet> getMeals()
     {
-        List<MealSet> mealSet = SeedData.getMeals();
+        List<MealSet> mealSet = SeedData.meals;
         return mealSet;
     }
 
