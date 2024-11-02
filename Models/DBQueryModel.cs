@@ -259,7 +259,7 @@ public class DBQueryModel
     public static async Task<bool> CreateCookbookNode(string username, string name, string description)
     {
         var query = @"
-            MATCH (user:User{username: $user})
+            MATCH (user:User{username: $username})
             MERGE (cookbook:Cookbook {name: $cookbookName})
             ON CREATE SET
                 cookbook.description = $description
@@ -272,7 +272,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { cookbookName, description });
+            var response = await session.RunAsync(query, new { username, cookbookName, description });
             Console.WriteLine($"Cookbook node {cookbookName} created!");
 
             // Pulls all responses from query
