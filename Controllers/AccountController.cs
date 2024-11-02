@@ -53,10 +53,6 @@ public class AccountController : Controller
         }
     }
 
-    public IActionResult Create()
-    {
-        return View();
-    }
 
     public IActionResult Create(string msg = "")
     {
