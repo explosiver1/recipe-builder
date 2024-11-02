@@ -42,12 +42,24 @@
     .input-group .btn {
         margin-left: 10px;
     }
+    .block {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
+        background-color: #F5F5F5;
+        border-radius: 5px;
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        text-align: center;
+    }
 </style>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-
     <div class="d-flex">
-        @*<form asp-action="" method="get" class="form-inline"> * need to know which model to pull from for Tag search*@
+        @*<form asp-action="" method="get" class="form-inline"> * need to know which model to pull from for Tag search *@
         <div class="input-group input-group-sm">
             <input type="text" class="form-control" placeholder="Search by Tags..." name="TagSearch" value="@ViewData["CurrentTagFilter"]" style="max-width: 150px;" />
             <div class="input-group-append">
@@ -57,9 +69,8 @@
         @*</form>*@
     </div>
     <h1 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">Cookbooks</h1>
-
     <hr class="rounded">
-    <a asp-controller="Cookbooks" asp-action="Add" class="btn btn-custom">Create New Cookbook</a>
+    <a asp-controller="Cookbooks" asp-action="Add" class="btn btn-custom d-flex">Create New Cookbook</a>
 </div>
 
 <div class="text-center">
@@ -77,15 +88,11 @@
         @foreach (var cookbook in Model.cookbooks)
         {
             <div class="col-md-4">
-                @*<div class="card mb-4"> Cookbook Card View
-                    <div class="card-body">
-                        <h5 class="card-title">@cookbook.Title</h5>
-                        <p class="card-text">Description or Tag</p>
-                        <a asp-action="Cookbook" asp-route-id="@cookbook.Title">@cookbook.Title</a>
+                <div class="block">
+                    <h4 style="color: #4A743E;">@cookbook.Title</h4>
+                    <div class="button-container">
+                        <a asp-action="Cookbook" asp-route-id=@cookbook.Title class="btn btn-custom">View</a>
                     </div>
-                </div>*@
-                <div class="button-container">
-                    <a asp-action="Cookbook" asp-route-id=@cookbook.Title class="btn btn-custom">@cookbook.Title</a>
                 </div>
             </div>
         }

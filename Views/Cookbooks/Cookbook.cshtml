@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = @Model.cookbook.Title;
 }
-               
+
 <style>
     body {
         hr.rounded {
@@ -26,6 +26,19 @@
 
     .btn-primary:hover {
         background-color: #96AE6D;
+        }
+    .block {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
+        background-color: #F5F5F5;
+        border-radius: 5px;
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        text-align: center;
         }
     }
 </style>
@@ -55,24 +68,26 @@
     @*</form>*@
 </div><br>
 
-@*<a asp-controller="Recipe" asp-action="Add" asp-route-cookbookName=@Model.cookbook.Title>Add Recipe</a>*@
 <div class="row">
     @if (Model.cookbook.Recipes !=null && Model.cookbook.Recipes.Any())
     {
         @foreach (var recipe in Model.cookbook.Recipes)
         {
-            <div class="col-md-4">
-                @*<div class="card mb-4"> Card View
-                    <div class="card-body">
-                        <h5 class="card-title">@recipe.Name</h5>
-                        <p class="card-text">Difficulty: @recipe.Difficulty</p>
-                        <a asp-controller=Recipe asp-action=Look asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name>@recipe.Name</a>
+            <form asp-action="Cookbook" method="post">
+                <div class="col-md-4">
+                    <div class="block">
+                        <div class="col-md-6">
+                        <h5 style="color: #4A743E;">@recipe.Name</h5>
+                        </div>
+                        <div class="col-md-6">
+                        <h5 style="color: #4A743E;">delete</h5>
+                        </div>
+                        <div class="button-container">
+                            <a asp-controller="Recipe" asp-action=Look asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name class="btn btn-primary">View</a>
+                        </div>
                     </div>
-                </div>*@
-                <div class="button-container">
-                    <a asp-controller="Recipe" asp-action=Look asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name class="btn btn-primary">@recipe.Name</a>
                 </div>
-            </div>
+            </form>
         }
     }
     else
