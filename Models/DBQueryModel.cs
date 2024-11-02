@@ -71,7 +71,9 @@ public class DBQueryModel
     // TODO - Return success/fail
     public static async Task<bool> CreateCuisineNode(string cuisine)
     {
-        var query = @"CREATE (cuisine:Cuisine {name: $cuisineName})";
+        var query = @"
+            CREATE (cuisine:Cuisine {name: $cuisineName})
+            ";
 
         var session = driver.AsyncSession();
         try
@@ -834,6 +836,40 @@ public class DBQueryModel
             cbks.Add(cb);
         }
         return cbks;
+    }
+
+    public static async Task<bool> EditCookBook(string username, string name, string description)
+    {
+        var query = @"
+            MATCH (cookbook:Cookbook {name: $cookbookName})
+            SET cookbook.description = $description
+        ";
+
+        var cookbookName = username + name;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            var response = await session.RunAsync(query, new { cookbookName, description });
+            Console.WriteLine($"Cookbook node {cookbookName} edited!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool cookbookCreated = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + cookbookCreated);
+            return cookbookCreated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
     }
 
     //IN PROGRESS

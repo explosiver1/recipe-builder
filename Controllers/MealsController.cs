@@ -29,11 +29,11 @@ public class MealsController : Controller
     {
         return View();
     }
-    
-    // public IActionResult Look()
-    // {
-    //     MealsLookVM mealVM = new MealsLookVM();
-    //     mealVM.meal = CtrlModel.getMeal();
-    //     return View();
-    // }
+
+    public IActionResult Look(string id)
+    {
+        MealsLookVM mealVM = new MealsLookVM();
+        mealVM.meal = CtrlModel.getMeal(id);
+        return View(mealVM);
+    }
 }
