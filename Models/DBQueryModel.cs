@@ -30,7 +30,7 @@ public class DBQueryModel
         Console.WriteLine("Creating user...");
         var query = @"
             MERGE (u:User {username: $username})
-            ON CREATE SET 
+            ON CREATE SET
                 u.name = $name,
                 u.email = $email,
                 u.phone = $phone,
@@ -96,7 +96,7 @@ public class DBQueryModel
         var query = @"
             MATCH (user:User {username: $user})
             MERGE (recipe:Recipe {name: $recipeName})
-            ON CREATE SET 
+            ON CREATE SET
                 recipe.description = $description
                 recipe.difficulty = $difficulty
                 recipe.servings = $servings
@@ -110,7 +110,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { username, recipeName, description, difficulty, servings, servingsize});
+            var response = await session.RunAsync(query, new { username, recipeName, description, difficulty, servings, servingsize });
 
             // Pulls all responses from the query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
@@ -364,7 +364,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { username, shopListName});
+            var response = await session.RunAsync(query, new { username, shopListName });
             Console.WriteLine($"Shopping List node {shopListName} created!");
 
             // Pulls all responses from query
@@ -503,7 +503,7 @@ public class DBQueryModel
         {
             var response = await session.RunAsync(query, new { tag, recipeName });
             Console.WriteLine($"Tag {tag} created and connected to {recipeName}!");
-            
+
         }
         catch (Exception ex)
         {
@@ -828,11 +828,12 @@ public class DBQueryModel
                                     "return cb\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
-        foreach (IRecord record in irol)
+        foreach (var record in irol)
         {
+            var cbNode = record["cb"].As<INode>();
             //We only add the name because there are no
             Cookbook cb = new Cookbook();
-            cb.Title = record["name"].As<string>();
+            cb.Title = cbNode["name"].As<string>();
             cbks.Add(cb);
         }
         return cbks;

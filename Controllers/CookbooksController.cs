@@ -24,9 +24,9 @@ public class CookbooksController : Controller
             at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
             viewModel.cookbooks = DBQueryModel.GetCookbooks(at).Result;
         }
-        catch
+        catch (Exception e)
         {
-            Console.WriteLine("Error Getting Cookbooks");
+            Console.WriteLine("Error Getting Cookbooks: " + e);
         }
 
         return View(viewModel);
