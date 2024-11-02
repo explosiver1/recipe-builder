@@ -20,6 +20,19 @@
     .btn-custom:hover {
         background-color: #96AE6D;
     }
+    .block {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
+        background-color: #F5F5F5;
+        border-radius: 5px;
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        text-align: center;
+    }
 </style>
 
 <div class="text-center">
@@ -34,15 +47,10 @@
         @foreach (var cookbook in Model.cookbooks)
         {
             <div class="col-md-4">
-                @*<div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">@cookbook.Title</h5>
-                        <p class="card-text">@cookbook.Description</p>
-                     
-                        <a asp-controller="Cookbooks" asp-action="Cookbook" asp-route-id=@cookbook.Title>@cookbook.Title</a>
-                    </div>
-                </div>*@
-                <a asp-controller="Cookbooks" asp-action="Cookbook" asp-route-id=@cookbook.Title class="btn-custom">@cookbook.Title</a>
+                <div class="block">
+                    <h4 style="color: #4A743E;">@cookbook.Title</h4><br>
+                    <a asp-controller="Cookbooks" asp-action="Cookbook" asp-route-id=@cookbook.Title class="btn-custom">View Cookbook</a>
+                </div>
             </div>
        }
     }
@@ -58,14 +66,10 @@
         @foreach (var recipe in Model.recipes)
         {
             <div class="col-md-4">
-                @*<div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">@recipe.Name</h5>
-                        
-                        <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe.Name>@recipe.Name</a>
-                    </div>
-                </div>*@
-                <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe.Name class="btn-custom">@recipe.Name</a>
+                <div class="block">
+                <h4 style="color: #4A743E;">@recipe.Name</h4><br>
+                <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe.Name class="btn-custom">View Recipe</a>
+                </div>
             </div>
         }
     }
