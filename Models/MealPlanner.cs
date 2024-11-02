@@ -2,14 +2,14 @@ namespace RecipeBuilder.Models
 {
     public class MealPlanner
     {
+        public DateOnly Date { get; set; }
         public List<MealSet> ScheduledMeals { get; set; }
-        //public MPMonth ScheduledMeals {get; set;}
 
         // Blank constructor initializing to default values
         public MealPlanner()
         {
             ScheduledMeals = new List<MealSet>();
-            //ScheduledMeals = new MPMonth();
+            Date = DateOnly.FromDateTime(DateTime.Now);
         } // end Blank Constructor
 
         // Schedule a meal with validation

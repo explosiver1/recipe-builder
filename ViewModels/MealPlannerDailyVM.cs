@@ -3,10 +3,8 @@ using RecipeBuilder.Models;
 
 namespace RecipeBuilder.ViewModels
 {
-    public class MealPlannerDailyVm
-    {
-        public MPDay selectedDay {get; set;} = new MPDay();
-        
+    public class MealPlannerDailyVM
+    {        
         public MealPlanner mealPlanner { get; set; } = new MealPlanner();
     }
 }

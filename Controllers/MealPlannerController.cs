@@ -11,46 +11,46 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            var viewModel = new MealPlannerIndexVm
+            var viewModel = new MealPlannerIndexVM
             {
                 mealPlanner = new MealPlanner()
             };
             return View(viewModel);
         }
 
-        // GET: /MealPlanner/Plan
+        // GET: /MealPlanner/Month
         [HttpGet]
-        public IActionResult Plan()
+        public IActionResult Month()
         {
-            var viewModel = new MealPlannerPlanVm
+            var viewModel = new MealPlannerMonthVM
             {
                 mealPlanner = new MealPlanner()
             };
             return View(viewModel);
         }
 
-        // POST: /MealPlanner/Plan
-        [HttpPost]
-        public IActionResult Plan(MealPlannerPlanVm viewModel)
-        {
-            if (ModelState.IsValid)
-            {
-                // Logic to save or update the meal plan
-                viewModel.mealPlanner.ScheduleMeal(new MealSet { Name = "Sample Meal", Description = "A test meal" });
-                // interact with the database
-                return RedirectToAction("Index");
-            }
-            return View(viewModel);
-        }
+        // // POST: /MealPlanner/Month
+        // [HttpPost]
+        // public IActionResult Plan(MealPlannerMonthVM viewModel)
+        // {
+        //     if (ModelState.IsValid)
+        //     {
+        //         // Logic to save or update the meal plan
+        //         viewModel.mealPlanner.ScheduleMeal(new MealSet { Name = "Sample Meal", Description = "A test meal" });
+        //         // interact with the database
+        //         return RedirectToAction("Index");
+        //     }
+        //     return View(viewModel);
+        // }
 
         // GET: /MealPlanner/Daily
         [HttpGet]
-        public IActionResult Daily()
+        public IActionResult Daily(DateOnly date)
         {
-            var viewModel = new MealPlannerDailyVm
-            {
-                mealPlanner = new MealPlanner()
-            };
+            var viewModel = new MealPlannerDailyVM();
+            viewModel.mealPlanner.ScheduledMeals = [SeedData.cookieMeal, SeedData.cookieMeal2];
+            viewModel.mealPlanner.Date = date;
+
             return View(viewModel);
         }
 
@@ -58,21 +58,21 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Week()
         {
-            var viewModel = new MealPlannerWeekVm
+            var viewModel = new MealPlannerWeekVM
             {
                 mealPlanner = new MealPlanner()
             };
             return View(viewModel);
         }
 
-        // POST: /MealPlanner/Remove
-        [HttpPost]
-        public IActionResult Remove(string mealSetName)
-        {
-            var mealPlanner = new MealPlanner();
-            mealPlanner.RemoveMeal(mealSetName);
+        // // POST: /MealPlanner/Remove
+        // [HttpPost]
+        // public IActionResult Remove(string mealSetName)
+        // {
+        //     var mealPlanner = new MealPlanner();
+        //     mealPlanner.RemoveMeal(mealSetName);
 
-            return RedirectToAction("Index");
-        }
+        //     return RedirectToAction("Index");
+        // }
     }
 }

@@ -8,5 +8,7 @@ namespace RecipeBuilder.ViewModels
     {
         public string CookbookTitle { get; set; } = string.Empty;
         public List<Recipe> Recipes { get; set; } = new List<Recipe>();
+
+        public string msg { get; set; }
     }
 }

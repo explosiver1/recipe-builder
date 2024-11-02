@@ -34,36 +34,73 @@ public class CookbooksController : Controller
 
     // Cookbook method: Displays a specific cookbook by ID
     [HttpGet]
-    public IActionResult Cookbook(string id)
+    public IActionResult Cookbook(string name)
     {
-        var cookbookModel = CtrlModel.GetCookbook(id);
-        if (cookbookModel == null)
+        AuthToken at;
+        Cookbook cookbookModel;
+        try
         {
-            return NotFound(); // Handle case where no cookbook is found
+
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            cookbookModel = DBQueryModel.GetCookbook(name, at).Result;
         }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error Getting Cookbooks");
+            cookbookModel = new Cookbook();
+            cookbookModel.Title = "Error, cookbook" + name + "could not be retrieved. Exception: " + e;
+        }
+
 
         CookbooksCookbookVM viewModel = new CookbooksCookbookVM { cookbook = cookbookModel };
         return View(viewModel);
     }
 
     [HttpGet]
-    public IActionResult Add()
+    public IActionResult Add(string msg = "")
     {
+        if (msg != "")
+        {
+            CookbooksAddVM cavm = new CookbooksAddVM();
+            cavm.msg = msg;
+            return View(cavm);
+        }
         return View();
     }
+
     // Add method (POST): Handles form submission to create a new cookbook
     [HttpPost]
     public IActionResult Add(Cookbook newCookbook)
     {
+        Console.WriteLine("Creating Cookbook: \n" +
+            "Name: " + newCookbook.Title);
         if (!ModelState.IsValid)
         {
             return View(newCookbook); // Returns form with errors if validation fails
         }
 
+        AuthToken at;
+        CookbooksAddVM cavm = new CookbooksAddVM();
+        bool test;
+        try
+        {
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            test = DBQueryModel.CreateCookbookNode(at.username, newCookbook.Title).Result;
+        }
+        catch (Exception e)
+        {
+            test = false;
+        }
+
+        if (!test)
+        {
+            return Add("Error, cookbook could not be created.");
+        }
         // Uncomment the following line if you want to add to seed data
         // RecipeSeedData.cookbooks.Add(newCookbook);
 
         // For now, you can integrate with a database or just return a success view
+        // The index will display the new cookbook in the list, so it's fine.
         return RedirectToAction("Index"); // Redirect back to index
     }
 
@@ -74,18 +111,29 @@ public class CookbooksController : Controller
     {
         // Uncomment the following line if you want to use seed data
         // var cookbook = RecipeSeedData.cookbooks.FirstOrDefault(c => c.Title == cookbookName);
+        AuthToken at;
+        Cookbook cb;
 
-        // For now, return a dummy cookbook object or fetch from a database
-        var cookbook = new Cookbook { Title = cookbookName, Recipes = new List<Recipe>() };
-
+        try
+        {
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            cb = DBQueryModel.GetCookbook(cookbookName, at).Result;
+        }
+        catch (Exception e)
+        {
+            cb = new Cookbook();
+            cb.Title = "Error, cookbook " + cookbookName + "could not be retrieved. Exception: " + e;
+        }
+        /*
         if (cookbook == null)
         {
             return NotFound(); // If no cookbook found
-        }
+        } */
+
 
         var viewModel = new CookbooksEditVM
         {
-            cookbookName = cookbook.Title,
+            cookbookName = cb.Title,
             recipe = new Recipe()
         };
 
@@ -105,7 +153,7 @@ public class CookbooksController : Controller
         // var cookbook = RecipeSeedData.cookbooks.FirstOrDefault(c => c.Title == viewModel.CookbookName);
 
         // For now, simulate updating a cookbook (e.g., with a service or database)
-        var cookbook = new Cookbook { Title = viewModel.cookbookName };
+        Cookbook cookbook = new Cookbook { Title = viewModel.cookbookName };
 
         if (cookbook == null)
         {

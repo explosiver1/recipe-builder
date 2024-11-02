@@ -3,7 +3,7 @@ using RecipeBuilder.Models;
 
 namespace RecipeBuilder.ViewModels
 {
-    public class MealPlannerIndexVm
+    public class MealPlannerIndexVM
     {
         public MealPlanner mealPlanner { get; set; } = new MealPlanner();
     }

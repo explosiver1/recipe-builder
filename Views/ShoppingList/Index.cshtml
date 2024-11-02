@@ -1,3 +1,5 @@
+@model RecipeBuilder.ViewModels.ShoppingListIndexVM
+
 @{
     ViewData["Title"] = "Shopping List";
 }
@@ -46,13 +48,13 @@
             margin: auto;
         }
 
-        /* list item styling with flexbox for proper alignment */
-        ul {
+        /* scoped list item styling within #shoppingListContainer */
+        #shoppingListContainer ul {
             list-style-type: none;
             padding-left: 0;
         }
 
-        ul li {
+        #shoppingListContainer ul li {
             font-size: 18px;
             margin: 5px 0;
             display: flex;
@@ -66,7 +68,7 @@
             align-items: center;
         }
 
-        ul li input[type="checkbox"] {
+        #shoppingListContainer ul li input[type="checkbox"] {
             margin-right: 10px;
         }
 
@@ -116,7 +118,22 @@
     <div id="shoppingListContainer">
         <br>
         <ul id="shoppingList">
-            <!-- test grocery items -->
+            @if (@Model.items.Count != 0) {
+                foreach (var item in @Model.items) {
+                    <li>
+                        <div class="item-left">
+                            <input type="checkbox" onchange="toggleCompletion(this)">
+                            <span>@item.Name</span>
+                        </div>
+                        <div class="button-container">
+                            <button class="pantry-btn" onclick="addToPantry('@item.Name')">Add to Pantry</button>
+                            <button class="remove-btn" onclick="removeItem(this)">Remove</button>
+                        </div>
+                    </li>
+                }
+            } else {
+                <p></p>
+            }
         </ul>
     </div>
 
