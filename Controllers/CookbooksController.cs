@@ -34,7 +34,7 @@ public class CookbooksController : Controller
 
     // Cookbook method: Displays a specific cookbook by ID
     [HttpGet]
-    public IActionResult Cookbook(string name)
+    public IActionResult Cookbook(string name, string msg = "")
     {
         AuthToken at;
         Cookbook cookbookModel;
@@ -169,5 +169,32 @@ public class CookbooksController : Controller
         cookbook.Title = viewModel.cookbookName;
 
         return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    public IActionResult RemoveRecipe(CookbooksCookbookVM ccvm)
+    {
+        AuthToken at;
+        bool test;
+        if (ccvm.recipeToRemove! != "")
+        {
+            try
+            {
+                Console.WriteLine("Cookbook Title:" + ccvm.cookbook.Title);
+                Console.WriteLine("Recipe to Remove: " + ccvm.recipeToRemove);
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                test = false; //DBQueryModel.CookbookRemoveRecipe(at.username, ccvm.cookbook.Title, ccvm.recipeToRemove);
+                if (!test)
+                {
+                    ccvm.msg = "Error: Recipe could not be removed.";
+                    return RedirectToAction("Cookbook", ccvm);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e);
+            }
+        }
+        return RedirectToAction("Cookbook");
     }
 }

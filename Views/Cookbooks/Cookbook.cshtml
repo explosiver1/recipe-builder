@@ -3,7 +3,7 @@
 @{
     ViewData["Title"] = @Model.cookbook.Title;
 }
-               
+
 <style>
     body {
         hr.rounded {
@@ -16,7 +16,7 @@
         padding: 10px 20px;
         font-size: 16px;
         color: white;
-        background-color: #4A743E; 
+        background-color: #4A743E;
         text-align: center;
         text-decoration: none;
         border-radius: 5px;
@@ -72,6 +72,13 @@
                 <div class="button-container">
                     <a asp-controller="Recipe" asp-action=Look asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name class="btn btn-primary">@recipe.Name</a>
                 </div>
+                <div>
+                    <form method="post" asp-controller="Cookbooks" asp-action="RemoveRecipe" id=@(recipe.Name + "RForm")>
+                        <input type="hidden" asp-for="recipeToRemove" id=@(recipe.Name + "recipeToRemove") name=@(recipe.Name + "cookbookTitle") value=@recipe.Name/>
+                        <input type="hidden" asp-for="cookbook.Title" id=@(recipe.Name + "cookbookTitle") name=@(recipe.Name + "cookbookTitle") value=@Model.cookbook.Title/>
+                        <button type="submit">Remove Recipe</button>
+                    </form>
+                </div
             </div>
         }
     }
