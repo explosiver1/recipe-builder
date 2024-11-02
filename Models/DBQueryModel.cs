@@ -67,27 +67,26 @@ public class DBQueryModel
         }
     }
 
-    // CreateCuisine()
-    // TODO - Return success/fail
-    public static async Task<bool> CreateCuisineNode(string cuisine)
-    {
-        var query = @"
-            CREATE (cuisine:Cuisine {name: $cuisineName})
-            ";
+    // This is covered by the tags node
+    // public static async Task<bool> CreateCuisineNode(string cuisine)
+    // {
+    //     var query = @"
+    //         CREATE (cuisine:Cuisine {name: $cuisineName})
+    //         ";
 
-        var session = driver.AsyncSession();
-        try
-        {
-            await session.RunAsync(query, new { cuisineName = cuisine });
-            Console.WriteLine($"Cuisine node {cuisine} created!");
-        }
-        finally
-        {
-            await session.CloseAsync();
-        }
+    //     var session = driver.AsyncSession();
+    //     try
+    //     {
+    //         await session.RunAsync(query, new { cuisineName = cuisine });
+    //         Console.WriteLine($"Cuisine node {cuisine} created!");
+    //     }
+    //     finally
+    //     {
+    //         await session.CloseAsync();
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     // CreateRecipe()
     // TODO - test results/add group authentication
@@ -100,7 +99,7 @@ public class DBQueryModel
                 recipe.description = $description
                 recipe.difficulty = $difficulty
                 recipe.servings = $servings
-                recipe.servingsize = $servingsize
+                recipe.servingSize = $servingsize
             MERGE (user)-[:OWNS]->(recipe)
             RETURN COUNT(recipe) > 0
         ";
@@ -140,7 +139,7 @@ public class DBQueryModel
     public static async Task<List<string>> GetRecipeNodeNames(string username)
     {
         var query = @"
-        MATCH (user:User {username: $username})-[:OWNS]->(recipe:Recipe)
+        MERGE (user:User {username: $username})-[:OWNS]->(recipe:Recipe)
         RETURN recipe.name AS recipeName
         ";
 
@@ -171,7 +170,7 @@ public class DBQueryModel
     public static async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
         var query = @"
-            MERGE (ingredient:Ingredient {name: $ingredientName})
+            MERGE (ingredient:Ingredient {name: $ingredientName}) 
             RETURN COUNT(ingredient) > 0
             ";
 
@@ -389,39 +388,50 @@ public class DBQueryModel
     // CreateMealNode()
     // TODO - return success/fail
     // TODO - Match to User/Group First
-    public static async Task<bool> CreateMealNode(string username, string meal)
+    public static async Task<bool> CreateMealNode(string username, string meal, string date)
     {
         var query = @"
-        CREATE (meal:Meal {
-            name: $mealName,
-            title: $meal
-        })
+            MERGE (meal:Meal { name: $mealName})
+            ON CREATE SET
+                date: $date
+            RETURN COUNT(meal) > 0
         ";
+
         var mealName = username + meal;
 
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { mealName, meal });
+            var response = await session.RunAsync(query, new { mealName, date });
             Console.WriteLine($"Meal node {mealName} created!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool mealCreated = records.Any() && records.First()[0].As<bool>();
+            return mealCreated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
         }
         finally
         {
             await session.CloseAsync();
         }
-
-        return true;
     }
 
     // MergeMealNode()
     // TODO - return success/fail
-    // TODO - Match to User/Group First
     public static async Task<bool> ConnectMealNode(string username, string meal, string recipe)
     {
         var query = @"
         MATCH (meal:Meal{name:$mealName})
         MATCH (recipe:Recipe{name:$recipeName})
-        CREATE (meal)-[:MADE_WITH]->(recipe)
+        MERGE (meal)-[x:MADE_WITH]->(recipe)
+        RETURN COUNT(x) > 0
         ";
         var mealName = username + meal;
         var recipeName = username + recipe;
@@ -568,17 +578,17 @@ public class DBQueryModel
             startLabel = "User";
         }
         string query = "MATCH  (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->()-[:CATALOGUES]->(rec:Recipe {name:'" + name + "'})-[r]->(b)\n " +
-                                    //"MATCH (rec)<-[tr]-(c)\n" +
+                                    // "MATCH (rec)<-[tr]-(c)\n" +
                                     "return rec, r, b \n"; //tr, c\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
-        //var record = irol.First();
-        //var rNode = record["rec"].As<INode>();
+        // var record = irol.First();
+        // var rNode = record["rec"].As<INode>();
 
         Recipe r = new Recipe();
 
-        //The recipe node is on each record, so we're getting it's info on the first pass only.
-        //The other passes are for getting data from relationships to the recipe.
+        // The recipe node is on each record, so we're getting it's info on the first pass only.
+        // The other passes are for getting data from relationships to the recipe.
         bool firstPass = true;
         foreach (var record in irol)
         {
@@ -587,7 +597,7 @@ public class DBQueryModel
             var bNode = record["b"].As<INode>();
             if (firstPass)
             {
-                //Try-Catching all of them independently since many fields are optional.
+                // Try-Catching all of them independently since many fields are optional.
                 try
                 {
                     r.Name = recNode["name"].As<string>();
