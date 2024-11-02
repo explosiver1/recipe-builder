@@ -16,7 +16,7 @@
         padding: 10px 20px;
         font-size: 16px;
         color: white;
-        background-color: #4A743E; 
+        background-color: #4A743E;
         text-align: center;
         text-decoration: none;
         border-radius: 5px;
@@ -73,7 +73,6 @@
     {
         @foreach (var recipe in Model.cookbook.Recipes)
         {
-            <form asp-action="Cookbook" method="post">
                 <div class="col-md-4">
                     <div class="block">
                         <div class="col-md-6">
@@ -87,7 +86,15 @@
                         </div>
                     </div>
                 </div>
-            </form>
+
+                <div>
+                    <form method="post" asp-controller="Cookbooks" asp-action="RemoveRecipe" id=@(recipe.Name + "RForm")>
+                        <input type="hidden" asp-for="recipeToRemove" id=@(recipe.Name + "recipeToRemove") name=@(recipe.Name + "cookbookTitle") value=@recipe.Name/>
+                        <input type="hidden" asp-for="cookbook.Title" id=@(recipe.Name + "cookbookTitle") name=@(recipe.Name + "cookbookTitle") value=@Model.cookbook.Title/>
+                        <button type="submit">Remove Recipe</button>
+                    </form>
+                </div
+            </div>
         }
     }
     else
