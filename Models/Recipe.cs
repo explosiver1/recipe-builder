@@ -13,22 +13,17 @@ namespace RecipeBuilder.Models
         [StringLength(100, ErrorMessage = "Recipe name cannot exceed 100 characters.")]
         public string Name { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Description is required.")]
+        // Remove the required attribute to make this field optional
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string Description { get; set; } = string.Empty;
 
-        // Serving size stored as a dictionary with key of unit & value of int amount
         public Dictionary<string, int> servingSize { get; set; } = new Dictionary<string, int>();
-        
         public int numServings { get; set; }
-
         public List<string> Equipment { get; set; } = new List<string>();
 
-        // Make Ingredients and Instructions optional if they don’t need to be required
+        // Optional fields
         public List<IngredientDetail> Ingredients { get; set; } = new List<IngredientDetail>();
-
         public List<string> Instructions { get; set; } = new List<string>();
-
         public List<string> Tags { get; set; } = new List<string>();
 
         [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]
@@ -42,6 +37,7 @@ namespace RecipeBuilder.Models
 
         [Range(0, 600, ErrorMessage = "Cook time must be between 0 and 600 minutes.")]
         public int CookTime { get; set; }
+
 
         // Constructor to initialize lists and dictionaries if needed
         public Recipe()
