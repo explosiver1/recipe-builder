@@ -236,8 +236,8 @@ public static class CtrlModel
 
         return new List<MealSet>
         {
-            new MealSet { Name = "Placeholder Meal 1", Description = "Description for Placeholder Meal 1" },
-            new MealSet { Name = "Placeholder Meal 2", Description = "Description for Placeholder Meal 2" }
+            new MealSet { Name = "Cookies", Description = "Description for Placeholder Meal 1" },
+            new MealSet { Name = "Chocolate Cookies", Description = "Description for Placeholder Meal 2" }
         };
     }
 
@@ -250,8 +250,8 @@ public static class CtrlModel
         // Return a simulated list of meals
         return new List<MealSet>
         {
-            new MealSet { Name = "Simulated Meal 1", Description = "Simulated Description 1" },
-            new MealSet { Name = "Simulated Meal 2", Description = "Simulated Description 2" }
+            new MealSet { Name = "Cookies", Description = "Simulated Description 1" },
+            new MealSet { Name = "Chocolate Cookies", Description = "Simulated Description 2" }
         };
     }
 
