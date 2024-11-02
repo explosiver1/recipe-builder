@@ -8,6 +8,8 @@ namespace RecipeBuilder.ViewModels
     {
         public List<Ingredient> items { get; set; }
 
+        public bool success { get; set;}
+
         public PantryIndexVM()
         {
             items = new List<Ingredient>();

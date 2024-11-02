@@ -1,19 +1,25 @@
-@model RecipeBuilder.ViewModels.IngredientsIndexVM 
+@model RecipeBuilder.ViewModels.IngredientsIndexVM
 @{
     ViewData["Title"] = "Ingredients";
 }
 
-<style>
-        h1 {
-        color: #4A743E;
-        text-align: center;
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingredients</title>
+    
+    <style>
+        #mainContainer {
+            padding: 0px; 
+            border-radius: 10px;
+            max-width: 900px; 
+            margin: auto; 
         }
 
-        body {
-            background-color: #ffffff; 
-            color: #333; 
-            margin: 0;
-            padding: 20px;
+        h1 {
+            color: #4A743E;
+            text-align: center;
+            margin: 10px 0; 
         }
 
         .text-center {
@@ -22,6 +28,7 @@
 
         .search-container {
             margin: 20px 0; 
+            text-align: center; 
         }
 
         .search-container input[type="text"] {
@@ -46,7 +53,7 @@
         }
 
         .alphabet a:hover {
-            color: #4A743E; 
+            color: #96AE6D; 
         }
 
         .ingredients-list {
@@ -66,43 +73,44 @@
         }
 
         .ingredients-list li:hover {
-            background-color: #F4F3EC; 
+            background-color: #E8E8E8; 
         }
 
         .ingredients-list a {
             text-decoration: none; 
             color: #4A743E; 
         }
-</style>
+    </style>
+</head>
 
 <body>
-    <div class="text-center">
-        <h1 class="display-4">Ingredients</h1>
-        <div class="search-container">
-            <input type="text" id="ingredientSearch" placeholder="Search" oninput="scrollToIngredient()">
+    <div id="mainContainer">
+        <div class="text-center">
+            <h1 class="display-4">Ingredients</h1>
+            <div class="search-container">
+                <input type="text" id="ingredientSearch" placeholder="Search" oninput="scrollToIngredient()">
+            </div>
         </div>
-    </div>
 
-    <div class="alphabet">
-        @foreach (var letter in @Model.ingredientNamesDict.Keys)
-        {
-            <a href="#@letter">@letter</a>
-        }
-
-    </div>
-
-    <div class="ingredients-list">
-        @foreach (var letter in @Model.ingredientNamesDict.Keys)
-        {
-            <h2 id="@letter">@letter</h2>
-            @foreach (var ingredient in @Model.ingredientNamesDict[letter])
+        <div class="alphabet">
+            @foreach (var letter in @Model.ingredientNamesDict.Keys)
             {
+                <a href="#@letter">@letter</a>
+            }
+        </div>
+
+        <div class="ingredients-list">
+            @foreach (var letter in @Model.ingredientNamesDict.Keys)
+            {
+                <h2 id="@letter">@letter</h2>
                 <ul>
-                    <li><a href="/Recipe/Index/@ingredient">@ingredient</a></li>
+                    @foreach (var ingredient in @Model.ingredientNamesDict[letter])
+                    {
+                        <li><a href="/Recipe/Index/@ingredient">@ingredient</a></li>
+                    }
                 </ul>
             }
-        }
-        
+        </div>
     </div>
 
     <script>
@@ -112,7 +120,7 @@
 
             items.forEach(item => {
                 if (item.textContent.toLowerCase().includes(searchInput)) {
-                    const ingredientSection = item.closest('ul').previousElementSibling; // get the following header (h2)
+                    const ingredientSection = item.closest('ul').previousElementSibling; // get following header (h2)
                     ingredientSection.scrollIntoView({ behavior: 'smooth' });
                     return; // exit loop
                 }

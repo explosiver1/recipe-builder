@@ -90,9 +90,9 @@ public static class CtrlModel
     }
 
     // Adds an ingredient to the shopping list
-    public static void AddItemToShoppingList(Ingredient ingredient)
+    public static bool AddItemToShoppingList(Ingredient ingredient)
     {
-        if (ingredient == null) return;
+        if (ingredient == null) return false;
             
         if (shoppingList.Items == null)
         {
@@ -103,10 +103,12 @@ public static class CtrlModel
         {
             shoppingList.Items.Add(ingredient);
             Console.WriteLine($"{ingredient.Name} added to the shopping list.");
+            return true;
         }
         else
         {
             Console.WriteLine($"{ingredient.Name} is already in the shopping list.");
+            return false;
         }
     }
 
@@ -147,6 +149,8 @@ public static class CtrlModel
     // Retrieve all pantry items
     public static List<Ingredient> GetPantryItems()
     {
+        AddItemToPantry(SeedData.Butter);
+        AddItemToPantry(SeedData.BakingSoda);
         return pantryItems;
     }
 
