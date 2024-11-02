@@ -90,13 +90,14 @@ public class DBQueryModel
 
     // CreateRecipe()
     // TODO - test results/add group authentication
-    public static async Task<bool> CreateRecipeNode(string username, string recipe, string description, string difficulty, string servings, string servingsize)
+    public static async Task<bool> CreateRecipeNode(string username, string recipe, string description, string rating, string difficulty, string servings, string servingsize)
     {
         var query = @"
             MATCH (user:User {username: $user})
             MERGE (recipe:Recipe {name: $recipeName})
             ON CREATE SET
                 recipe.description = $description
+                recipe.description = $rating
                 recipe.difficulty = $difficulty
                 recipe.servings = $servings
                 recipe.servingSize = $servingsize
@@ -109,7 +110,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { username, recipeName, description, difficulty, servings, servingsize });
+            var response = await session.RunAsync(query, new { username, recipeName, description, rating, difficulty, servings, servingsize });
 
             // Pulls all responses from the query
             IReadOnlyList<IRecord> records = await response.ToListAsync();

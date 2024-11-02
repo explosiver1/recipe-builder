@@ -63,7 +63,7 @@ namespace RecipeBuilder.Models
             {
                 // Passing the dictionary might be easier but all variable makes it more readable...
                 //.Result added to change Task<bool> to bool; unsure if this is right fix or if this method as a whole also needs to be async
-                bool recipeCreated = false; //DBQueryModel.CreateRecipeNode(at.username, recipe, title, description).Result;
+                bool recipeCreated = false; //DBQueryModel.CreateRecipeNode(at.username, recipe, description, rating, difficulty, servings, servingsize).Result;
                 return recipeCreated;
             }
         }
