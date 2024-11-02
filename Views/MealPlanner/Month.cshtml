@@ -1,0 +1,154 @@
+@model RecipeBuilder.ViewModels.MealPlannerMonthVM
+
+@{ 
+    ViewData["Title"] = "Monthly Meals"; 
+}
+
+<!-- styling for page -->
+<style>
+    h1 {
+        color: #4A743E;
+        text-align: center;
+        margin-top: 0;
+        padding-top: 0;
+    }
+
+    body {
+        background-color: #ffffff; 
+        color: #333; 
+        margin: 0;
+        padding: 0; 
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0; 
+    }
+
+    hr.rounded {
+        border-top: 8px solid #96AE6D;
+        border-radius: 5px;
+        width: 80%;
+        margin: 10px auto;
+    }
+
+    /* Button styles */
+    .button {
+        background-color: #4A743E;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .button:hover {
+        background-color: #96AE6D;
+    }
+
+    .month {
+        display: grid;
+        grid-template-columns: auto repeat(7, 1fr);
+        grid-template-rows: repeat(5, auto);
+        gap: 10px;
+        margin-top: 20px;
+        padding: 20px;
+        background-color: #F5F5F5;
+        border-radius: 5px;
+    }
+
+    .week-label {
+        font-weight: bold;
+        color: #4A743E;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .day {
+        background-color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .day-title {
+        font-size: 1.2em;
+        color: #4A743E;
+        margin: 0 0 5px 0;
+    }
+
+    .button-container {
+        margin-bottom: 40px;
+        text-align: center; 
+    }
+</style>
+
+<body>
+    <div class="container">
+        <h1 class="display-4">Monthly Meal Planner</h1>
+        <hr class="rounded">
+        <br>
+        <div class="button-container">
+            <a asp-controller="MealPlanner" asp-action="Index" class="button">Meal Schedule</a>
+        </div>
+        
+        <div class="month">
+            <!-- Week 1 -->
+            <div class="week-label"><a asp-controller="MealPlanner" asp-action="Week">Week 1</a></div>
+            <!-- Days for Week 1 -->
+            <div class="day"><p class="day-title">Sunday 1</p><p>Spaghetti Bolognese</p><p>Garlic Bread</p></div>
+            <div class="day"><p class="day-title">Monday 2</p><p>Chicken Caesar Salad</p><p>French Bread</p></div>
+            <div class="day"><p class="day-title">Tuesday 3</p><p>Grilled Salmon</p><p>Roasted Vegetables</p></div>
+            <div class="day"><p class="day-title">Wednesday 4</p><p>BBQ Ribs</p><p>Coleslaw</p></div>
+            <div class="day"><p class="day-title">Thursday 5</p><p>Roast Chicken</p><p>Mashed Potatoes</p></div>
+            <div class="day"><p class="day-title">Friday 6</p><p>Pizza</p><p>Caesar Salad</p></div>
+            <div class="day"><p class="day-title">Saturday 7</p><p>Beef Stew</p><p>Bread Rolls</p></div>
+
+            <!-- Week 2 -->
+            <div class="week-label"><a asp-controller="MealPlanner" asp-action="Week">Week 2</a></div>
+            <!-- Days for Week 2 -->
+            <div class="day"><p class="day-title">Sunday 8</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Monday 9</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Tuesday 10</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Wednesday 11</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Thursday 12</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Friday 13</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Saturday 14</p><p>Meal 1</p><p>Meal 2</p></div>
+
+            <!-- Weeks 3-->
+            <div class="week-label"><a asp-controller="MealPlanner" asp-action="Week">Week 3</a></div>
+            <!-- Days for Week 3 -->
+            <div class="day"><p class="day-title">Sunday 15</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Monday 16</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Tuesday 17</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Wednesday 18</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Thursday 19</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Friday 20</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Saturday 21</p><p>Meal 1</p><p>Meal 2</p></div>
+            
+            <!-- Week 4 -->
+            <div class="week-label"><a asp-controller="MealPlanner" asp-action="Week">Week 4</a></div>
+            <!-- Days for Week 4 -->
+            <div class="day"><p class="day-title">Sunday 22</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Monday 23</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Tuesday 24</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Wednesday 25</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Thursday 26</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Friday 27</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Saturday 28</p><p>Meal 1</p><p>Meal 2</p></div>
+
+            <!-- Week 5 -->
+            <div class="week-label"><a asp-controller="MealPlanner" asp-action="Week">Week 5</a></div>
+            <!-- Days for Week 5 -->
+            <div class="day"><p class="day-title">Sunday 29</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Monday 30</p><p>Meal 1</p><p>Meal 2</p></div>
+            <div class="day"><p class="day-title">Tuesday 31</p><p>Meal 1</p><p>Meal 2</p></div>
+        </div>
+    </div>
+</body>

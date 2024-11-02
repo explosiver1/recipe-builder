@@ -1,5 +1,7 @@
+@model RecipeBuilder.ViewModels.MealPlannerDailyVM
+
 @{ 
-    ViewData["Title"] = "Daily Meal Planner";
+    ViewData["Title"] = "Daily Meals";
 }
 
 <!-- styling for page -->
@@ -25,17 +27,21 @@
     hr.rounded {
         border-top: 8px solid #96AE6D;
         border-radius: 5px;
-        width: 80%; /* adjust width for centering */
+        width: 80%; 
         margin: 0 auto; 
         margin-top: 10px; 
     }
 
+    /* container for each meal entry */
     .meal-entry {
-        display: flex;
-        align-items: center;
-        justify-content: center; /* center meal entry */
-        margin-bottom: 10px;
-        position: relative; /* pop-up positioning */
+        background-color: #f9f9f9;
+        border: 2px solid #96AE6D;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 15px;
+        position: relative; 
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        width: 500px; 
     }
 
     .meal-label {
@@ -46,7 +52,7 @@
     }
 
     input[type="text"] {
-        width: 400px;
+        width: calc(100% - 150px); /* Adjust width based on container */
         padding: 8px;
         margin-right: 10px;
         box-sizing: border-box;
@@ -87,7 +93,7 @@
     }
 
     .meal-entry:hover .popup-menu {
-        display: block; /* show menu when hovering over meal entry */
+        display: block; 
     }
 
     .popup-menu a {
@@ -99,6 +105,43 @@
 
     .popup-menu a:hover {
         text-decoration: underline;
+    }
+
+    /* note form styling */
+    .note-popup {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: #f9f9f9;
+        padding: 20px;
+        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 2;
+        border-radius: 5px; 
+    }
+
+    .note-popup textarea {
+        width: 100%;
+        height: 60px;
+        padding: 8px;
+        border: 2px solid #96AE6D;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+    .note-popup button {
+        background-color: #4A743E;
+        color: white;
+        border: none;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px; 
+    }
+
+    .note-popup button:hover {
+        background-color: #96AE6D;
     }
 
     /* button to add more meals */
@@ -135,37 +178,52 @@
 <body>
     <div class="container">
         <h1 class="display-4">Daily Meal Planner</h1>
+        <h2 style="color: #4A743E;" class="text-center">@Model.mealPlanner.Date.DayOfWeek @Model.mealPlanner.Date</h2>
         <hr class="rounded">
         <br>
-        <!-- button for creating meals and meal schedule -->
-        <div class="button-container" style="text-align: center;">
-            <a asp-controller="Meals" asp-action="Create" class="add-meal-btn">Create Meals</a>
-            <a asp-controller="MealPlanner" asp-action="Plan" class="add-meal-btn">Meal Schedule</a>
-        </div>
 
-        <!-- meal entries -->
-        <div id="meal-list">
-            <!-- meal entry #1 -->
-            <div class="meal-entry">
-                <span class="meal-label">Meal 1:</span>
-                <input type="text" placeholder="Enter meal 1">
-                <button class="plus-button" onclick="togglePopupMenu(this)">+</button>
-                
-                <!-- pop-up menu for the plus button -->
-                <div class="popup-menu">
-                    <a asp-controller="Meals" asp-action="Index">Add Meal</a><br>
-                    <a asp-controller="Recipe" asp-action="Index">Add Recipe</a><br>
-                    <a href="#">Add Note</a>
-                </div>
+        @if (Model.mealPlanner.ScheduledMeals.Count != 0)
+        {
+            <!-- meal entries -->
+            <div id="meal-list">
+                @foreach (MealSet meal in Model.mealPlanner.ScheduledMeals)
+                {
+                    <div class="meal-entry">
+                        <span class="meal-label">Meal @(@Model.mealPlanner.ScheduledMeals.IndexOf(meal) + 1):</span>
+                        <input type="text" value="@meal.Description" readonly>
+                        
+                        @foreach (Recipe recipe in meal.Recipes) {
+                            <p>@recipe.Name</p>
+                        }
+                        
+                        <button class="plus-button" onclick="togglePopupMenu(this)">+</button>
+                        
+                        <!-- pop-up menu for the plus button -->
+                        <div class="popup-menu">
+                            <a asp-controller="Meals" asp-action="Index">Add Meal</a><br>
+                            <a asp-controller="Recipe" asp-action="Index">Add Recipe</a><br>
+                            <a href="#" onclick="showNotePopup(this)">Add Note</a>
+                        </div>
+
+                        <!-- inner pop-up for note -->
+                        <div class="note-popup">
+                            <textarea placeholder="Enter your note here"></textarea>
+                            <button onclick="addNote(this)">Save Note</button>
+                        </div>
+                    </div>
+                }
             </div>
-
-            <!-- additional meal entries will be added here -->
-        </div>
+        }
+        
+        else
+        {
+            <p class="text-center">No meals scheduled for today.</p>
+        }
 
         <!-- button to add more meals -->
         <button class="add-meal-btn" onclick="addMeal()">Add Another Meal</button>
 
-        <!-- javascript to handle adding new meals and toggling popup -->
+        <!-- javascript to handle adding new meals, toggling popup, and adding notes -->
         <script>
             function addMeal() {
                 var mealList = document.getElementById('meal-list');
@@ -176,12 +234,16 @@
                 newMeal.className = 'meal-entry';
                 newMeal.innerHTML = `
                     <span class="meal-label">Meal ` + mealCount + `:</span>
-                    <input type="text" placeholder="Enter meal ` + mealCount + `">
+                    <input type="text" placeholder="Enter meal ` + mealCount + `" readonly>
                     <button class="plus-button" onclick="togglePopupMenu(this)">+</button>
                     <div class="popup-menu">
                         <a asp-controller="Meals" asp-action="Index">Add Meal</a><br>
-                        <a asp-controller="Cookbooks" asp-action="Index">Add Recipe</a><br>
-                        <a href="#">Add Note</a>
+                        <a asp-controller="Recipe" asp-action="Index">Add Recipe</a><br>
+                        <a href="#" onclick="showNotePopup(this)">Add Note</a>
+                    </div>
+                    <div class="note-popup">
+                        <textarea placeholder="Enter your note here..."></textarea>
+                        <button onclick="addNote(this)">Save Note</button>
                     </div>
                 `;
 
@@ -193,6 +255,24 @@
             function togglePopupMenu(button) {
                 var popupMenu = button.nextElementSibling;
                 popupMenu.style.display = popupMenu.style.display === 'block' ? 'none' : 'block';
+            }
+
+            // show the inner note popup
+            function showNotePopup(button) {
+                var notePopup = button.parentElement.nextElementSibling;
+                notePopup.style.display = notePopup.style.display === 'block' ? 'none' : 'block';
+            }
+
+            // add note to meal entry
+            function addNote(button) {
+                var noteInput = button.previousElementSibling.value;
+                if (noteInput.trim() !== "") {
+                    var mealEntry = button.closest('.meal-entry');
+                    var mealInput = mealEntry.querySelector('input[type="text"]');
+                    mealInput.value += (mealInput.value ? ', ' : '') + noteInput; // append note to meal input
+                    button.previousElementSibling.value = ""; // clear the note input
+                    button.parentElement.style.display = 'none'; // hide the note popup
+                }
             }
         </script>
     </div>

@@ -1,5 +1,7 @@
+@model RecipeBuilder.ViewModels.MealPlannerWeekVM
+
 @{ 
-    ViewData["Title"] = "Weekly Meal Planner"; 
+    ViewData["Title"] = "Weekly Meals"; 
 }
 
 <!-- styling for page -->
@@ -28,8 +30,7 @@
         border-top: 8px solid #96AE6D;
         border-radius: 5px;
         width: 80%;
-        margin: 0 auto;
-        margin-top: 10px; 
+        margin: 10px auto;
     }
 
     /* button styling */
@@ -84,10 +85,16 @@
         <hr class="rounded">
         <br>
         <div class="button-container">
-            <a asp-controller="MealPlanner" asp-action="Plan" class="button">Meal Schedule</a>
+            <a asp-controller="MealPlanner" asp-action="Index" class="button">Meal Schedule</a>
         </div>
         
         <div class="schedule">
+            <div class="day">
+                <h2 class="schedule-title">Sunday</h2>
+                <p>Omelets</p>
+                <p>Tuna Salad</p>
+                <p>Steak, Mashed Potatoes, Mac and Cheese</p>
+            </div>
             <div class="day">
                 <h2 class="schedule-title">Monday</h2>
                 <p>Omelets</p>
@@ -120,12 +127,6 @@
             </div>
             <div class="day">
                 <h2 class="schedule-title">Saturday</h2>
-                <p>Omelets</p>
-                <p>Tuna Salad</p>
-                <p>Steak, Mashed Potatoes, Mac and Cheese</p>
-            </div>
-            <div class="day">
-                <h2 class="schedule-title">Sunday</h2>
                 <p>Omelets</p>
                 <p>Tuna Salad</p>
                 <p>Steak, Mashed Potatoes, Mac and Cheese</p>
