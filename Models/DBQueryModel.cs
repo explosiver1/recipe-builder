@@ -30,15 +30,15 @@ public class DBQueryModel
     {
         Console.WriteLine("Creating user...");
         var query = @"
-            CREATE (u:User {
-                username: $username,
-                name: $name,
-                email: $email,
-                phone: $phone,
-                password: $password
-            })
+            MERGE (u:User {username: $username})
+            ON CREATE SET 
+                u.name = $name,
+                u.email = $email,
+                u.phone = $phone,
+                u.password = $password
             RETURN COUNT(u) > 0
-            ";
+        ";
+
 
         // Opens a session for Neo4j
         var session = driver.AsyncSession();
@@ -90,16 +90,16 @@ public class DBQueryModel
 
     // CreateRecipe()
     // TODO - test results/add group authentication
-    public static async Task<bool> CreateRecipeNode(string username, string recipe, string title, string description)
+    public static async Task<bool> CreateRecipeNode(string username, string recipe, string description, string difficulty, string servings)
     {
         var query = @"
-            MATCH (user:User {username: $username})
-            CREATE (recipe:Recipe {
-                name: $recipeName,
-                title: $title,
-                description: $description
-            })
-            CREATE (user)-[:OWNS]->(recipe)
+            MATCH (user:User {username: $user})
+            MERGE (recipe:Recipe {name: $recipeName})
+            ON CREATE SET 
+                recipe.description = $description
+                recipe.difficulty = $difficulty
+                recipe.servings = $servings
+            MERGE (user)-[:OWNS]->(recipe)
             RETURN COUNT(recipe) > 0
         ";
 
@@ -108,7 +108,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { username, recipeName, title, description });
+            var response = await session.RunAsync(query, new { username, recipeName, description, difficulty, servings});
 
             // Pulls all responses from the query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
