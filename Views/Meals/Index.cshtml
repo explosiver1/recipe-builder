@@ -65,16 +65,16 @@
         @foreach (MealSet meal in @Model.meals)
         {
             <div class="col-md-4">
-                @*<p>@meal.Name</p>
+                <p>@meal.Name</p>
                 <div class="card mb-4"> Meals Card View
                     <div class="card-body">
                         <h5 class="card-title">@meal.Name</h5>
                         <p class="card-text">Description</p>
                         <a asp-action="Look" asp-route-id="@meal.Name">@meal.Name</a>
                     </div>
-                </div>*@
+                </div>
                 <div class="button-container">
-                    <a asp-action="Look" asp-route-id=@meal.Name class="btn btn-custom">@meal.Name</a>
+                    <a asp-action="Look" asp-route-id="@meal.Name" class="btn btn-custom">@meal.Name</a>
                 </div>
             </div>
         }
