@@ -7,13 +7,24 @@ namespace RecipeBuilder.Controllers;
 
 public class MealsController : Controller
 {
+    [HttpGet]
     public IActionResult Index()
     {
-        MealsIndexVM mealVM = new MealsIndexVM();
-        mealVM.meals = CtrlModel.getMeals();
+        var mealVM = new MealsIndexVM
+        {
+            // Use the placeholder method to simulate combining data from Neo4j
+            meals = CtrlModel.GetAllMeals().Concat(CtrlModel.GetMealsFromNeo4j()).ToList()
+        };
+
         return View(mealVM);
     }
-
+    
+    //public IActionResult Index()
+    //{
+    //    MealsIndexVM mealVM = new MealsIndexVM();
+    //    mealVM.meals = CtrlModel.getMeals();
+    //    return View(mealVM);
+    //}
     public IActionResult Create()
     {
         return View();

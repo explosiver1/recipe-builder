@@ -4,6 +4,13 @@ namespace RecipeBuilder.Models
     {
         public DateOnly Date { get; set; }
         public List<MealSet> ScheduledMeals { get; set; }
+        public List<MealSet> ScheduledMealsToday => ScheduledMeals
+        .Where(meal => meal.Date == DateOnly.FromDateTime(DateTime.Now))
+        .ToList();
+
+
+        // Add a property to convert DateOnly to string
+        public string DateString => Date.ToString("yyyy-MM-dd"); 
 
         // Blank constructor initializing to default values
         public MealPlanner()

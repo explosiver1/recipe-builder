@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
 using RecipeBuilder.ViewModels;
+using System.Collections.Generic;
 
 namespace RecipeBuilder.Controllers
 {
@@ -22,14 +23,98 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Month()
         {
+            // Get the date range for the current month
+            var (startOfMonth, endOfMonth) = DateHelper.GetDateRangeForCurrentMonth();
+
+            // Create and populate the view model with meal data
             var viewModel = new MealPlannerMonthVM
             {
-                mealPlanner = new MealPlanner()
+                MealPlanners = GetMealPlansForDateRange(startOfMonth, endOfMonth)
             };
+
             return View(viewModel);
         }
 
-        // // POST: /MealPlanner/Month
+        // GET: /MealPlanner/Daily
+        [HttpGet]
+        public IActionResult Daily(DateOnly date)
+        {
+            var viewModel = new MealPlannerDailyVM
+            {
+                mealPlanner = new MealPlanner
+                {
+                    Date = date,
+                    ScheduledMeals = CtrlModel.getMealsForDate(date)
+                }
+            };
+
+            return View(viewModel);
+        }
+
+        // GET: /MealPlanner/Week
+        [HttpGet]
+        public IActionResult Week()
+        {
+        var currentDate = DateOnly.FromDateTime(DateTime.Now);
+        var startOfWeek = DateHelper.GetStartOfWeek(currentDate);
+        var datesInWeek = DateHelper.GetDatesForWeek(startOfWeek);
+
+        var viewModel = new MealPlannerWeekVM
+        {
+            mealPlanner = new MealPlanner(),
+            selectedWeek = new MPWeek
+            {
+                Days = datesInWeek.Select(date =>
+                    new MPDay
+                    {
+                        Date = date, // Ensure the Date property exists in MPDay
+                        Meals = CtrlModel.getMealsForDate(date).Select(meal => new MPMeal
+                        {
+                            mealDescription = meal.Description,
+                            recipes = meal.Recipes
+                        }).ToList()
+                    }).ToList()
+            }
+        };
+
+        return View(viewModel);
+        }
+
+        // Helper method to get meal plans for a date range (for the month view)
+        private List<MealPlanner> GetMealPlansForDateRange(DateOnly startDate, DateOnly endDate)
+        {
+            var mealPlans = new List<MealPlanner>();
+
+            for (var date = startDate; date <= endDate; date = date.AddDays(1))
+            {
+                var dailyMeals = CtrlModel.getMealsForDate(date);
+                if (dailyMeals.Any())
+                {
+                    mealPlans.Add(new MealPlanner
+                    {
+                        Date = date,
+                        ScheduledMeals = dailyMeals
+                    });
+                }
+            }
+
+            return mealPlans;
+        }
+    }
+}
+
+
+        // // POST: /MealPlanner/Remove
+        // [HttpPost]
+        // public IActionResult Remove(string mealSetName)
+        // {
+        //     var mealPlanner = new MealPlanner();
+        //     mealPlanner.RemoveMeal(mealSetName);
+
+        //     return RedirectToAction("Index");
+        // }
+
+                // // POST: /MealPlanner/Month
         // [HttpPost]
         // public IActionResult Plan(MealPlannerMonthVM viewModel)
         // {
@@ -42,37 +127,3 @@ namespace RecipeBuilder.Controllers
         //     }
         //     return View(viewModel);
         // }
-
-        // GET: /MealPlanner/Daily
-        [HttpGet]
-        public IActionResult Daily(DateOnly date)
-        {
-            var viewModel = new MealPlannerDailyVM();
-            viewModel.mealPlanner.ScheduledMeals = [SeedData.cookieMeal, SeedData.cookieMeal2];
-            viewModel.mealPlanner.Date = date;
-
-            return View(viewModel);
-        }
-
-        // GET: /MealPlanner/Week
-        [HttpGet]
-        public IActionResult Week()
-        {
-            var viewModel = new MealPlannerWeekVM
-            {
-                mealPlanner = new MealPlanner()
-            };
-            return View(viewModel);
-        }
-
-        // // POST: /MealPlanner/Remove
-        // [HttpPost]
-        // public IActionResult Remove(string mealSetName)
-        // {
-        //     var mealPlanner = new MealPlanner();
-        //     mealPlanner.RemoveMeal(mealSetName);
-
-        //     return RedirectToAction("Index");
-        // }
-    }
-}
