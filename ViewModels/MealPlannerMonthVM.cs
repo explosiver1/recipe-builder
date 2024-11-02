@@ -5,6 +5,12 @@ namespace RecipeBuilder.ViewModels
 {
     public class MealPlannerMonthVM
     {
-        public MealPlanner mealPlanner { get; set; } = new MealPlanner();
+        public List<MealPlanner> MealPlanners { get; set; } = new List<MealPlanner>(); // List of meal plans for the month
+
+        // Optional constructor
+        public MealPlannerMonthVM()
+        {
+            MealPlanners = new List<MealPlanner>();
+        }
     }
 }

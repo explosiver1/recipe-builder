@@ -3,9 +3,14 @@ using RecipeBuilder.Models;
 
 namespace RecipeBuilder.ViewModels
 {
-    public class MealPlannerWeekVM
+public class MealPlannerWeekVM
+{
+    public MealPlanner mealPlanner { get; set; }
+    public MPWeek selectedWeek { get; set; } = new MPWeek();
+
+    public MealPlannerWeekVM()
     {
-        public MPWeek selectedWeek {get; set;} = new MPWeek();
-        public MealPlanner mealPlanner { get; set; } = new MealPlanner();
+        mealPlanner = new MealPlanner();
     }
+}
 }
