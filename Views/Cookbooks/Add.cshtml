@@ -30,19 +30,21 @@
     <h1 class="display-4">Create Cookbook</h1>
 </div>
 
-@*<form asp-controller="Cookbooks" asp-action="Add" method="post"> *need to know which controller is used*@
+<form asp-controller="Cookbooks" asp-action="Add" method="post" id="form">
 
 <div class="form-group">
-    <label for="Name">Cookbook Name:</label>
-    <input type="text" class="form-control" id="Name" name="Name" required /><br>
+    <label for="CookbookTitle">Cookbook Name:</label>
+    <input type="text" class="form-control" id="CookbookTitle" asp-for="CookbookTitle" required /><br>
+    <span asp-validation-for="CookbookTitle" class="text-danger"></span>
 </div>
 
 <div class="form-group">
-    <label for="Description">Description:</label>
-    <textarea class="form-control" id="Description" name="Description" required></textarea><br>
+    <label for="CookbookDescription">Description:</label>
+    <textarea class="form-control" id="CookbookDescription" asp-for="CookbookDescription" required></textarea><br>
+    <span asp-validation-for="CookbookDescription" class="text-danger"></span>
 </div>
 
-@*@if (selectedRecipe != null) *Need to pull from Model*
+@*@if (selectedRecipe != null)
 {
     <div class="form-group">
         <label>Recipes Added:</label>
@@ -61,6 +63,17 @@
     <a asp-controller="Recipe" asp-action="Select">Select Recipe</a><br>
 </div>
 
+        @if (Model != null)
+        {
+            @if (Model.msg != "")
+            {
+            <div>
+            <p>@Model.msg</p>
+            </div>
+            }
+        }
+
+
 <br><button type="submit" class="btn btn-custom">Save Cookbook</button><br>
 <br>
-@*</form>*@
+</form>

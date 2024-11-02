@@ -122,7 +122,17 @@ public static class SeedData
     /* SHOPPING LIST DATA */
     /* PANTRY DATA */
     /* MEALS DATA */
-    public static List<MealSet> meals = [cookieMeal, cookieMeal2];
+    public static List<MealSet> meals = [
+        new MealSet{
+        Name = "Cookies",
+        Description = "Cookie Monster's Favorite Meal.",
+        Recipes = [ChocolateChipCookies, SugarCookies]
+        }, 
+        new MealSet{
+        Name = "Chocolate Cookies",
+        Description = "Cookie Monster's Second Favorite Meal.",
+        Recipes = [ChocolateChipCookies]
+        }];
     public static MealSet cookieMeal = new MealSet{
         Name = "Cookies",
         Description = "Cookie Monster's Favorite Meal.",

@@ -70,14 +70,15 @@ public class CookbooksController : Controller
 
     // Add method (POST): Handles form submission to create a new cookbook
     [HttpPost]
-    public IActionResult Add(Cookbook newCookbook)
+    public IActionResult Add(CookbooksAddVM newCookbook)
     {
         Console.WriteLine("Creating Cookbook: \n" +
-            "Name: " + newCookbook.Title);
-        if (!ModelState.IsValid)
-        {
-            return View(newCookbook); // Returns form with errors if validation fails
-        }
+            "Name: " + newCookbook.CookbookTitle);
+        //if (!ModelState.IsValid)
+        //{
+        //    Console.WriteLine("Model State Invalid");
+        //    return View(newCookbook); // Returns form with errors if validation fails
+        // }
 
         AuthToken at;
         CookbooksAddVM cavm = new CookbooksAddVM();
@@ -85,15 +86,18 @@ public class CookbooksController : Controller
         try
         {
             at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-            test = DBQueryModel.CreateCookbookNode(at.username, newCookbook.Title).Result;
+            Console.WriteLine("User " + at.username + " Deserialized");
+            test = DBQueryModel.CreateCookbookNode(at.username, newCookbook.CookbookTitle, newCookbook.CookbookDescription).Result;
         }
         catch (Exception e)
         {
+            Console.WriteLine("Error: Exception " + e);
             test = false;
         }
 
         if (!test)
         {
+            Console.WriteLine("Cookbook Creation Failure. Sending Error MEssage to View.");
             return Add("Error, cookbook could not be created.");
         }
         // Uncomment the following line if you want to add to seed data
@@ -101,6 +105,7 @@ public class CookbooksController : Controller
 
         // For now, you can integrate with a database or just return a success view
         // The index will display the new cookbook in the list, so it's fine.
+        Console.WriteLine("Cookbook creation success. Redirecting to Cookbooks Index");
         return RedirectToAction("Index"); // Redirect back to index
     }
 
@@ -144,10 +149,10 @@ public class CookbooksController : Controller
     [HttpPost]
     public IActionResult Edit(CookbooksEditVM viewModel)
     {
-        if (!ModelState.IsValid)
-        {
-            return View(viewModel); // Return form with errors
-        }
+        // if (!ModelState.IsValid)
+        // {
+        //    return View(viewModel); // Return form with errors
+        //}
 
         // Uncomment the following line if you want to use seed data
         // var cookbook = RecipeSeedData.cookbooks.FirstOrDefault(c => c.Title == viewModel.CookbookName);
