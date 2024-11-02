@@ -49,10 +49,10 @@
                                     <a class="dropdown-item" asp-area="" asp-controller="MealPlanner" asp-action="Daily" asp-route-date="@DateOnly.FromDateTime(DateTime.Now)">Today's Schedule</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="MealPlanner" asp-action="Week">Weekly Planner</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="MealPlanner" asp-action="Week" asp-route-date="@DateOnly.FromDateTime(DateTime.Now)">This Week</a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="MealPlanner" asp-action="Month">Monthly Planner</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="MealPlanner" asp-action="Month" asp-route-date="@DateOnly.FromDateTime(DateTime.Now)">This Month</a>
                                 </li>
                             </ul>
                         </div>

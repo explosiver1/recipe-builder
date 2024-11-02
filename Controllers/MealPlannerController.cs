@@ -21,7 +21,7 @@ namespace RecipeBuilder.Controllers
 
         // GET: /MealPlanner/Month
         [HttpGet]
-        public IActionResult Month()
+        public IActionResult Month(DateOnly date)
         {
             // Get the date range for the current month
             var (startOfMonth, endOfMonth) = DateHelper.GetDateRangeForCurrentMonth();
@@ -53,9 +53,9 @@ namespace RecipeBuilder.Controllers
 
         // GET: /MealPlanner/Week
         [HttpGet]
-        public IActionResult Week()
+        public IActionResult Week(DateOnly date)
         {
-        var currentDate = DateOnly.FromDateTime(DateTime.Now);
+        var currentDate = date;//DateOnly.FromDateTime(DateTime.Now);
         var startOfWeek = DateHelper.GetStartOfWeek(currentDate);
         var datesInWeek = DateHelper.GetDatesForWeek(startOfWeek);
 

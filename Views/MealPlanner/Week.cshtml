@@ -89,6 +89,25 @@
         </div>
         
         <div class="schedule">
+            @foreach (MPDay day in @Model.selectedWeek.Days)
+            {
+                <div class="day">
+                    <a class="schedule-title" asp-area="" asp-controller="MealPlanner" asp-action="Daily" asp-route-date="@day.Date">@day.Date.DayOfWeek @day.Date</a>
+                    @* <h2 class="schedule-title">@day.Date.DayOfWeek @day.Date</h2> *@
+                    @if (@day.Meals.Count > 0)
+                    {
+                        foreach (MPMeal meal in @day.Meals)
+                        {
+                            <div>
+                            @foreach (Recipe recipe in meal.recipes)
+                            {
+                                <p>@recipe.Name</p>
+                            }
+                            </div>
+                        }
+                    }
+                </div> 
+            }
             <div class="day">
                 <h2 class="schedule-title">Sunday</h2>
                 <p>Omelets</p>
