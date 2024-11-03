@@ -170,7 +170,9 @@ public class DBQueryModel
     public static async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
         var query = @"
+            MATCH (user:User {name: $user})
             MERGE (ingredient:Ingredient {name: $ingredientName})
+            MERGE (user)-(:OWNS)->(ingredient)
             RETURN COUNT(ingredient) > 0
             ";
 
@@ -252,6 +254,37 @@ public class DBQueryModel
         }
 
         return true;
+    }
+
+    // GetIngredients()
+    // All ingredients a User Owns
+    public static async Task<List<string>> GetIngredientNodeNames(string username)
+    {
+        var query = @"
+        MERGE (user:User {username: $username})-[:OWNS]->(ingredient:Ingredient)
+        RETURN ingredient.name AS ingredientName
+        ";
+
+        var session = driver.AsyncSession();
+        var ingredientNames = new List<string>();
+
+        try
+        {
+            var result = await session.RunAsync(query, new { username });
+
+            await result.ForEachAsync(record =>
+            {
+                ingredientNames.Add(record["ingredientName"].As<string>());
+            });
+
+            Console.WriteLine($"Found {ingredientNames.Count} ingredients for user {username}!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+
+        return ingredientNames;
     }
 
     // CreateCookbookNode()
