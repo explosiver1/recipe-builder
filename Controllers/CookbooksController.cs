@@ -171,6 +171,7 @@ public class CookbooksController : Controller
         return RedirectToAction("Index");
     }
 
+
     [HttpPost]
     public IActionResult RemoveRecipe(CookbooksCookbookVM ccvm)
     {
@@ -196,5 +197,36 @@ public class CookbooksController : Controller
             }
         }
         return RedirectToAction("Cookbook");
+    }
+
+    [HttpPost]
+    public IActionResult RemoveCookbook(string cookbookToRemove)
+    {
+        AuthToken at;
+        bool test;
+        if (cookbookToRemove != "")
+        {
+            try
+            {
+                Console.WriteLine("Cookbook To Remove: " + cookbookToRemove!);
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                test = DBQueryModel.DeleteCookbook(cookbookToRemove, at).Result;
+                if (!test)
+                {
+                    CookbooksIndexVM civm = new CookbooksIndexVM();
+                    civm.msg = "Error: Recipe could not be removed.";
+                    return RedirectToAction("Index", civm);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Error: cookbookToRemove is blank.");
+        }
+        return RedirectToAction("Index");
     }
 }
