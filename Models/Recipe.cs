@@ -17,7 +17,8 @@ namespace RecipeBuilder.Models
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string Description { get; set; } = string.Empty;
 
-        public Dictionary<string, int> servingSize { get; set; } = new Dictionary<string, int>();
+        //public Dictionary<string, int> servingSize { get; set; } = new Dictionary<string, int>();
+        public string servingSize { get; set; } = string.Empty;
         public int numServings { get; set; }
         public List<string> Equipment { get; set; } = new List<string>();
 
@@ -48,7 +49,7 @@ namespace RecipeBuilder.Models
             Ingredients = new List<IngredientDetail>();
             Instructions = new List<string>();
             Tags = new List<string>();
-            servingSize = new Dictionary<string, int>();
+            servingSize = string.Empty;//new Dictionary<string, int>();
         }
 
         public bool CreateRecipe(AuthToken at, string recipe, string title, string description)

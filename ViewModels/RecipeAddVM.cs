@@ -16,5 +16,7 @@ namespace RecipeBuilder.ViewModels
         public string ServingSizeInput { get; set; } = string.Empty; // e.g., "cup, 2"
         public string EquipmentInput { get; set; } = string.Empty; // Comma-separated tools/equipment
         public string InstructionsInput { get; set; } = string.Empty; // One instruction per line
+
+        public string? msg { get; set; }
     }
 }

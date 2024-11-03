@@ -92,19 +92,27 @@ public class DBQueryModel
     // TODO - test results/add group authentication
     public static async Task<bool> CreateRecipeNode(string username, string recipe, string description, string difficulty, string servings, string servingsize)
     {
+
+        Console.WriteLine("Entering CreateRecipeNode with parameters:\n" +
+            "username: " + username + "\n" +
+            "recipe: " + recipe + "\n" +
+            "description: " + description + "\n" +
+            "difficulty: " + difficulty + "\n" +
+            "servings: " + servings + "\n" +
+            "servingize: " + servingsize + "\n");
         var query = @"
             MATCH (user:User {username: $user})
             MERGE (recipe:Recipe {name: $recipeName})
             ON CREATE SET
-                recipe.description = $description
-                recipe.difficulty = $difficulty
-                recipe.servings = $servings
+                recipe.description = $description,
+                recipe.difficulty = $difficulty,
+                recipe.servings = $servings,
                 recipe.servingSize = $servingsize
             MERGE (user)-[:OWNS]->(recipe)
             RETURN COUNT(recipe) > 0
         ";
 
-        var recipeName = username + recipe;
+        var recipeName = recipe;
 
         var session = driver.AsyncSession();
         try
@@ -203,6 +211,37 @@ public class DBQueryModel
             await session.CloseAsync();
         }
     }
+
+    //This was easier than making the other method do more because of the parameter injection on the query string.
+    public static async Task<List<string>> GetRecipeNodeNamesByIngredient(string username, string ingredient)
+    {
+        var query = @"
+            MERGE (user:User {username: $username})-[:OWNS]->(recipe:Recipe)-[:MADE_WITH]->(i:Ingredient {name: $ingredient})
+            RETURN recipe.name AS recipeName
+            ";
+
+        var session = driver.AsyncSession();
+        var recipeNames = new List<string>();
+
+        try
+        {
+            var result = await session.RunAsync(query, new { username, ingredient });
+
+            await result.ForEachAsync(record =>
+            {
+                recipeNames.Add(record["recipeName"].As<string>());
+            });
+
+            Console.WriteLine($"Found {recipeNames.Count} recipes for user {username}!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+
+        return recipeNames;
+    }
+
 
     // MergeIngredient()
     // TODO - return success/fail
@@ -586,7 +625,7 @@ public class DBQueryModel
     }
 
     //TESTING
-    public async Task<Recipe> GetRecipe(string recName, AuthToken at, string group = "")
+    public static async Task<Recipe> GetRecipe(string recName, AuthToken at, string ingredient = "", string group = "")
     {
         string name;
         string startLabel;
@@ -727,7 +766,7 @@ public class DBQueryModel
 
 
     //TESTING
-    public async Task<bool> DeleteRecipe(string recName, AuthToken at, string group = "")
+    public static async Task<bool> DeleteRecipe(string recName, AuthToken at, string group = "")
     {
         string name;
         string startLabel;
