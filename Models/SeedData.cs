@@ -5,34 +5,40 @@ namespace RecipeBuilder.Models;
 
 public static class SeedData
 {
-    /* SAMPLE DATA */ 
+    /* SAMPLE DATA */
 
     /* INGREDIENTS */
-    public static Ingredient Sugar = new Ingredient{Name = "Sugar", Description="White granulated sugar", Unit="Cups"};
-    public static Ingredient Egg = new Ingredient{Name = "Egg", Description="Large White Chicken Eggs", Unit="Dozen"};
-    public static Ingredient BrownSugar = new Ingredient{Name = "Brown Sugar", Description="Light brown sugar", Unit="Cups"};
-    public static Ingredient PowderedSugar = new Ingredient{Name = "Powdered Sugar", Description="Powdered sugar", Unit="Cups"};
-    public static Ingredient Flour = new Ingredient{Name = "Flour", Description="Bleached all-purpose flour", Unit="Cups"};
-    public static Ingredient Vanilla = new Ingredient{Name = "Vanilla", Description="Pure vanilla extract", Unit="tsp"};
-    public static Ingredient BakingSoda = new Ingredient{Name = "Baking Soda", Description="Sodium Bicarbonate", Unit="tsp"};
-    public static Ingredient BakingPowder = new Ingredient{Name = "Baking Powder", Description="Baking powder", Unit="tsp"};
-    public static Ingredient Salt = new Ingredient{Name = "Salt", Description="Sodium Chloride", Unit="tsp"};
-    public static Ingredient Butter = new Ingredient{Name = "Butter", Description="Butter", Unit="sticks"};
-    public static Ingredient Oil = new Ingredient{Name = "Oil", Description="Neutral cooking oil: canola, sunflower, peanut, avocado, vegetable, etc.", Unit="tsp"};
-    public static Ingredient ChocolateChips = new Ingredient{Name = "Chocolate Chips", Description="Semi-Sweet Chocolate Chips", Unit="Cups"};
-    public static Ingredient SweetPotato = new Ingredient{Name="Sweet Potato", Description="", Unit=""};
+    public static Ingredient Sugar = new Ingredient { Name = "Sugar", Description = "White granulated sugar", Unit = "Cups" };
+    public static Ingredient Egg = new Ingredient { Name = "Egg", Description = "Large White Chicken Eggs", Unit = "Dozen" };
+    public static Ingredient BrownSugar = new Ingredient { Name = "Brown Sugar", Description = "Light brown sugar", Unit = "Cups" };
+    public static Ingredient PowderedSugar = new Ingredient { Name = "Powdered Sugar", Description = "Powdered sugar", Unit = "Cups" };
+    public static Ingredient Flour = new Ingredient { Name = "Flour", Description = "Bleached all-purpose flour", Unit = "Cups" };
+    public static Ingredient Vanilla = new Ingredient { Name = "Vanilla", Description = "Pure vanilla extract", Unit = "tsp" };
+    public static Ingredient BakingSoda = new Ingredient { Name = "Baking Soda", Description = "Sodium Bicarbonate", Unit = "tsp" };
+    public static Ingredient BakingPowder = new Ingredient { Name = "Baking Powder", Description = "Baking powder", Unit = "tsp" };
+    public static Ingredient Salt = new Ingredient { Name = "Salt", Description = "Sodium Chloride", Unit = "tsp" };
+    public static Ingredient Butter = new Ingredient { Name = "Butter", Description = "Butter", Unit = "sticks" };
+    public static Ingredient Oil = new Ingredient { Name = "Oil", Description = "Neutral cooking oil: canola, sunflower, peanut, avocado, vegetable, etc.", Unit = "tsp" };
+    public static Ingredient ChocolateChips = new Ingredient { Name = "Chocolate Chips", Description = "Semi-Sweet Chocolate Chips", Unit = "Cups" };
+    public static Ingredient SweetPotato = new Ingredient { Name = "Sweet Potato", Description = "", Unit = "" };
     // public static Ingredient Lentils = new Ingredient{Name="Lentils", Description="Brown or Green", Unit=""};
     // public static Ingredient Name = new Ingredient{Name="", Description="", Unit=""};
     //public static Ingredient Name = new Ingredient{Name="", Description="", Unit=""};
-    
+
     /* INGREDIENT LIST */
     public static List<Ingredient> myIngredients = [Sugar, Egg, BrownSugar, PowderedSugar, Flour, Vanilla, BakingSoda, BakingPowder, Butter, Oil, ChocolateChips];
-    
+
     /* RECIPES */
-    public static Recipe ChocolateChipCookies = new Recipe{
-        Name="Nestle Toll House Chocolate Chip Cookies", Description="Best chocolate chip cookies!", 
-        Difficulty=1, Rating=5, PrepTime=0, CookTime=0, 
-        servingSize = {{"Cup", 1}}, numServings=12, 
+    public static Recipe ChocolateChipCookies = new Recipe
+    {
+        Name = "Nestle Toll House Chocolate Chip Cookies",
+        Description = "Best chocolate chip cookies!",
+        Difficulty = 1,
+        Rating = 5,
+        PrepTime = 0,
+        CookTime = 0,
+        servingSize = "1Cup",
+        numServings = 12,
         Tags = ["Desserts", "Cookies", "Chocolate"],
         Equipment = ["Mixer", "Oven", "Cookie Sheet", "Cooling Rack"],
         Ingredients = [
@@ -58,12 +64,18 @@ public static class SeedData
             "Bake at 375 F for 7-9 minutes or until golden brown on the edges.",
             "Allow cookies to cool on the pan for 2 minutes before transferring to a wire cooling rack."
         ]
-        };
+    };
 
-    public static Recipe SugarCookies = new Recipe{
-        Name="Sugar Cookies", Description="", 
-        Difficulty=0, Rating=0, PrepTime=0, CookTime=0, 
-        servingSize = {{"Cookie", 1}}, numServings=48, 
+    public static Recipe SugarCookies = new Recipe
+    {
+        Name = "Sugar Cookies",
+        Description = "",
+        Difficulty = 0,
+        Rating = 0,
+        PrepTime = 0,
+        CookTime = 0,
+        servingSize = "1Cookie",
+        numServings = 48,
         Tags = ["Desserts", "Cookies"],
         Equipment = ["Mixer", "Oven", "Cookie Sheet", "Cooling Rack"],
         Ingredients = [
@@ -87,38 +99,44 @@ public static class SeedData
         ]
     };
     // public static Recipe Name = new Recipe{
-    //     Name="", Description="", 
-    //     Difficulty=0, Rating=0, PrepTime=0, CookTime=0, 
-    //     servingSize = {{"Cup", 1}}, numServings=12, 
+    //     Name="", Description="",
+    //     Difficulty=0, Rating=0, PrepTime=0, CookTime=0,
+    //     servingSize = {{"Cup", 1}}, numServings=12,
     //     Tags = [""],
     //     Equipment = [""],
-    //     Ingredients = [ 
-        // new IngredientDetail{Ingredient = Name, Qualifier = "", Quantity = 0, Unit = ""},
-        // new IngredientDetail{Ingredient = Name, Qualifier = "", Quantity = 0, Unit = ""}
-        // ],
+    //     Ingredients = [
+    // new IngredientDetail{Ingredient = Name, Qualifier = "", Quantity = 0, Unit = ""},
+    // new IngredientDetail{Ingredient = Name, Qualifier = "", Quantity = 0, Unit = ""}
+    // ],
     //     Instructions = [
-                // "",
-                // ""
-            //  ]
+    // "",
+    // ""
+    //  ]
     // };
     /* RECIPE LIST */
     public static List<Recipe> myRecipes = [ChocolateChipCookies, SugarCookies];
-        
+
     /* COOKBOOKS */
-    public static Cookbook CookiesCookbook = new Cookbook{
-        Title = "Cookies", Description ="Cookie Recipes",
-        Recipes =[ChocolateChipCookies, SugarCookies]
+    public static Cookbook CookiesCookbook = new Cookbook
+    {
+        Title = "Cookies",
+        Description = "Cookie Recipes",
+        Recipes = [ChocolateChipCookies, SugarCookies]
     };
-    public static Cookbook DessertsCookbook = new Cookbook{
-        Title = "Desserts", Description ="Dessert Recipes",
-        Recipes =[ChocolateChipCookies, SugarCookies]
+    public static Cookbook DessertsCookbook = new Cookbook
+    {
+        Title = "Desserts",
+        Description = "Dessert Recipes",
+        Recipes = [ChocolateChipCookies, SugarCookies]
     };
-    public static Cookbook ChocolateCookbook = new Cookbook{
-        Title = "Chocolate Cookbook", Description ="Recipes with Chocolate",
-        Recipes =[ChocolateChipCookies]
+    public static Cookbook ChocolateCookbook = new Cookbook
+    {
+        Title = "Chocolate Cookbook",
+        Description = "Recipes with Chocolate",
+        Recipes = [ChocolateChipCookies]
     };
     /* COOKBOOK LIST */
-    public static List<Cookbook> myCookbooks = [CookiesCookbook,DessertsCookbook,ChocolateCookbook];
+    public static List<Cookbook> myCookbooks = [CookiesCookbook, DessertsCookbook, ChocolateCookbook];
     /* SHOPPING LIST DATA */
     /* PANTRY DATA */
     /* MEALS DATA */
@@ -127,27 +145,29 @@ public static class SeedData
         Name = "Cookies",
         Description = "Cookie Monster's Favorite Meal.",
         Recipes = [ChocolateChipCookies, SugarCookies]
-        }, 
+        },
         new MealSet{
         Name = "Chocolate Cookies",
         Description = "Cookie Monster's Second Favorite Meal.",
         Recipes = [ChocolateChipCookies]
         }];
-    public static MealSet cookieMeal = new MealSet{
+    public static MealSet cookieMeal = new MealSet
+    {
         Name = "Cookies",
         Description = "Cookie Monster's Favorite Meal.",
         Recipes = [ChocolateChipCookies, SugarCookies]
-        };
-        
-    public static MealSet cookieMeal2 = new MealSet{
+    };
+
+    public static MealSet cookieMeal2 = new MealSet
+    {
         Name = "Chocolate Cookies",
         Description = "Cookie Monster's Second Favorite Meal.",
         Recipes = [ChocolateChipCookies]
-        };
+    };
     /* USER DATA */
     // public static ;
 
-    /* GET METHODS */ 
+    /* GET METHODS */
     /* User Lists */
     public static List<Cookbook> GetCookbookList()
     {
@@ -171,8 +191,8 @@ public static class SeedData
         foreach (Ingredient ingredient in myIngredients)
         {
             ingredients.Add(ingredient.Name);
-        } 
-        
+        }
+
         return ingredients;
     }
 
@@ -192,7 +212,7 @@ public static class SeedData
         }
         return recipesWithIngredient;
     }
-    
+
     /* Look up & return specific items */
     public static Recipe? GetRecipe(string RecipeName)
     {
@@ -217,12 +237,12 @@ public static class SeedData
         }
         return null;
     }
-    
+
     public static List<MealSet> getMeals()
     {
         return meals;
     }
-    
+
     // public static MealSet? getMeal(string mealName)
     // {
     //     foreach (MealSet meal in meals)
@@ -235,7 +255,7 @@ public static class SeedData
     //     return null;
     // }
 
-        public static MealSet getMeal(string mealName)
+    public static MealSet getMeal(string mealName)
     {
         foreach (MealSet meal in meals)
         {
@@ -247,7 +267,7 @@ public static class SeedData
         return new MealSet();
     }
 
-    
+
 
 
 }

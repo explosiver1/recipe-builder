@@ -173,20 +173,21 @@ public class CookbooksController : Controller
 
 
     [HttpPost]
-    public IActionResult RemoveRecipe(CookbooksCookbookVM ccvm)
+    public IActionResult RemoveRecipe(string cookbookTitle, string recipeToRemove)
     {
         AuthToken at;
         bool test;
-        if (ccvm.recipeToRemove! != "")
+        if (recipeToRemove! != "")
         {
             try
             {
-                Console.WriteLine("Cookbook Title:" + ccvm.cookbook.Title);
-                Console.WriteLine("Recipe to Remove: " + ccvm.recipeToRemove);
+                Console.WriteLine("Cookbook Title:" + cookbookTitle);
+                Console.WriteLine("Recipe to Remove: " + recipeToRemove);
                 at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
                 test = false; //DBQueryModel.CookbookRemoveRecipe(at.username, ccvm.cookbook.Title, ccvm.recipeToRemove);
                 if (!test)
                 {
+                    CookbooksCookbookVM ccvm = new CookbooksCookbookVM();
                     ccvm.msg = "Error: Recipe could not be removed.";
                     return RedirectToAction("Cookbook", ccvm);
                 }

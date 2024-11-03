@@ -85,9 +85,9 @@
                         <div class="button-container">
                             <a asp-controller="Recipe" asp-action=Look asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipe.Name class="btn btn-primary">View</a>
                         </div>
-                        <form method="post" asp-controller="Cookbooks" asp-action="RemoveRecipe" id=@(recipe.Name + "RForm")>
-                                <input type="hidden" asp-for="recipeToRemove" id=@(recipe.Name + "recipeToRemove") name=@(recipe.Name + "cookbookTitle") value=@recipe.Name/>
-                                <input type="hidden" asp-for="cookbook.Title" id=@(recipe.Name + "cookbookTitle") name=@(recipe.Name + "cookbookTitle") value=@Model.cookbook.Title/>
+                        <form method="post" asp-controller="Cookbooks" asp-action="RemoveRecipe">
+                                <input type="hidden" name="cookbookTitle" value="@recipe.Name"/>
+                                <input type="hidden" name="cookbookTitle" value="@Model.cookbook.Title"/>
                                 <div class="button-container">
                                     <button type="submit">Remove Recipe</button>
                                 </div>
