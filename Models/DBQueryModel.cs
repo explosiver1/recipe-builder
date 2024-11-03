@@ -146,7 +146,7 @@ public class DBQueryModel
     public static async Task<List<string>> GetRecipeNodeNames(string username)
     {
         var query = @"
-        MERGE (user:User {username: $username})-[:OWNS]->(recipe:Recipe)
+        MATCH (user:User {username: $username})-[:OWNS]->(recipe:Recipe)
         RETURN recipe.name AS recipeName
         ";
 
@@ -215,7 +215,7 @@ public class DBQueryModel
     public static async Task<List<string>> GetRecipeNodeNamesByIngredient(string username, string ingredient)
     {
         var query = @"
-            MERGE (user:User {username: $username})-[:OWNS]->(recipe:Recipe)-[:MADE_WITH]->(i:Ingredient {name: $ingredient})
+            MATCH (user:User {username: $username})-[:OWNS]->(recipe:Recipe)-[:MADE_WITH]->(i:Ingredient {name: $ingredient})
             RETURN recipe.name AS recipeName
             ";
 
@@ -310,7 +310,7 @@ public class DBQueryModel
     public static async Task<List<string>> GetIngredientNodeNames(string username)
     {
         var query = @"
-        MERGE (user:User {username: $username})-[:OWNS]->(ingredient:Ingredient)
+        MATCH (user:User {username: $username})-[:OWNS]->(ingredient:Ingredient)
         RETURN ingredient.name AS ingredientName
         ";
 
