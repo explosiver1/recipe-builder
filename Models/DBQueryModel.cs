@@ -170,7 +170,7 @@ public class DBQueryModel
     public static async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
         var query = @"
-            MERGE (ingredient:Ingredient {name: $ingredientName}) 
+            MERGE (ingredient:Ingredient {name: $ingredientName})
             RETURN COUNT(ingredient) > 0
             ";
 
@@ -268,7 +268,7 @@ public class DBQueryModel
             RETURN COUNT(cookbook) > 0
         ";
 
-        var cookbookName = username + name;
+        var cookbookName = name;
 
         var session = driver.AsyncSession();
         try
@@ -906,8 +906,10 @@ public class DBQueryModel
             name = cbName;
             startLabel = "User";
         }
-        string query = "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})\n " +
-                                    "DELETE cb\n" +
+        string query = "MATCH (:" + startLabel + " {username:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})\n " +
+                                    "WITH cb\n" +
+                                    "DETACH DELETE cb\n" +
+                                    "WITH cb\n" +
                         "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(cbk:Cookbook {name:'" + name + "'})\n " +
                         "return NOT(Count(cbk) > 0)";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
