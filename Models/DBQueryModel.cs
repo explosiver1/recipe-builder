@@ -100,19 +100,13 @@ public class DBQueryModel
             "servings: " + servings + "\n" +
             "servingize: " + servingsize + "\n");
         var query = @"
-            MATCH (user:User {username: $user})
+            MATCH (user:User {username: $username})
             MERGE (recipe:Recipe {name: $recipeName})
             ON CREATE SET
-<<<<<<< HEAD
                 recipe.description = $description,
+                recipe.rating = $rating,
                 recipe.difficulty = $difficulty,
                 recipe.servings = $servings,
-=======
-                recipe.description = $description
-                recipe.description = $rating
-                recipe.difficulty = $difficulty
-                recipe.servings = $servings
->>>>>>> 8325352e6428e9b161c43464c30495b6ec8aa56e
                 recipe.servingSize = $servingsize
             MERGE (user)-[x:OWNS]->(recipe)
             RETURN COUNT(x) > 0
@@ -261,7 +255,7 @@ public class DBQueryModel
             MATCH (parent:Pantry{name:$parentName})
             MATCH (ingredient:Ingredient{name:$ingredientName})
             MERGE (parent)-[x:STORES]->(ingredient)
-            RETURN COUNT(x) > 0 
+            RETURN COUNT(x) > 0
             ";
         }
         else if (parent.Contains("ShoppingList"))
@@ -270,7 +264,7 @@ public class DBQueryModel
             MATCH (parent:ShoppingList{name:$parentName})
             MATCH (ingredient:Ingredient{name:$ingredientName})
             MERGE (parent)-[x:PLANS_TO_BUY]->(ingredient)
-            RETURN COUNT(x) > 0 
+            RETURN COUNT(x) > 0
             ";
         }
         else
@@ -279,7 +273,7 @@ public class DBQueryModel
             MATCH (parent:Recipe{name:$parentName})
             MATCH (ingredient:Ingredient{name:$ingredientName})
             MERGE (parent)-[x:MADE_WITH]->(ingredient)
-            RETURN COUNT(x) > 0 
+            RETURN COUNT(x) > 0
             ";
         }
         var parentName = username + parent;
@@ -528,7 +522,7 @@ public class DBQueryModel
             var response = await session.RunAsync(query, new { mealName, recipeName });
             Console.WriteLine($"Meal node {mealName} connected to {recipe}!");
 
-             // Pulls all responses from query
+            // Pulls all responses from query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
 
             // Checks if there is a record && gets the first record which should be the bool response
@@ -568,10 +562,10 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { recipeName, stepName, order, description } );
+            var response = await session.RunAsync(query, new { recipeName, stepName, order, description });
             Console.WriteLine($"Step {order} created for {recipeName}!");
 
-             // Pulls all responses from query
+            // Pulls all responses from query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
 
             // Checks if there is a record && gets the first record which should be the bool response
@@ -610,7 +604,7 @@ public class DBQueryModel
             var response = await session.RunAsync(query, new { tag, recipeName });
             Console.WriteLine($"Tag {tag} created and connected to {recipeName}!");
 
-             // Pulls all responses from query
+            // Pulls all responses from query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
 
             // Checks if there is a record && gets the first record which should be the bool response

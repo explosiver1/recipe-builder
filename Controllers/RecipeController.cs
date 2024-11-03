@@ -150,6 +150,7 @@ namespace RecipeBuilder.Controllers
                 test = DBQueryModel.CreateRecipeNode(at.username,
                     recipeVM.recipe.Name,
                     recipeVM.recipe.Description,
+                    recipeVM.recipe.Rating.ToString(),
                     recipeVM.recipe.Difficulty.ToString(),
                     recipeVM.recipe.numServings.ToString(),
                     recipeVM.recipe.servingSize).Result;
@@ -166,8 +167,9 @@ namespace RecipeBuilder.Controllers
             }
 
             // Redirect to Look
-            Debug.WriteLine($"Redirecting to Look with recipeName: {recipeVM.recipe.Name}");
-            return RedirectToAction("Look", new { recipeName = recipeVM.recipe.Name });
+            //Debug.WriteLine($"Redirecting to Look with recipeName: {recipeVM.recipe.Name}");
+            //Redirecting to Index instead because the other redirect kept throwing an error loop
+            return RedirectToAction("Index");
         }
 
         // Edit method (GET): Display the form to edit an existing recipe
@@ -203,6 +205,7 @@ namespace RecipeBuilder.Controllers
             {
                 RecipeLookVM rlvm = new RecipeLookVM { recipe = new Recipe() };
                 rlvm.msg = msg;
+                return View(rlvm);
             }
             //Recipe? recipeModel = SeedData.GetRecipe(recipeName);
             //Debug.WriteLine(recipeModel != null ? $"Recipe found: {recipeModel.Name}" : "Recipe not found");
