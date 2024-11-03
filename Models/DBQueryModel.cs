@@ -38,7 +38,6 @@ public class DBQueryModel
             RETURN COUNT(u) > 0
         ";
 
-
         // Opens a session for Neo4j
         var session = driver.AsyncSession();
         try
@@ -89,8 +88,8 @@ public class DBQueryModel
     // }
 
     // CreateRecipe()
-    // TODO - test results/add group authentication
-    public static async Task<bool> CreateRecipeNode(string username, string recipe, string description, string rating, string difficulty, string servings, string servingsize)
+    // TODO - Test results
+    public static async Task<bool> CreateRecipeNode(string username, string recipe, string description = "", string rating = "", string difficulty = "", string servings = "", string servingsize = "")
     {
         var query = @"
             MATCH (user:User {username: $user})
@@ -101,8 +100,8 @@ public class DBQueryModel
                 recipe.difficulty = $difficulty
                 recipe.servings = $servings
                 recipe.servingSize = $servingsize
-            MERGE (user)-[:OWNS]->(recipe)
-            RETURN COUNT(recipe) > 0
+            MERGE (user)-[x:OWNS]->(recipe)
+            RETURN COUNT(x) > 0
         ";
 
         var recipeName = username + recipe;
@@ -117,7 +116,6 @@ public class DBQueryModel
 
             // Checks if there is a record and gets the first record which should be the bool response
             bool recipeCreated = records.Any() && records.First()[0].As<bool>();
-
             Console.WriteLine($"Recipe {recipeName} created!");
             return recipeCreated;
         }
@@ -135,7 +133,7 @@ public class DBQueryModel
 
 
     // GetRecipes()
-    // All Recipes a User Owns
+    // Gets a list of all the recipe names a user owns
     // TODO - Add Group Parameter
     public static async Task<List<string>> GetRecipeNodeNames(string username)
     {
@@ -173,8 +171,8 @@ public class DBQueryModel
         var query = @"
             MATCH (user:User {name: $user})
             MERGE (ingredient:Ingredient {name: $ingredientName})
-            MERGE (user)-(:OWNS)->(ingredient)
-            RETURN COUNT(ingredient) > 0
+            MERGE (user)-(x:OWNS)->(ingredient)
+            RETURN COUNT(x) > 0
             ";
 
         var ingredientName = username + ingredient;
@@ -206,8 +204,9 @@ public class DBQueryModel
     }
 
     // MergeIngredient()
-    // TODO - return success/fail
-    // What's going on with the parent parameter?
+    // TODO - Test results
+    // Used when adding ingredients to Recipe, Shopping List, or Pantry (must create the nodes first)
+    // The parent is the name of the node you are adding ingredients too
     public static async Task<bool> ConnectIngredientNode(string username, string parent, string ingredient)
     {
         string query;
@@ -216,7 +215,8 @@ public class DBQueryModel
             query = @"
             MATCH (parent:Pantry{name:$parentName})
             MATCH (ingredient:Ingredient{name:$ingredientName})
-            CREATE (parent)-[:STORES]->(ingredient)
+            MERGE (parent)-[x:STORES]->(ingredient)
+            RETURN COUNT(x) > 0 
             ";
         }
         else if (parent.Contains("ShoppingList"))
@@ -224,7 +224,8 @@ public class DBQueryModel
             query = @"
             MATCH (parent:ShoppingList{name:$parentName})
             MATCH (ingredient:Ingredient{name:$ingredientName})
-            CREATE (parent)-[:PLANS_TO_BUY]->(ingredient)
+            MERGE (parent)-[x:PLANS_TO_BUY]->(ingredient)
+            RETURN COUNT(x) > 0 
             ";
         }
         else
@@ -232,7 +233,8 @@ public class DBQueryModel
             query = @"
             MATCH (parent:Recipe{name:$parentName})
             MATCH (ingredient:Ingredient{name:$ingredientName})
-            CREATE (parent)-[:MADE_WITH]->(ingredient)
+            MERGE (parent)-[x:MADE_WITH]->(ingredient)
+            RETURN COUNT(x) > 0 
             ";
         }
         var parentName = username + parent;
@@ -241,8 +243,16 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { parentName, ingredientName });
+            var response = await session.RunAsync(query, new { parentName, ingredientName });
             Console.WriteLine($"Parent node {parentName} connected to {ingredient}!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool nodesConnected = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + nodesConnected);
+            return nodesConnected;
         }
         catch (Exception ex)
         {
@@ -253,12 +263,11 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
-
-        return true;
     }
 
     // GetIngredients()
-    // All ingredients a User Owns
+    // Gets a list of all the names of ingredients a user owns
+    // Unsure if works with no ingredients
     public static async Task<List<string>> GetIngredientNodeNames(string username)
     {
         var query = @"
@@ -289,17 +298,16 @@ public class DBQueryModel
     }
 
     // CreateCookbookNode()
-    // TODO - return success/fail
-    // TODO - Add Group Parameter
-    public static async Task<bool> CreateCookbookNode(string username, string name, string description)
+    // TODO - Test no description input
+    public static async Task<bool> CreateCookbookNode(string username, string name, string description = "")
     {
         var query = @"
             MATCH (user:User{username: $username})
             MERGE (cookbook:Cookbook {name: $cookbookName})
             ON CREATE SET
                 cookbook.description = $description
-            MERGE (user)-[:OWNS]->(cookbook)
-            RETURN COUNT(cookbook) > 0
+            MERGE (user)-[x:OWNS]->(cookbook)
+            RETURN COUNT(x) > 0
         ";
 
         var cookbookName = name;
@@ -330,8 +338,7 @@ public class DBQueryModel
     }
 
     // CreateTool()
-    // TODO - return success/fail
-    // TODO - Match and Connect to User Node
+    // TODO - Test results
     public static async Task<bool> CreateToolNode(string toolName)
     {
         var query = @"
@@ -383,12 +390,10 @@ public class DBQueryModel
     // }
 
     // CreateShopListNode()
-    // TODO - return success/fail
-    // TODO - Match and Connect to User Node
+    // TODO - Test results
     public static async Task<bool> CreateShoppingListNode(string username)
     {
         var query = @"
-            MATCH (user:User{username: $username})
             MERGE (shopList:ShoppingList {name: $shopListName})
             RETURN COUNT(shopList) > 0
             ";
@@ -397,7 +402,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { username, shopListName });
+            var response = await session.RunAsync(query, new { shopListName });
             Console.WriteLine($"Shopping List node {shopListName} created!");
 
             // Pulls all responses from query
@@ -419,9 +424,9 @@ public class DBQueryModel
         }
     }
 
+
     // CreateMealNode()
-    // TODO - return success/fail
-    // TODO - Match to User/Group First
+    // TODO - Test results
     public static async Task<bool> CreateMealNode(string username, string meal, string date)
     {
         var query = @"
@@ -457,7 +462,9 @@ public class DBQueryModel
         }
     }
 
+
     // MergeMealNode()
+    // Used for adding all recipes within a meal
     // TODO - return success/fail
     public static async Task<bool> ConnectMealNode(string username, string meal, string recipe)
     {
@@ -473,8 +480,15 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { mealName, recipeName });
+            var response = await session.RunAsync(query, new { mealName, recipeName });
             Console.WriteLine($"Meal node {mealName} connected to {recipe}!");
+
+             // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool mealConnected = records.Any() && records.First()[0].As<bool>();
+            return mealConnected;
         }
         catch (Exception ex)
         {
@@ -485,36 +499,39 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
-
-        return true;
     }
 
+
     // CreateStepNode()
-    // TODO - success/fail
-    // TODO - Match to User/Group First
-    public static async Task<bool> CreateStepNode(string username, Dictionary<string, object> stepData, string recipe)
+    // TODO - Test results
+    // Order is the step number
+    public static async Task<bool> CreateStepNode(string username, string recipe, string order, string description = "")
     {
         var query = @"
         MATCH (recipe:Recipe {name: $recipeName})
-        CREATE (step:Step {
-            description: $description,
-            step_number: $stepNumber
-        })
-        CREATE (recipe)-[:HAS_STEP]->(step)
+        MERGE (step:Step {name: $stepName})
+        ON CREATE SET
+            step.order = order: $order
+            step.description = description: $description
+        MERGE (recipe)-[x:HAS_STEP]->(step)
+        RETURN COUNT(x) > 0
         ";
 
         var recipeName = username + recipe;
+        var stepName = recipeName + "Step" + order;
 
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new
-            {
-                description = stepData["description"],
-                stepNumber = stepData["step_number"],
-                recipeName
-            });
-            Console.WriteLine($"Step {stepData["step_number"]} created for {recipeName}!");
+            var response = await session.RunAsync(query, new { recipeName, stepName, order, description } );
+            Console.WriteLine($"Step {order} created for {recipeName}!");
+
+             // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool mealCreated = records.Any() && records.First()[0].As<bool>();
+            return mealCreated;
         }
         catch (Exception ex)
         {
@@ -525,8 +542,8 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
-        return true;
     }
+
 
     // CreateTagNode()
     // TODO - return success/fail
@@ -536,8 +553,8 @@ public class DBQueryModel
         var query = @"
         MATCH (recipe:Recipe {name: $recipeName})
         MERGE (tag:Tag {name: $tag})
-        MERGE (recipe)-[:TAGGED_WITH]->(tag)
-        RETURN COUNT(tag) > 0
+        MERGE (recipe)-[x:TAGGED_WITH]->(tag)
+        RETURN COUNT(x) > 0
         ";
 
         var recipeName = username + recipe;
@@ -548,6 +565,12 @@ public class DBQueryModel
             var response = await session.RunAsync(query, new { tag, recipeName });
             Console.WriteLine($"Tag {tag} created and connected to {recipeName}!");
 
+             // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool tagCreated = records.Any() && records.First()[0].As<bool>();
+            return tagCreated;
         }
         catch (Exception ex)
         {
@@ -558,8 +581,6 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
-
-        return true;
     }
 
 
@@ -883,11 +904,13 @@ public class DBQueryModel
         return cbks;
     }
 
+    // Doesn't return bool in query response yet
     public static async Task<bool> EditCookBook(string username, string name, string description)
     {
         var query = @"
             MATCH (cookbook:Cookbook {name: $cookbookName})
             SET cookbook.description = $description
+
         ";
 
         var cookbookName = username + name;
