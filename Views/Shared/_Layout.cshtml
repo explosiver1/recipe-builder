@@ -43,7 +43,7 @@
                             </a>
                             <ul class="dropdown-menu" aria-labelledby="cookbookDropdown">
                                 <li>
-                                    <a class="dropdown-item" asp-area="" asp-controller="MealPlanner" asp-action="Index">Meal Schedule</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="MealPlanner" asp-action="Index" asp-route-date="@DateOnly.FromDateTime(DateTime.Now)">Meal Schedule</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item" asp-area="" asp-controller="MealPlanner" asp-action="Daily" asp-route-date="@DateOnly.FromDateTime(DateTime.Now)">Today's Schedule</a>

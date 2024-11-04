@@ -5,12 +5,11 @@ namespace RecipeBuilder.ViewModels
 {
 public class MealPlannerWeekVM
 {
-    public MealPlanner mealPlanner { get; set; }
-    public MPWeek selectedWeek { get; set; } = new MPWeek();
+    public MPWeek selectedWeek { get; set; }
 
     public MealPlannerWeekVM()
     {
-        mealPlanner = new MealPlanner();
+        selectedWeek = new MPWeek();
     }
 }
 }
