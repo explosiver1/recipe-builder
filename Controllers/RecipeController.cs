@@ -14,6 +14,7 @@ namespace RecipeBuilder.Controllers
         {
             if (id == "-9999" && msg != "")
             {
+                Console.WriteLine("Received error message on Recipe/Index: " + msg);
                 RecipeIndexVM erroredViewModel = new RecipeIndexVM();
                 erroredViewModel.msg = msg;
                 return View(erroredViewModel);
@@ -84,11 +85,10 @@ namespace RecipeBuilder.Controllers
         }
 
         [HttpPost]
-        public IActionResult Remove(string recipeToRemove)
+        public IActionResult RemoveRecipe(string recipeToRemove)
         {
             AuthToken at;
             bool test;
-
             try
             {
                 at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
@@ -97,16 +97,17 @@ namespace RecipeBuilder.Controllers
             catch (Exception e)
             {
                 Console.WriteLine("Error, recipe could not be delete. Exception: " + e);
-                return Index("-9999", "Error, recipe could not be deleted. Exception: " + e);
+
+                return RedirectToAction("Index", new { id = "-9999", msg = "Error, recipe could not be deleted. Exception: " + e });
             }
 
             if (test)
             {
-                return Index("");
+                return RedirectToAction("Index");
             }
             else
             {
-                return Index("-9999", "Error, recipe could not be deleted. No Exception Thrown.");
+                return RedirectToAction("Index", new { id = "-9999", msg = "Error, recipe could not be deleted. No Exception Thrown." });
             }
         }
 
