@@ -80,6 +80,7 @@ namespace RecipeBuilder.Controllers
             return View(viewModel);
         }
 
+        // TODO: Handle nullreference exception when not everything is enter into recipe form
         // Add method (POST): Handles form submission to create a new recipe
         [HttpPost]
         public IActionResult Add(RecipeAddVM recipeVM)
@@ -98,6 +99,8 @@ namespace RecipeBuilder.Controllers
             AuthToken at;
             bool test;
 
+            try
+            {
             // Parse Tags
             recipeVM.recipe.Tags = recipeVM.TagsInput.Split(',')
                                         .Select(tag => tag.Trim())
@@ -138,8 +141,7 @@ namespace RecipeBuilder.Controllers
 
             // ** Add the recipe to SeedData here **
             //SeedData.GetRecipeList().Add(recipeVM.recipe);
-            try
-            {
+
                 Console.WriteLine("Entering try block on Account/Add");
                 at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
                 if (!at.Validate())
@@ -219,7 +221,7 @@ namespace RecipeBuilder.Controllers
                 {
                     throw new Exception("Authentication Expired. Please login again.");
                 }
-                recipeModel = DBQueryModel.GetRecipe(recipeName, at).Result;
+                recipeModel = DBQueryModel.GetRecipe(at.username, recipeName).Result;
             }
             catch (Exception e)
             {
