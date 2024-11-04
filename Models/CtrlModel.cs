@@ -265,5 +265,64 @@ public static class CtrlModel
         {
             new MealSet { Name = $"Meal for {date}", Description = $"Description for meal on {date}" }
         };
+    }
+
+    // Get MealPlanner Monthly Data
+    public static MPMonth getMealsForMonth(DateOnly date)
+    {
+        Console.WriteLine("Starting CtrlModel.getMealsForMonth method for {0}", date);
+        // Get the date range for the current month
+        var (startOfMonth, endOfMonth) = DateHelper.GetDateRangeForCurrentMonth();
+        Console.WriteLine("Got Date Range for Month. Start: {0} End: {1}", startOfMonth, endOfMonth);
+        
+        // Get first day of last week of month
+        var startOfLastWeekOfMonth = DateHelper.GetStartOfWeek(endOfMonth);
+        Console.WriteLine("Start of Last week of month: {0}",startOfLastWeekOfMonth);
+        
+        // Get first day of first week of month
+        var startOfFirstWeekOfMonth = DateHelper.GetStartOfWeek(startOfMonth);
+        Console.WriteLine("Start of First week of month: {0}",startOfFirstWeekOfMonth);
+
+        // Variable to track current day working with
+        DateOnly day = startOfFirstWeekOfMonth;
+
+        // Variable for Month data
+        MPMonth month = new MPMonth();
+        Console.WriteLine("Ready to begin loops to populate month data");
+
+        // Loop through each week, new week
+        for (DateOnly startOfWeek = startOfFirstWeekOfMonth; startOfWeek <= startOfLastWeekOfMonth; startOfWeek = startOfWeek.AddDays(7))
+        {
+            MPWeek currentWeek = new MPWeek();
+            Console.WriteLine("Created new Week");
+            // Loop through days of week, populating day data
+            for (int i = 0; i < 7; i++)
+            {
+                Console.WriteLine("Creating new day for {0}", day);
+                // Get data for day
+                MPDay currentDay = new MPDay
+                {
+                    Date = day,
+                    Meals = new List<MPMeal>()
+                    // Meals = CtrlModel.getMealsForDate(day).Select(meal => new MPMeal
+                    // {
+                    //     mealDescription = meal.Description,
+                    //     recipes = meal.Recipes
+                    // }).ToList()
+                };
+                Console.WriteLine("Data for new day obtained");
+                // Add day to week
+                currentWeek.Days.Add(currentDay);
+                Console.WriteLine("Day added to current week");
+                // Increment day to next date
+                day = day.AddDays(1);
+                Console.WriteLine("Ready for next day: {0}", day);
+            }
+            // Add week to month
+            month.weeks.Add(currentWeek);
+            Console.WriteLine("Added new week");
         }
+        Console.WriteLine("Returning Month Data");
+        return month;
+    }
 }

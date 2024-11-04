@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
 using RecipeBuilder.ViewModels;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace RecipeBuilder.Controllers
 {
@@ -19,21 +20,41 @@ namespace RecipeBuilder.Controllers
             return View(viewModel);
         }
 
-        // GET: /MealPlanner/Month
+        // GET: /MealPlanner/Month/ given date
         [HttpGet]
         public IActionResult Month(DateOnly date)
         {
-            // Get the date range for the current month
-            var (startOfMonth, endOfMonth) = DateHelper.GetDateRangeForCurrentMonth();
+            // Initialize VM to be sent to view
+            MealPlannerMonthVM monthVM = new MealPlannerMonthVM();
+            Console.WriteLine("Created blank monthVM for {0}", date);
+            // Set Month Name
+            monthVM.monthName = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(date.Month);
+            Console.WriteLine("Month Name Set: {0}", monthVM.monthName);
 
-            // Create and populate the view model with meal data
-            var viewModel = new MealPlannerMonthVM
-            {
-                MealPlanners = GetMealPlansForDateRange(startOfMonth, endOfMonth)
-            };
+            Console.WriteLine("Calling CtrlModel to get Data");
+            // Get month data to VM
+            monthVM.monthPlans = CtrlModel.getMealsForMonth(date); 
+            Console.WriteLine("Data received from CtrlModel. Sending to View");
 
-            return View(viewModel);
+            return View(monthVM);
         }
+        // // GET: /MealPlanner/Month
+        // [HttpGet]
+        // public IActionResult Month(DateOnly date)
+        // {
+        //     // Get the date range for the current month
+        //     var (startOfMonth, endOfMonth) = DateHelper.GetDateRangeForCurrentMonth();
+
+        //     // Create and populate the view model with meal data
+        //     var viewModel = new MealPlannerMonthVM
+        //     {
+        //         MealPlanners = GetMealPlansForDateRange(startOfMonth, endOfMonth),
+        //         firstDayOfMonth = startOfMonth.DayOfWeek,
+        //         lastDayOfMonth = endOfMonth.DayOfWeek
+        //     };
+
+        //     return View(viewModel);
+        // }
 
         // GET: /MealPlanner/Daily
         [HttpGet]
