@@ -83,6 +83,33 @@ namespace RecipeBuilder.Controllers
             return View(viewModel);
         }
 
+        [HttpPost]
+        public IActionResult Remove(string recipeToRemove)
+        {
+            AuthToken at;
+            bool test;
+
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                test = DBQueryModel.DeleteRecipe(recipeToRemove, at).Result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error, recipe could not be delete. Exception: " + e);
+                return Index("-9999", "Error, recipe could not be deleted. Exception: " + e);
+            }
+
+            if (test)
+            {
+                return Index("");
+            }
+            else
+            {
+                return Index("-9999", "Error, recipe could not be deleted. No Exception Thrown.");
+            }
+        }
+
         // TODO: Handle nullreference exception when not everything is enter into recipe form
         // Add method (POST): Handles form submission to create a new recipe
         [HttpPost]
@@ -104,46 +131,46 @@ namespace RecipeBuilder.Controllers
 
             try
             {
-            // Parse Tags
-            recipeVM.recipe.Tags = recipeVM.TagsInput.Split(',')
-                                        .Select(tag => tag.Trim())
-                                        .Where(tag => !string.IsNullOrEmpty(tag))
-                                        .ToList();
+                // Parse Tags
+                recipeVM.recipe.Tags = recipeVM.TagsInput.Split(',')
+                                            .Select(tag => tag.Trim())
+                                            .Where(tag => !string.IsNullOrEmpty(tag))
+                                            .ToList();
 
-            // Parse Ingredients
-            recipeVM.recipe.Ingredients = recipeVM.IngredientsInput.Split('\n')
-                                        .Select(line => new IngredientDetail { Name = line.Trim() })
-                                        .Where(ingredient => !string.IsNullOrEmpty(ingredient.Name))
-                                        .ToList();
+                // Parse Ingredients
+                recipeVM.recipe.Ingredients = recipeVM.IngredientsInput.Split('\n')
+                                            .Select(line => new IngredientDetail { Name = line.Trim() })
+                                            .Where(ingredient => !string.IsNullOrEmpty(ingredient.Name))
+                                            .ToList();
 
-            // Parse Serving Size (assuming a format like "cup, 2")
-            /*
-            var servingSizeParts = recipeVM.ServingSizeInput.Split(',');
-            if (servingSizeParts.Length == 2)
-            {
-                string unit = servingSizeParts[0].Trim();
-                if (int.TryParse(servingSizeParts[1].Trim(), out int amount))
+                // Parse Serving Size (assuming a format like "cup, 2")
+                /*
+                var servingSizeParts = recipeVM.ServingSizeInput.Split(',');
+                if (servingSizeParts.Length == 2)
                 {
-                    recipeVM.recipe.servingSize = string.Empty; //new Dictionary<string, int> { { unit, amount } };
-                }
-            } */
+                    string unit = servingSizeParts[0].Trim();
+                    if (int.TryParse(servingSizeParts[1].Trim(), out int amount))
+                    {
+                        recipeVM.recipe.servingSize = string.Empty; //new Dictionary<string, int> { { unit, amount } };
+                    }
+                } */
 
-            recipeVM.recipe.servingSize = recipeVM.ServingSizeInput;
+                recipeVM.recipe.servingSize = recipeVM.ServingSizeInput;
 
-            // Parse Equipment
-            recipeVM.recipe.Equipment = recipeVM.EquipmentInput.Split(',')
-                                        .Select(tool => tool.Trim())
-                                        .Where(tool => !string.IsNullOrEmpty(tool))
-                                        .ToList();
+                // Parse Equipment
+                recipeVM.recipe.Equipment = recipeVM.EquipmentInput.Split(',')
+                                            .Select(tool => tool.Trim())
+                                            .Where(tool => !string.IsNullOrEmpty(tool))
+                                            .ToList();
 
-            // Parse Instructions
-            recipeVM.recipe.Instructions = recipeVM.InstructionsInput.Split('\n')
-                                        .Select(instruction => instruction.Trim())
-                                        .Where(instruction => !string.IsNullOrEmpty(instruction))
-                                        .ToList();
+                // Parse Instructions
+                recipeVM.recipe.Instructions = recipeVM.InstructionsInput.Split('\n')
+                                            .Select(instruction => instruction.Trim())
+                                            .Where(instruction => !string.IsNullOrEmpty(instruction))
+                                            .ToList();
 
-            // ** Add the recipe to SeedData here **
-            //SeedData.GetRecipeList().Add(recipeVM.recipe);
+                // ** Add the recipe to SeedData here **
+                //SeedData.GetRecipeList().Add(recipeVM.recipe);
 
                 Console.WriteLine("Entering try block on Account/Add");
                 at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
@@ -158,7 +185,9 @@ namespace RecipeBuilder.Controllers
                     recipeVM.recipe.Rating.ToString(),
                     recipeVM.recipe.Difficulty.ToString(),
                     recipeVM.recipe.numServings.ToString(),
-                    recipeVM.recipe.servingSize).Result;
+                    recipeVM.recipe.servingSize,
+                    recipeVM.recipe.CookTime.ToString(),
+                    recipeVM.recipe.PrepTime.ToString()).Result;
             }
             catch (Exception e)
             {
@@ -210,6 +239,7 @@ namespace RecipeBuilder.Controllers
             {
                 RecipeLookVM rlvm = new RecipeLookVM { recipe = new Recipe() };
                 rlvm.msg = msg;
+                rlvm.recipe.Name = "Error";
                 return View(rlvm);
             }
             //Recipe? recipeModel = SeedData.GetRecipe(recipeName);
@@ -225,6 +255,8 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
                 recipeModel = DBQueryModel.GetRecipe(at.username, recipeName).Result;
+
+                Console.WriteLine(@$"Recipe Found. Name: {recipeModel.Name}");
             }
             catch (Exception e)
             {
