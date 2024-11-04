@@ -303,12 +303,11 @@ public static class CtrlModel
                 MPDay currentDay = new MPDay
                 {
                     Date = day,
-                    Meals = new List<MPMeal>()
-                    // Meals = CtrlModel.getMealsForDate(day).Select(meal => new MPMeal
-                    // {
-                    //     mealDescription = meal.Description,
-                    //     recipes = meal.Recipes
-                    // }).ToList()
+                    Meals = CtrlModel.getMealsForDate(day).Select(meal => new MPMeal
+                    {
+                        mealDescription = meal.Description,
+                        recipes = meal.Recipes
+                    }).ToList()
                 };
                 Console.WriteLine("Data for new day obtained");
                 // Add day to week
