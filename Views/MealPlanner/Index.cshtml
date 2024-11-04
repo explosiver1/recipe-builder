@@ -80,8 +80,19 @@
         <h1 class="display-4">Meal Schedule</h1>
         <hr class="rounded">
         <br>
-        <h2 class="schedule-title">Today</h2>
+        <h2 class="schedule-title">Today: @Model.ScheduledMealsToday.Date.DayOfWeek @Model.ScheduledMealsToday.Date</h2>
         <div class="schedule">
+            @foreach (var meal in @Model.ScheduledMealsToday.ScheduledMeals)
+            {
+                <div class="day">
+                    @* Make this a link that goes to meal look with asp-route-id=@meal.Name *@
+                    <p>Meal @(@Model.ScheduledMealsToday.ScheduledMeals.IndexOf(meal) + 1) Recipes</p>
+                    @foreach (var recipe in meal.Recipes)
+                    {
+                        <p>@recipe.Name</p>
+                    }
+                </div>
+            }
             <div class="day">
                 <p>Meal 1 Recipes</p>
             </div>
@@ -99,6 +110,20 @@
         <br><br>
         <h2 class="schedule-title">This Week</h2>
         <div class="schedule">
+            @foreach (var day in @Model.ScheduledMealsThisWeek.Days)
+            {
+                //Finish setting up link asp-route-date=@day.Date
+                <a>@day.Date.DayOfWeek @day.Date</a>
+                @foreach (var meal in day.Meals)
+                {
+                    <p>Meal @(@day.Meals.IndexOf(meal)+1) Recipes</p>
+                    @foreach (var recipe in meal.recipes)
+                    {
+                        <p>@recipe.Name</p>
+                    }
+                }
+                    
+            }
             <div class="day">
                 <p>Day 1 Recipes</p>
             </div>

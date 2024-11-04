@@ -7,9 +7,6 @@ namespace RecipeBuilder.ViewModels
     {
         public MPMonth monthPlans { get; set; } = new MPMonth();
         public string monthName {get; set;}
-        // public List<MealPlanner> MealPlanners { get; set; } = new List<MealPlanner>(); // List of meal plans for the month
-        // public DayOfWeek firstDayOfMonth;
-        // public DayOfWeek lastDayOfMonth;
 
         // Optional constructor
         public MealPlannerMonthVM()

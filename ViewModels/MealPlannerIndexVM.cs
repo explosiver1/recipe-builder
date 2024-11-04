@@ -5,8 +5,7 @@ namespace RecipeBuilder.ViewModels
 {
     public class MealPlannerIndexVM
     {
-        public MealPlanner mealPlanner { get; set; } = new MealPlanner();
-        public List<MealSet> ScheduledMealsToday { get; set; } = new List<MealSet>();
-        public List<MPDay> ScheduledMealsThisWeek { get; set; } = new List<MPDay>();
+        public MealPlanner ScheduledMealsToday { get; set; } = new MealPlanner();
+        public MPWeek ScheduledMealsThisWeek { get; set; } = new MPWeek();
     }
 }
