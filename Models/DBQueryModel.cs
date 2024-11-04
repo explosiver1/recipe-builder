@@ -96,9 +96,11 @@ public class DBQueryModel
             "username: " + username + "\n" +
             "recipe: " + recipe + "\n" +
             "description: " + description + "\n" +
+            "rating: " + rating + "\n" +
             "difficulty: " + difficulty + "\n" +
             "servings: " + servings + "\n" +
             "servingize: " + servingsize + "\n");
+
         var query = @"
             MATCH (user:User {username: $username})
             MERGE (recipe:Recipe {name: $recipeName})
@@ -112,7 +114,7 @@ public class DBQueryModel
             RETURN COUNT(x) > 0
         ";
 
-        var recipeName = recipe;
+        var recipeName = username + recipe;
 
         var session = driver.AsyncSession();
         try
@@ -135,6 +137,53 @@ public class DBQueryModel
         finally
         {
             // Ensures the session is closed
+            await session.CloseAsync();
+        }
+    }
+
+    // MergeRecipe()
+    // Used when adding a recipe to a cookbook or to a meal
+    public static async Task<bool> ConnectRecipeNode(string username, string parent, string recipe)
+    {
+        string query;
+
+        if (parent.Contains(""))
+        {
+            query = @"
+            test
+            ";
+        }
+        else
+        {
+            query = @"
+            test
+            ";
+        }
+
+        var parentName = username + parent;
+        var recipeName = username + recipe;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            var response = await session.RunAsync(query, new { parentName, recipeName });
+            Console.WriteLine($"Parent node {parentName} connected to {recipe}!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool nodesConnected = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + nodesConnected);
+            return nodesConnected;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
             await session.CloseAsync();
         }
     }
@@ -646,6 +695,79 @@ public class DBQueryModel
         }
     }
 
+    // Playing around with new GetRecipe
+    public static async Task<Recipe> GetRecipe(string username, string recipe, string tool = "", string tag = "")
+    {
+        var query = @"
+            MATCH (recipe:Recipe {name: $recipeName})
+            OPTIONAL MATCH (tool:Tool {name: $toolName})
+            OPTIONAL MATCH (tag:Tag {name: $tagName})
+            RETURN recipe.name AS recipeName,
+                recipe.description AS description,
+                recipe.servingSize AS servingSize,
+                recipe.servings AS numServings,
+                recipe.rating AS rating,
+                recipe.difficulty AS difficulty,
+                tool.name AS toolName,
+                tag.name AS tagName
+        ";
+
+        var recipeName = username + recipe;
+        var toolName = !string.IsNullOrEmpty(tool) ? username + tool : null;
+        var tagName = !string.IsNullOrEmpty(tag) ? username + tag : null;
+
+        // Initialize the Neo4j session
+        var session = driver.AsyncSession();
+        Recipe resultRecipe = null;
+
+        try
+        {
+            // Run the query and pass in parameters
+            var result = await session.RunAsync(query, new { recipeName, toolName, tagName });
+            
+            // Process each record in the result
+            await result.ForEachAsync(record =>
+            {
+                // Initialize and populate a new Recipe object
+                resultRecipe = new Recipe
+                {
+                    Name = record["recipeName"]?.As<string>() ?? string.Empty,
+                    Description = record["description"]?.As<string>() ?? string.Empty,
+                    servingSize = record["servingSize"]?.As<string>() ?? string.Empty,
+                    numServings = record["numServings"]?.As<int>() ?? 0, // Default to 0 if null
+                    Rating = record["rating"]?.As<int>() ?? 1,            // Default to 1 if null
+                    Difficulty = record["difficulty"]?.As<int>() ?? 1,    // Default to 1 if null
+                    Equipment = new List<string>(),
+                    Tags = new List<string>()
+                };
+
+                // Add tool and tag names to Equipment and Tags lists if they are present
+                var toolNameValue = record["toolName"]?.As<string>();
+                if (!string.IsNullOrEmpty(toolNameValue))
+                {
+                    resultRecipe.Equipment.Add(toolNameValue);
+                }
+
+                var tagNameValue = record["tagName"]?.As<string>();
+                if (!string.IsNullOrEmpty(tagNameValue))
+                {
+                    resultRecipe.Tags.Add(tagNameValue);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+
+        return resultRecipe;
+    }
+
+
     //TESTING
     public static async Task<Recipe> GetRecipe(string recName, AuthToken at, string ingredient = "", string group = "")
     {
@@ -701,14 +823,14 @@ public class DBQueryModel
                     r.Name = "Error";
                 }
 
-                try
-                {
-                    r.CookTime = recNode["cooktime"].As<int>();
-                }
-                catch
-                {
-                    r.CookTime = 0;
-                }
+                // try
+                // {
+                //     r.CookTime = recNode["cooktime"].As<int>();
+                // }
+                // catch
+                // {
+                //     r.CookTime = 0;
+                // }
 
                 try
                 {
