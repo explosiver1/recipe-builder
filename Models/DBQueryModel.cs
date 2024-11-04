@@ -89,7 +89,7 @@ public class DBQueryModel
 
     // CreateRecipe()
     // TODO - Test results
-    public static async Task<bool> CreateRecipeNode(string username, string recipe, string description = "", string rating = "", string difficulty = "", string servings = "", string servingsize = "")
+    public static async Task<bool> CreateRecipeNode(string username, string recipe, string description = "", string rating = "", string difficulty = "", string servings = "", string servingsize = "", string cookTime = "", string prepTime = "")
     {
 
         Console.WriteLine("Entering CreateRecipeNode with parameters:\n" +
@@ -99,7 +99,9 @@ public class DBQueryModel
             "rating: " + rating + "\n" +
             "difficulty: " + difficulty + "\n" +
             "servings: " + servings + "\n" +
-            "servingize: " + servingsize + "\n");
+            "servingize: " + servingsize + "\n" +
+            "cookTime: " + cookTime + "\n" +
+            "prepTime: " + prepTime + "\n");
 
         var query = @"
             MATCH (user:User {username: $username})
@@ -109,7 +111,9 @@ public class DBQueryModel
                 recipe.rating = $rating,
                 recipe.difficulty = $difficulty,
                 recipe.servings = $servings,
-                recipe.servingSize = $servingsize
+                recipe.servingSize = $servingsize,
+                recipe.cookTime = $cookTime,
+                recipe.prepTime = $prepTime
             MERGE (user)-[x:OWNS]->(recipe)
             RETURN COUNT(x) > 0
         ";
@@ -119,7 +123,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { username, recipeName, description, rating, difficulty, servings, servingsize });
+            var response = await session.RunAsync(query, new { username, recipeName, description, rating, difficulty, servings, servingsize, cookTime, prepTime });
 
             // Pulls all responses from the query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
@@ -208,7 +212,7 @@ public class DBQueryModel
 
             await result.ForEachAsync(record =>
             {
-                recipeNames.Add(record["recipeName"].As<string>());
+                recipeNames.Add(GetCleanString(username, record["recipeName"].As<string>()));
             });
 
             Console.WriteLine($"Found {recipeNames.Count} recipes for user {username}!");
@@ -695,6 +699,7 @@ public class DBQueryModel
         }
     }
 
+
     // Playing around with new GetRecipe
     public static async Task<Recipe> GetRecipe(string username, string recipe, string tool = "", string tag = "")
     {
@@ -708,6 +713,8 @@ public class DBQueryModel
                 recipe.servings AS numServings,
                 recipe.rating AS rating,
                 recipe.difficulty AS difficulty,
+                recipe.prepTime AS prepTime,
+                recipe.cookTime AS cookTime,
                 tool.name AS toolName,
                 tag.name AS tagName
         ";
@@ -724,14 +731,14 @@ public class DBQueryModel
         {
             // Run the query and pass in parameters
             var result = await session.RunAsync(query, new { recipeName, toolName, tagName });
-            
+
             // Process each record in the result
             await result.ForEachAsync(record =>
             {
                 // Initialize and populate a new Recipe object
                 resultRecipe = new Recipe
                 {
-                    Name = record["recipeName"]?.As<string>() ?? string.Empty,
+                    Name = GetCleanString(username, record["recipeName"]?.As<string>() ?? string.Empty),
                     Description = record["description"]?.As<string>() ?? string.Empty,
                     servingSize = record["servingSize"]?.As<string>() ?? string.Empty,
                     numServings = record["numServings"]?.As<int>() ?? 0, // Default to 0 if null
@@ -768,6 +775,7 @@ public class DBQueryModel
     }
 
 
+    /*
     //TESTING
     public static async Task<Recipe> GetRecipe(string recName, AuthToken at, string ingredient = "", string group = "")
     {
@@ -869,7 +877,7 @@ public class DBQueryModel
 
                 firstPass = false;
             }
-            /*
+
             if (rNode != null)
             {
                 switch (rNode["type"].As<string>())
@@ -907,7 +915,7 @@ public class DBQueryModel
                         break;
                 }
             }
-            */
+
         }
         List<Tag> tags = await GetTagsByRecipe(recipeName, at);
         List<string> tagNames = new List<string>();
@@ -918,6 +926,7 @@ public class DBQueryModel
         r.Tags = tagNames;
         return r;
     }
+    */
 
 
     //TESTING
@@ -940,12 +949,12 @@ public class DBQueryModel
         }
         else
         {
-            name = recName;
+            name = at.username + recName;
             startLabel = "User";
         }
-        string query = "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->()-[:CATALOGUES]->(rec:Recipe {name:'" + name + "'})\n " +
-            "DELETE rec \n" +
-            "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->()-[:CATALOGUES]->(n:Recipe {name:'" + name + "'})\n " +
+        string query = "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(rec:Recipe {name:'" + name + "'})\n " +
+            "DETACH DELETE rec \n" +
+            "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(n:Recipe {name:'" + name + "'})\n " +
             "return NOT(Count(n) >0) ";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         //response is EagerResult<IReadOnlyList<IRecord>>
@@ -983,7 +992,7 @@ public class DBQueryModel
         }
         else
         {
-            name = cbName;
+            name = at.username + cbName;
             startLabel = "User";
         }
         string query = "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})-[r]->(b)\n " +
@@ -1132,7 +1141,7 @@ public class DBQueryModel
         }
         else
         {
-            name = cbName;
+            name = at.username + cbName;
             startLabel = "User";
         }
         string query = "MATCH (:" + startLabel + " {username:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})\n " +
@@ -1168,15 +1177,27 @@ public class DBQueryModel
         }
         else
         {
-            name = ingName;
+            name = at.username + ingName;
             startLabel = "User";
         }
-        string query = "MATCH (:" + startLabel + ")-[r]->(:Ingredient {name: " + ingName + "})\n " +
+        string query = "MATCH (:" + startLabel + ")-[r]->(t:Ingredient {name: " + ingName + "})\n " +
                                         "return t\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
         var record = irol.First<IRecord>();
+        var iNode = record["t"].As<INode>();
         Ingredient ing = new Ingredient();
+
+        try
+        {
+            ing.Name = GetCleanString(at.username, iNode["name"].As<string>() ?? string.Empty);
+            ing.Unit = GetCleanString(at.username, iNode["unit"].As<string>() ?? string.Empty);
+            ing.Description = GetCleanString(at.username, iNode["description"].As<string>() ?? string.Empty);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error accessing query results. Exception: " + e);
+        }
         return ing;
     }
 
@@ -1206,7 +1227,7 @@ public class DBQueryModel
         }
         else
         {
-            name = recName;
+            name = at.username + recName;
             startLabel = "User";
         }
         string query = "MATCH (:" + startLabel + ")-[r]->(b:Recipe {name: " + recName + "})\n " +
@@ -1220,7 +1241,7 @@ public class DBQueryModel
             var tNode = record["t"].As<INode>();
             try
             {
-                t.Name = tNode["name"].As<string>();
+                t.Name = GetCleanString(at.username, tNode["name"].As<string>());
             }
             catch
             {
@@ -1251,7 +1272,7 @@ public class DBQueryModel
         }
         else
         {
-            name = tagName;
+            name = at.username + tagName;
             startLabel = "User";
         }
         string query = "MATCH (:" + startLabel + ")-[:OWNS]->(:Cookbook)-[:CATALOGUES]->(:Recipe {name: " + recName + "})<-[:DESCRIBES]-(t:Tag)\n " +
@@ -1275,8 +1296,37 @@ public class DBQueryModel
         return record[0].As<bool>();
     }
 
+    /*
     private static string SanitizeQueryParameters(string s)
     {
         return s.Replace("'", "''");
     }
+    */
+
+    public static List<string> GetCleanList(string user, List<string> list)
+    {
+        List<string> cleanedList = new List<string>();
+
+        foreach (var item in list)
+        {
+            if (item.StartsWith(user))
+            {
+                string itemName = item.Substring(user.Length);
+                cleanedList.Add(itemName);
+            }
+        }
+        return cleanedList;
+    }
+
+    // id is the part you want you remove (it's usually just username but it may be recipe)
+    // ex. "jeff123BananaBreadStep1"
+    public static string GetCleanString(string id, string item)
+    {
+        if (item.StartsWith(id))
+        {
+            return item.Substring(id.Length);
+        }
+        return item; // Return the original string if no match
+    }
+
 }

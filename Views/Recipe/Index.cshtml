@@ -16,7 +16,7 @@
         padding: 10px 20px;
         font-size: 16px;
         color: white;
-        background-color: #4A743E; 
+        background-color: #4A743E;
         text-align: center;
         text-decoration: none;
         border-radius: 5px;
@@ -51,7 +51,7 @@
     /* align buttons side by side */
     .button-container {
         display: inline-block;
-        margin: 0 10px; 
+        margin: 0 10px;
     }
 
     .input-group .btn {
@@ -91,7 +91,7 @@
 </div>
 
 <div class="text-center">
-    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for general search*@ 
+    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for general search*@
     <div class="form-group">
         <input type="text" class="form-control" placeholder="Search Recipes..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
     </div><br>
@@ -110,6 +110,12 @@
                     <div class="button-container">
                         <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName="@recipe.Name" class="btn btn-create">View</a>
                     </div>
+                    <form method="post" asp-controller="Recipe" asp-action="RemoveRecipe" >
+                                <input type="hidden" name="recipeToRemove" value="@recipe.Name"/>
+                                <div class="button-container">
+                                    <button type="submit">Remove Recipe</button>
+                                </div>
+                    </form>
                 </div>
             </div>
         }
@@ -117,5 +123,5 @@
     else
     {
         <p>No Recipes Found.</p>
-    }    
+    }
 </div>

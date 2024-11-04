@@ -83,6 +83,33 @@ namespace RecipeBuilder.Controllers
             return View(viewModel);
         }
 
+        [HttpPost]
+        public IActionResult Remove(string recipeToRemove)
+        {
+            AuthToken at;
+            bool test;
+
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                test = DBQueryModel.DeleteRecipe(recipeToRemove, at).Result;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error, recipe could not be delete. Exception: " + e);
+                return Index("-9999", "Error, recipe could not be deleted. Exception: " + e);
+            }
+
+            if (test)
+            {
+                return Index("");
+            }
+            else
+            {
+                return Index("-9999", "Error, recipe could not be deleted. No Exception Thrown.");
+            }
+        }
+
         // TODO: Handle nullreference exception when not everything is enter into recipe form
         // Add method (POST): Handles form submission to create a new recipe
         [HttpPost]
@@ -158,7 +185,9 @@ namespace RecipeBuilder.Controllers
                     recipeVM.recipe.Rating.ToString(),
                     recipeVM.recipe.Difficulty.ToString(),
                     recipeVM.recipe.numServings.ToString(),
-                    recipeVM.recipe.servingSize).Result;
+                    recipeVM.recipe.servingSize,
+                    recipeVM.recipe.CookTime.ToString(),
+                    recipeVM.recipe.PrepTime.ToString()).Result;
             }
             catch (Exception e)
             {
@@ -227,7 +256,7 @@ namespace RecipeBuilder.Controllers
                 }
                 recipeModel = DBQueryModel.GetRecipe(at.username, recipeName).Result;
 
-                Console.WriteLine(@$"Recipe Found. Name: {recipeModel.Name}, Description: {recipeModel.Description}");
+                Console.WriteLine(@$"Recipe Found. Name: {recipeModel.Name}");
             }
             catch (Exception e)
             {
