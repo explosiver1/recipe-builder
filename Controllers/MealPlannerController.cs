@@ -11,12 +11,37 @@ namespace RecipeBuilder.Controllers
     {
         // GET: /MealPlanner/
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(DateOnly date)
         {
+            
+
+            var currentDate = date;
+            var startOfWeek = DateHelper.GetStartOfWeek(currentDate);
+            var datesInWeek = DateHelper.GetDatesForWeek(startOfWeek);
+
             var viewModel = new MealPlannerIndexVM
             {
-                mealPlanner = new MealPlanner()
+                ScheduledMealsThisWeek = new MPWeek
+                {
+                    Days = datesInWeek.Select(date =>
+                        new MPDay
+                        {
+                            Date = date, // Ensure the Date property exists in MPDay
+                            Meals = CtrlModel.getMealsForDate(date).Select(meal => new MPMeal
+                            {
+                                mealDescription = meal.Description,
+                                recipes = meal.Recipes
+                            }).ToList()
+                        }).ToList()
+                },
+
+                ScheduledMealsToday = new MealPlanner
+                {
+                    Date = date,
+                    ScheduledMeals = CtrlModel.getMealsForDate(date)
+                }
             };
+
             return View(viewModel);
         }
 
@@ -76,29 +101,28 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Week(DateOnly date)
         {
-        var currentDate = date;//DateOnly.FromDateTime(DateTime.Now);
-        var startOfWeek = DateHelper.GetStartOfWeek(currentDate);
-        var datesInWeek = DateHelper.GetDatesForWeek(startOfWeek);
+            var currentDate = date;//DateOnly.FromDateTime(DateTime.Now);
+            var startOfWeek = DateHelper.GetStartOfWeek(currentDate);
+            var datesInWeek = DateHelper.GetDatesForWeek(startOfWeek);
 
-        var viewModel = new MealPlannerWeekVM
-        {
-            mealPlanner = new MealPlanner(),
-            selectedWeek = new MPWeek
+            var viewModel = new MealPlannerWeekVM
             {
-                Days = datesInWeek.Select(date =>
-                    new MPDay
-                    {
-                        Date = date, // Ensure the Date property exists in MPDay
-                        Meals = CtrlModel.getMealsForDate(date).Select(meal => new MPMeal
+                selectedWeek = new MPWeek
+                {
+                    Days = datesInWeek.Select(date =>
+                        new MPDay
                         {
-                            mealDescription = meal.Description,
-                            recipes = meal.Recipes
+                            Date = date, // Ensure the Date property exists in MPDay
+                            Meals = CtrlModel.getMealsForDate(date).Select(meal => new MPMeal
+                            {
+                                mealDescription = meal.Description,
+                                recipes = meal.Recipes
+                            }).ToList()
                         }).ToList()
-                    }).ToList()
-            }
-        };
+                }
+            };
 
-        return View(viewModel);
+            return View(viewModel);
         }
 
         // Helper method to get meal plans for a date range (for the month view)
