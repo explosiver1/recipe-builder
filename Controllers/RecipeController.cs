@@ -101,46 +101,46 @@ namespace RecipeBuilder.Controllers
 
             try
             {
-            // Parse Tags
-            recipeVM.recipe.Tags = recipeVM.TagsInput.Split(',')
-                                        .Select(tag => tag.Trim())
-                                        .Where(tag => !string.IsNullOrEmpty(tag))
-                                        .ToList();
+                // Parse Tags
+                recipeVM.recipe.Tags = recipeVM.TagsInput.Split(',')
+                                            .Select(tag => tag.Trim())
+                                            .Where(tag => !string.IsNullOrEmpty(tag))
+                                            .ToList();
 
-            // Parse Ingredients
-            recipeVM.recipe.Ingredients = recipeVM.IngredientsInput.Split('\n')
-                                        .Select(line => new IngredientDetail { Name = line.Trim() })
-                                        .Where(ingredient => !string.IsNullOrEmpty(ingredient.Name))
-                                        .ToList();
+                // Parse Ingredients
+                recipeVM.recipe.Ingredients = recipeVM.IngredientsInput.Split('\n')
+                                            .Select(line => new IngredientDetail { Name = line.Trim() })
+                                            .Where(ingredient => !string.IsNullOrEmpty(ingredient.Name))
+                                            .ToList();
 
-            // Parse Serving Size (assuming a format like "cup, 2")
-            /*
-            var servingSizeParts = recipeVM.ServingSizeInput.Split(',');
-            if (servingSizeParts.Length == 2)
-            {
-                string unit = servingSizeParts[0].Trim();
-                if (int.TryParse(servingSizeParts[1].Trim(), out int amount))
+                // Parse Serving Size (assuming a format like "cup, 2")
+                /*
+                var servingSizeParts = recipeVM.ServingSizeInput.Split(',');
+                if (servingSizeParts.Length == 2)
                 {
-                    recipeVM.recipe.servingSize = string.Empty; //new Dictionary<string, int> { { unit, amount } };
-                }
-            } */
+                    string unit = servingSizeParts[0].Trim();
+                    if (int.TryParse(servingSizeParts[1].Trim(), out int amount))
+                    {
+                        recipeVM.recipe.servingSize = string.Empty; //new Dictionary<string, int> { { unit, amount } };
+                    }
+                } */
 
-            recipeVM.recipe.servingSize = recipeVM.ServingSizeInput;
+                recipeVM.recipe.servingSize = recipeVM.ServingSizeInput;
 
-            // Parse Equipment
-            recipeVM.recipe.Equipment = recipeVM.EquipmentInput.Split(',')
-                                        .Select(tool => tool.Trim())
-                                        .Where(tool => !string.IsNullOrEmpty(tool))
-                                        .ToList();
+                // Parse Equipment
+                recipeVM.recipe.Equipment = recipeVM.EquipmentInput.Split(',')
+                                            .Select(tool => tool.Trim())
+                                            .Where(tool => !string.IsNullOrEmpty(tool))
+                                            .ToList();
 
-            // Parse Instructions
-            recipeVM.recipe.Instructions = recipeVM.InstructionsInput.Split('\n')
-                                        .Select(instruction => instruction.Trim())
-                                        .Where(instruction => !string.IsNullOrEmpty(instruction))
-                                        .ToList();
+                // Parse Instructions
+                recipeVM.recipe.Instructions = recipeVM.InstructionsInput.Split('\n')
+                                            .Select(instruction => instruction.Trim())
+                                            .Where(instruction => !string.IsNullOrEmpty(instruction))
+                                            .ToList();
 
-            // ** Add the recipe to SeedData here **
-            //SeedData.GetRecipeList().Add(recipeVM.recipe);
+                // ** Add the recipe to SeedData here **
+                //SeedData.GetRecipeList().Add(recipeVM.recipe);
 
                 Console.WriteLine("Entering try block on Account/Add");
                 at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
@@ -207,6 +207,7 @@ namespace RecipeBuilder.Controllers
             {
                 RecipeLookVM rlvm = new RecipeLookVM { recipe = new Recipe() };
                 rlvm.msg = msg;
+                rlvm.recipe.Name = "Error";
                 return View(rlvm);
             }
             //Recipe? recipeModel = SeedData.GetRecipe(recipeName);
@@ -222,6 +223,8 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
                 recipeModel = DBQueryModel.GetRecipe(at.username, recipeName).Result;
+
+                Console.WriteLine(@$"Recipe Found. Name: {recipeModel.Name}, Description: {recipeModel.Description}");
             }
             catch (Exception e)
             {
