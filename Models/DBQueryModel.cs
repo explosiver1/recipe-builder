@@ -649,18 +649,22 @@ public class DBQueryModel
     //TESTING
     public static async Task<Recipe> GetRecipe(string recName, AuthToken at, string ingredient = "", string group = "")
     {
-        string name;
+        string recipeName;
         string startLabel;
+        string username;
         if (group != "")
         {
             bool gTest = await ValidateGroupMembership(group, at);
             if (gTest)
             {
-                name = group;
+                Console.WriteLine("Group " + group + " to be used.");
+                recipeName = group;
                 startLabel = "Group";
+                return new Recipe();
             }
             else
             {
+                Console.WriteLine("group validation failed");
                 Recipe r2 = new Recipe();
                 r2.Name = "ERROR";
                 return r2;
@@ -668,12 +672,17 @@ public class DBQueryModel
         }
         else
         {
-            name = recName;
+            Console.WriteLine("No group, using User " + at.username);
+            recipeName = recName; //SanitizeQueryParameters(recName);
+            username = at.username; //SanitizeQueryParameters(at.username);
             startLabel = "User";
         }
-        string query = "MATCH  (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->()-[:CATALOGUES]->(rec:Recipe {name:'" + name + "'})-[r]->(b)\n " +
+        //Changed parameterization to handle single quotes correctly.
+        string query = $@"MATCH  (:{startLabel} {{name: '{at.username}'}})-[:OWNS]->(rec:Recipe {{name: '{recipeName}'}})" + "\n" +
                                     // "MATCH (rec)<-[tr]-(c)\n" +
-                                    "return rec, r, b \n"; //tr, c\n";
+                                    "RETURN rec"; //tr, c\n";
+        Console.WriteLine(query);
+
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
         // var record = irol.First();
@@ -687,8 +696,8 @@ public class DBQueryModel
         foreach (var record in irol)
         {
             var recNode = record["rec"].As<INode>();
-            var rNode = record["r"].As<INode>();
-            var bNode = record["b"].As<INode>();
+            //var rNode = record["r"].As<INode>();
+            //var bNode = record["b"].As<INode>();
             if (firstPass)
             {
                 // Try-Catching all of them independently since many fields are optional.
@@ -738,6 +747,7 @@ public class DBQueryModel
 
                 firstPass = false;
             }
+            /*
             if (rNode != null)
             {
                 switch (rNode["type"].As<string>())
@@ -775,8 +785,9 @@ public class DBQueryModel
                         break;
                 }
             }
+            */
         }
-        List<Tag> tags = await GetTags(name, at);
+        List<Tag> tags = await GetTagsByRecipe(recipeName, at);
         List<string> tagNames = new List<string>();
         foreach (Tag tag in tags)
         {
@@ -1047,8 +1058,13 @@ public class DBQueryModel
         return ing;
     }
 
+    private static async Task<List<Ingredient>> GetIngredientsByRecipe(string recName, AuthToken at)
+    {
+        return new List<Ingredient>();
+    }
+
     //TESTING
-    private static async Task<List<Tag>> GetTags(string recName, AuthToken at, string group = "")
+    private static async Task<List<Tag>> GetTagsByRecipe(string recName, AuthToken at, string group = "")
     {
         string name;
         string startLabel;
@@ -1135,5 +1151,10 @@ public class DBQueryModel
         IReadOnlyList<IRecord> irol = response.Result;
         var record = irol.First<IRecord>();
         return record[0].As<bool>();
+    }
+
+    private static string SanitizeQueryParameters(string s)
+    {
+        return s.Replace("'", "''");
     }
 }
