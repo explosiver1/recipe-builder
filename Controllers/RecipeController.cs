@@ -22,7 +22,7 @@ namespace RecipeBuilder.Controllers
             List<Recipe> recipeList;
             RecipeIndexVM viewModel = new RecipeIndexVM();
             AuthToken at;
-            bool test;
+            string rPrint = "Recipes Received: ";
 
             try
             {
@@ -37,6 +37,7 @@ namespace RecipeBuilder.Controllers
                     List<string> recipeNameList = DBQueryModel.GetRecipeNodeNames(at.username).Result;
                     foreach (string recipeName in recipeNameList)
                     {
+                        rPrint += recipeName + ", ";
                         Recipe r = new Recipe();
                         r.Name = recipeName;
                         recipeList.Add(r);
@@ -47,6 +48,7 @@ namespace RecipeBuilder.Controllers
                     List<string> recipeNameList = DBQueryModel.GetRecipeNodeNamesByIngredient(at.username, id).Result;
                     foreach (string recipeName in recipeNameList)
                     {
+                        rPrint += recipeName + ", ";
                         Recipe r = new Recipe();
                         r.Name = recipeName;
                         recipeList.Add(r);
@@ -61,6 +63,7 @@ namespace RecipeBuilder.Controllers
                 return View("-9999", "Error getting recipes. Exception " + e);
             }
 
+            Console.WriteLine(rPrint);
             return View(viewModel);
         }
 
