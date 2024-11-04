@@ -123,5 +123,18 @@
     else
     {
         <p>No Recipes Found.</p>
+
     }
+
 </div>
+
+
+@if (Model != null)
+        {
+            @if (Model.msg != "")
+            {
+            <div>
+            <p>@Model.msg</p>
+            </div>
+            }
+        }

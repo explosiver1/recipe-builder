@@ -932,6 +932,7 @@ public class DBQueryModel
     //TESTING
     public static async Task<bool> DeleteRecipe(string recName, AuthToken at, string group = "")
     {
+        Console.WriteLine("Entering DeleteRecipe with recName: " + recName);
         string name;
         string startLabel;
         if (group != "")
@@ -952,20 +953,23 @@ public class DBQueryModel
             name = at.username + recName;
             startLabel = "User";
         }
-        string query = "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(rec:Recipe {name:'" + name + "'})\n " +
+        string query = "MATCH (:" + startLabel + " {username:'" + at.username + "'})-[:OWNS]->(rec:Recipe {name:'" + name + "'})\n " +
             "DETACH DELETE rec \n" +
-            "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(n:Recipe {name:'" + name + "'})\n " +
-            "return NOT(Count(n) >0) ";
+            "WITH rec \n" +
+            "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(rec:Recipe {name:'" + name + "'})\n " +
+            "return NOT(Count(rec) >0) ";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         //response is EagerResult<IReadOnlyList<IRecord>>
         IReadOnlyList<IRecord> irol = response.Result; //The Deconstruct() method has several outbound parameters. Result is one of them, and it can be referenced like a property here. First time I've seen this kind of behavior.'
         var record = irol.First(); //This gets the first IRecord of the list. This should be the only one in this case.
         if (record[0] != null)
         {
+            Console.WriteLine("Result: " + record[0].As<bool>());
             return record[0].As<bool>();
         }
         else
         {
+            Console.WriteLine("Returned record was null");
             return false;
         }
     }

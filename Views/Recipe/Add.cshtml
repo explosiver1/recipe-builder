@@ -101,4 +101,14 @@
             <button type="submit" class="btn btn-custom">Submit</button>
         </div>
     </form>
+
+    @if (Model != null)
+        {
+            @if (Model.msg != "")
+            {
+            <div>
+            <p>@Model.msg</p>
+            </div>
+            }
+        }
 </div>
