@@ -50,9 +50,11 @@ namespace RecipeBuilder.Models
                 return new List<Ingredient>();
             }//end if
 
+            //Ingredient no longer has Unit.
+            /*
             var filteredResults = Results.Where(ingredient => ingredient.Unit == unit).ToList();
-            Console.WriteLine($"{filteredResults.Count} ingredient(s) found matching '{unit}'");
-            return filteredResults;
+            Console.WriteLine($"{filteredResults.Count} ingredient(s) found matching '{unit}'"); */
+            return new List<Ingredient>(); //filteredResults;
         }// end FilterResults
 
         // Sorts the results alphabetically by ingredient name

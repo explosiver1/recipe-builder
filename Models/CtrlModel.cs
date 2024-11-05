@@ -3,7 +3,7 @@ using System;
 namespace RecipeBuilder.Models;
 
 /* This class exists to provide a single class for all controllers to call on without the complexity of the DB model
-Since multiple controllers need to call the same queries, this allows one method to be changed if needed 
+Since multiple controllers need to call the same queries, this allows one method to be changed if needed
 rather than multiple */
 public static class CtrlModel
 {
@@ -12,60 +12,102 @@ public static class CtrlModel
 
     /* GET METHODS */
 
-    public static List<Cookbook>  GetCookbookList()//string userName)
+    public static List<Cookbook> GetCookbookList(string username)//string userName)
     {
-        List<Cookbook> cookbookList = SeedData.GetCookbookList();// Update to be DBQueryModel Function Call
+        List<Cookbook> cookbookList = DBQueryModel.GetCookbooks(username).Result; //SeedData.GetCookbookList();// Update to be DBQueryModel Function Call
         return cookbookList;
     }
 
     /* Fetch Cookbook from DB by name & return to controller */
-    public static Cookbook?  GetCookbook(string cookbookName)
+    public static Cookbook? GetCookbook(string cookbookName, string username)
     {
-        Cookbook? cookbookObj = SeedData.GetCookbook(cookbookName);// Update to be DBQueryModel Function Call
+        Cookbook? cookbookObj = DBQueryModel.GetCookbook(cookbookName, username).Result; //SeedData.GetCookbook(cookbookName);// Update to be DBQueryModel Function Call
         return cookbookObj;
     }
 
-    public static List<Recipe>  GetRecipeList()//string userName)
-    
+    public static List<Recipe> GetRecipeList(string username)//string userName)
+
     {
-        List<Recipe> recipeList = SeedData.GetRecipeList();// Update to be DBQueryModel Function Call
+        List<Recipe> recipeList = new List<Recipe>();
+        foreach (string recipeName in GetRecipeNameList(username))
+        {
+            recipeList.Add(GetRecipe(username, recipeName)!);
+        } //DBQueryModel.GetRecipeNodeNames(username).Result; //SeedData.GetRecipeList();// Update to be DBQueryModel Function Call
         return recipeList;
     }
 
+    public static List<string> GetRecipeNameList(string username)
+    {
+        return DBQueryModel.GetRecipeNodeNames(username).Result;
+    }
+
     /* Fetch recipe from DB by name & return it to controller */
-    public static Recipe? GetRecipe(string recipeName)
+    public static Recipe? GetRecipe(string username, string recipeName)
     {
         // Will need updated to match DBQueryModel's Method & Parameters
         //Recipe recipe = DBQueryModel.GetRecipe(recipeName);
-        Recipe? recipe = SeedData.GetRecipe(recipeName);
+        Recipe? recipe = DBQueryModel.GetRecipe(username, recipeName).Result; //SeedData.GetRecipe(recipeName);
         return recipe;
     }
 
-    
 
-    public static List<Ingredient> GetIngredientList()
+
+    public static List<Ingredient> GetIngredientList(string username)
     {
-        List<Ingredient> myIngredients = SeedData.GetIngredientList();
+        List<Ingredient> myIngredients = new List<Ingredient>(); //SeedData.GetIngredientList();
+        foreach (string ingName in GetIngredients(username))
+        {
+            myIngredients.Add(DBQueryModel.GetIngredient(ingName, username).Result);
+        }
         return myIngredients;
     }
 
-    public static List<string> GetIngredientNameList()
+    public static Ingredient GetIngredient(string username, string ingName)
     {
-        List<string> myIngredients = SeedData.GetIngredientNameList();
+        return DBQueryModel.GetIngredient(ingName, username).Result;
+    }
+
+    public static IngredientDetail GetIngredientDetail(string username, string ingName)
+    {
+        return new IngredientDetail(); //Fill this in later;
+    }
+
+    public static List<string> GetIngredientNameList(string username)
+    {
+        List<string> myIngredients = DBQueryModel.GetIngredientNodeNames(username).Result; //SeedData.GetIngredientNameList();
         return myIngredients;
     }
 
-    public static List<Recipe> GetRecipesForIngredient(string IngredientName)
+    public static List<Recipe> GetRecipesForIngredient(string IngredientName, string username)
     {
-        List<Recipe> recipesWithIngredient = SeedData.GetRecipesForIngredient(IngredientName);
+        List<Recipe> recipesWithIngredient = new List<Recipe>(); //DBQueryModel.GetRecipeNodeNamesByIngredient(username, IngredientName).Result; //SeedData.GetRecipesForIngredient(IngredientName);
+        foreach (string recipeName in GetRecipeNamesForIngredient(IngredientName, username))
+        {
+            recipesWithIngredient.Add(DBQueryModel.GetRecipe(username, recipeName).Result);
+        }
+
         return recipesWithIngredient;
     }
 
+    public static List<string> GetRecipeNamesForIngredient(string IngredientName, string username)
+    {
+        return DBQueryModel.GetRecipeNodeNamesByIngredient(username, IngredientName).Result;
+    }
+
     // Send recipe data from user to DB (& return recipe to the controller?)
-    public static Recipe SetRecipe(string cookbookName, Recipe recipe)
+    public static Recipe SetRecipe(string username, Recipe recipe)
     {
         // Update to DB method
-        bool recipeAdded = RecipeSeedData.AddRecipe(cookbookName, recipe);
+        bool recipeAdded = DBQueryModel.CreateRecipeNode(username,
+            recipe.Name,
+            recipe.Description,
+            recipe.Rating.ToString(),
+            recipe.Difficulty.ToString(),
+            recipe.numServings.ToString(),
+            recipe.servingSize,
+            recipe.CookTime.ToString(),
+            recipe.PrepTime.ToString())
+            .Result; //RecipeSeedData.AddRecipe(cookbookName, recipe);
         if (recipeAdded)
         {
             return recipe;
@@ -77,9 +119,10 @@ public static class CtrlModel
     }
 
     /* Returns an alphabetized list of all ingredients a user has */
-    public static List<string> GetIngredients()
+    public static List<string> GetIngredients(string username)
     {
-        List<string> ingredients = ["Oranges","Apples","Bananas", "Pears", "Tomatoes", "Spinach", "Sausage"];
+        List<string> ingredients = DBQueryModel.GetIngredientNodeNames(username).Result; //["Oranges", "Apples", "Bananas", "Pears", "Tomatoes", "Spinach", "Sausage"];
+        ingredients.Sort();
         return ingredients;
     }
 
@@ -93,7 +136,7 @@ public static class CtrlModel
     public static bool AddItemToShoppingList(Ingredient ingredient)
     {
         if (ingredient == null) return false;
-            
+
         if (shoppingList.Items == null)
         {
             shoppingList.Items = new List<Ingredient>();
@@ -141,9 +184,9 @@ public static class CtrlModel
     // Retrieves an ingredient by name from the shopping list, allowing a nullable return
     public static Ingredient? GetIngredientByName(string name)
     {
-    if (shoppingList.Items == null) return null;
+        if (shoppingList.Items == null) return null;
 
-    return shoppingList.Items.FirstOrDefault(i => i.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false);
+        return shoppingList.Items.FirstOrDefault(i => i.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false);
     }
 
     // Retrieve all pantry items
@@ -157,7 +200,7 @@ public static class CtrlModel
     // Add an ingredient to the pantry
     public static void AddItemToPantry(Ingredient ingredient)
     {
-        if (ingredient == null || string.IsNullOrEmpty(ingredient.Name)) 
+        if (ingredient == null || string.IsNullOrEmpty(ingredient.Name))
         {
             Console.WriteLine("Cannot add ingredient without a name.");
             return;
@@ -228,7 +271,7 @@ public static class CtrlModel
     }
 
 
-     // Placeholder method to simulate getting all meals
+    // Placeholder method to simulate getting all meals
     public static List<MealSet> GetAllMeals()
     {
         // Placeholder logic - return a list of simulated meals
@@ -274,14 +317,14 @@ public static class CtrlModel
         // Get the date range for the current month
         var (startOfMonth, endOfMonth) = DateHelper.GetDateRangeForCurrentMonth();
         Console.WriteLine("Got Date Range for Month. Start: {0} End: {1}", startOfMonth, endOfMonth);
-        
+
         // Get first day of last week of month
         var startOfLastWeekOfMonth = DateHelper.GetStartOfWeek(endOfMonth);
-        Console.WriteLine("Start of Last week of month: {0}",startOfLastWeekOfMonth);
-        
+        Console.WriteLine("Start of Last week of month: {0}", startOfLastWeekOfMonth);
+
         // Get first day of first week of month
         var startOfFirstWeekOfMonth = DateHelper.GetStartOfWeek(startOfMonth);
-        Console.WriteLine("Start of First week of month: {0}",startOfFirstWeekOfMonth);
+        Console.WriteLine("Start of First week of month: {0}", startOfFirstWeekOfMonth);
 
         // Variable to track current day working with
         DateOnly day = startOfFirstWeekOfMonth;

@@ -117,15 +117,32 @@ namespace RecipeBuilder.Controllers
         public IActionResult Add(RecipeAddVM recipeVM)
         {
             Console.WriteLine("POST Add action hit"); // Logging to console
-                                                      //if (!ModelState.IsValid)
-                                                      //{
-                                                      //    Console.WriteLine("Model validation failed:");
-                                                      //    foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-                                                      //    {
-                                                      //        Console.WriteLine(error.ErrorMessage);
-                                                      //    }
-                                                      //    return View(recipeVM); // Return the form with validation errors
-                                                      //}
+            //Printing out the whole thing just to be sure.
+            Console.WriteLine("RecipeAddVM Properties: \n" +
+                "Cookbook: " + recipeVM.cookbookName + "\n" +
+                "Recipe: \n" +
+                "   Name: " + recipeVM.recipe.Name + "\n" +
+                "   Prep Time: " + recipeVM.recipe.PrepTime + "\n" +
+                "   Cook Time: " + recipeVM.recipe.CookTime + "\n" +
+                "   Rating: " + recipeVM.recipe.Rating + "\n" +
+                "   Difficulty: " + recipeVM.recipe.Difficulty + "\n" +
+                "   Description: " + recipeVM.recipe.Description + "\n" +
+                "   Servings: " + recipeVM.recipe.numServings + "\n" +
+                "Equipment String: " + recipeVM.EquipmentInput + "\n" +
+                "Tags String: " + recipeVM.TagsInput + "\n" +
+                "Ingredients String: " + recipeVM.IngredientsInput + "\n" +
+                "ServingSize String: " + recipeVM.ServingSizeInput + "\n" +
+                "Instructions String: " + recipeVM.InstructionsInput + "\n" +
+                "\n");
+            //if (!ModelState.IsValid)
+            //{
+            //    Console.WriteLine("Model validation failed:");
+            //    foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            //    {
+            //        Console.WriteLine(error.ErrorMessage);
+            //    }
+            //    return View(recipeVM); // Return the form with validation errors
+            //}
 
             AuthToken at;
             bool test;
@@ -144,6 +161,7 @@ namespace RecipeBuilder.Controllers
                                             .Where(ingredient => !string.IsNullOrEmpty(ingredient.Name))
                                             .ToList();
 
+                //Commented this out because the dictionary can't be parsed reliably without knowing the keys the user inputs.
                 // Parse Serving Size (assuming a format like "cup, 2")
                 /*
                 var servingSizeParts = recipeVM.ServingSizeInput.Split(',');
