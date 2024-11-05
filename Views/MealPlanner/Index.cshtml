@@ -17,7 +17,7 @@
         background-color: #ffffff; 
         color: #333; 
         margin: 0;
-        padding: 0; ]
+        padding: 0;
     }
 
     .container {
@@ -80,71 +80,43 @@
         <h1 class="display-4">Meal Schedule</h1>
         <hr class="rounded">
         <br>
+        
         <h2 class="schedule-title">Today: @Model.ScheduledMealsToday.Date.DayOfWeek @Model.ScheduledMealsToday.Date</h2>
         <div class="schedule">
             @foreach (var meal in @Model.ScheduledMealsToday.ScheduledMeals)
             {
                 <div class="day">
-                    @* Make this a link that goes to meal look with asp-route-id=@meal.Name *@
-                    <p>Meal @(@Model.ScheduledMealsToday.ScheduledMeals.IndexOf(meal) + 1) Recipes</p>
+                    <a asp-controller="MealPlanner" asp-action="Meal" asp-route-id="@meal.Name">
+                        Meal @(@Model.ScheduledMealsToday.ScheduledMeals.IndexOf(meal) + 1) Recipes
+                    </a>
                     @foreach (var recipe in meal.Recipes)
                     {
                         <p>@recipe.Name</p>
                     }
                 </div>
             }
-            <div class="day">
-                <p>Meal 1 Recipes</p>
-            </div>
-            <div class="day">
-                <p>Meal 2 Recipes</p>
-            </div>
-            <div class="day">
-                <p>Meal 3 Recipes</p>
-            </div>
-            <div class="day">
-                <p>Meal 4 Recipes</p>
-            </div>
-            <br>
         </div>
+
         <br><br>
+        
         <h2 class="schedule-title">This Week</h2>
         <div class="schedule">
             @foreach (var day in @Model.ScheduledMealsThisWeek.Days)
             {
-                //Finish setting up link asp-route-date=@day.Date
-                <a>@day.Date.DayOfWeek @day.Date</a>
-                @foreach (var meal in day.Meals)
-                {
-                    <p>Meal @(@day.Meals.IndexOf(meal)+1) Recipes</p>
-                    @foreach (var recipe in meal.recipes)
+                <div class="day">
+                    <a asp-controller="MealPlanner" asp-action="Day" asp-route-date="@day.Date">
+                        @day.Date.DayOfWeek @day.Date
+                    </a>
+                    @foreach (var meal in day.Meals)
                     {
-                        <p>@recipe.Name</p>
+                        <p>Meal @(@day.Meals.IndexOf(meal) + 1) Recipes</p>
+                        @foreach (var recipe in meal.recipes)
+                        {
+                            <p>@recipe.Name</p>
+                        }
                     }
-                }
-                    
+                </div>
             }
-            <div class="day">
-                <p>Day 1 Recipes</p>
-            </div>
-            <div class="day">
-                <p>Day 2 Recipes</p>
-            </div>
-            <div class="day">
-                <p>Day 3 Recipes</p>
-            </div>
-            <div class="day">
-                <p>Day 4 Recipes</p>
-            </div>
-            <div class="day">
-                <p>Day 5 Recipes</p>
-            </div>
-            <div class="day">
-                <p>Day 6 Recipes</p>
-            </div>
-            <div class="day">
-                <p>Day 7 Recipes</p>
-            </div>
         </div>
     </div>
 </body>
