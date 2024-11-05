@@ -431,18 +431,20 @@ public class DBQueryModel
 
     // CreateTool()
     // TODO - Test results
-    public static async Task<bool> CreateToolNode(string toolName)
+    public static async Task<bool> CreateToolNode(string username, string recipe, string tool)
     {
         var query = @"
+            MATCH (recipe:Tool {name: $recipeName})
             MERGE (tool:Tool {name: $toolName})
-            RETURN COUNT(tool) > 0
+            MERGE (recipe)-[x:USES]->(tool)
+            RETURN COUNT(x) > 0
         ";
 
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { toolName });
-            Console.WriteLine($"Tool {toolName} created!");
+            var response = await session.RunAsync(query, new { username, recipe, tool });
+            Console.WriteLine($"Tool {tool} created!");
 
             // Pulls all responses from query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
@@ -610,7 +612,7 @@ public class DBQueryModel
         ";
 
         var recipeName = username + recipe;
-        var stepName = recipeName + "Step" + order;
+        var stepName = recipeName + "Step " + order;
 
         var session = driver.AsyncSession();
         try
@@ -638,8 +640,8 @@ public class DBQueryModel
 
 
     // CreateTagNode()
-    // TODO - return success/fail
-    // TODO - Match Recipe to User/Group First
+    // Tag doesn't need special name since you can just add a connection and you never need to edit it
+    // TODO - Test Results
     public static async Task<bool> CreateTagNode(string tag, string recipe, string username)
     {
         var query = @"
