@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
 using RecipeBuilder.ViewModels;
+using Newtonsoft.Json;
 
 namespace RecipeBuilder.Controllers;
 
@@ -33,9 +34,19 @@ public class HomeController : Controller
     public IActionResult Private()
     {
         HomePrivateVM viewModel = new HomePrivateVM();
-        viewModel.cookbooks = CtrlModel.GetCookbookList();
-        viewModel.recipes = CtrlModel.GetRecipeList();
-        
+        try
+        {
+            AuthToken at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            viewModel.cookbooks = CtrlModel.GetCookbookList(at.username);
+            viewModel.recipes = CtrlModel.GetRecipeList(at.username);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error retrieving cookbooks and recipes. Exception: " + e);
+            RedirectToAction("Index", "Account");
+        }
+
+
         return View(viewModel);
     }
 }

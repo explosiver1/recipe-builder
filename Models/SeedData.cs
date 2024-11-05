@@ -8,19 +8,19 @@ public static class SeedData
     /* SAMPLE DATA */
 
     /* INGREDIENTS */
-    public static Ingredient Sugar = new Ingredient { Name = "Sugar", Description = "White granulated sugar", Unit = "Cups" };
-    public static Ingredient Egg = new Ingredient { Name = "Egg", Description = "Large White Chicken Eggs", Unit = "Dozen" };
-    public static Ingredient BrownSugar = new Ingredient { Name = "Brown Sugar", Description = "Light brown sugar", Unit = "Cups" };
-    public static Ingredient PowderedSugar = new Ingredient { Name = "Powdered Sugar", Description = "Powdered sugar", Unit = "Cups" };
-    public static Ingredient Flour = new Ingredient { Name = "Flour", Description = "Bleached all-purpose flour", Unit = "Cups" };
-    public static Ingredient Vanilla = new Ingredient { Name = "Vanilla", Description = "Pure vanilla extract", Unit = "tsp" };
-    public static Ingredient BakingSoda = new Ingredient { Name = "Baking Soda", Description = "Sodium Bicarbonate", Unit = "tsp" };
-    public static Ingredient BakingPowder = new Ingredient { Name = "Baking Powder", Description = "Baking powder", Unit = "tsp" };
-    public static Ingredient Salt = new Ingredient { Name = "Salt", Description = "Sodium Chloride", Unit = "tsp" };
-    public static Ingredient Butter = new Ingredient { Name = "Butter", Description = "Butter", Unit = "sticks" };
-    public static Ingredient Oil = new Ingredient { Name = "Oil", Description = "Neutral cooking oil: canola, sunflower, peanut, avocado, vegetable, etc.", Unit = "tsp" };
-    public static Ingredient ChocolateChips = new Ingredient { Name = "Chocolate Chips", Description = "Semi-Sweet Chocolate Chips", Unit = "Cups" };
-    public static Ingredient SweetPotato = new Ingredient { Name = "Sweet Potato", Description = "", Unit = "" };
+    public static Ingredient Sugar = new Ingredient { Name = "Sugar", Description = "White granulated sugar"/*, Unit = "Cups"*/ };
+    public static Ingredient Egg = new Ingredient { Name = "Egg", Description = "Large White Chicken Eggs"/* , Unit = "Dozen"*/ };
+    public static Ingredient BrownSugar = new Ingredient { Name = "Brown Sugar", Description = "Light brown sugar"/* , Unit = "Cups"*/ };
+    public static Ingredient PowderedSugar = new Ingredient { Name = "Powdered Sugar", Description = "Powdered sugar"/*, Unit = "Cups" */};
+    public static Ingredient Flour = new Ingredient { Name = "Flour", Description = "Bleached all-purpose flour"/*, Unit = "Cups"*/ };
+    public static Ingredient Vanilla = new Ingredient { Name = "Vanilla", Description = "Pure vanilla extract"/* , Unit = "tsp" */};
+    public static Ingredient BakingSoda = new Ingredient { Name = "Baking Soda", Description = "Sodium Bicarbonate"/*, Unit = "tsp" */};
+    public static Ingredient BakingPowder = new Ingredient { Name = "Baking Powder", Description = "Baking powder"/* , Unit = "tsp" */};
+    public static Ingredient Salt = new Ingredient { Name = "Salt", Description = "Sodium Chloride"/* , Unit = "tsp" */};
+    public static Ingredient Butter = new Ingredient { Name = "Butter", Description = "Butter"/* , Unit = "sticks" */};
+    public static Ingredient Oil = new Ingredient { Name = "Oil", Description = "Neutral cooking oil: canola, sunflower, peanut, avocado, vegetable, etc."/* , Unit = "tsp"*/ };
+    public static Ingredient ChocolateChips = new Ingredient { Name = "Chocolate Chips", Description = "Semi-Sweet Chocolate Chips"/* , Unit = "Cups"*/ };
+    public static Ingredient SweetPotato = new Ingredient { Name = "Sweet Potato", Description = ""/* , Unit = ""*/ };
     // public static Ingredient Lentils = new Ingredient{Name="Lentils", Description="Brown or Green", Unit=""};
     // public static Ingredient Name = new Ingredient{Name="", Description="", Unit=""};
     //public static Ingredient Name = new Ingredient{Name="", Description="", Unit=""};

@@ -975,12 +975,13 @@ public class DBQueryModel
     }
 
     //TESTING
-    public static async Task<Cookbook> GetCookbook(string cbName, AuthToken at, string group = "")
+    public static async Task<Cookbook> GetCookbook(string cbName, string username, string group = "")
     {
-        string name;
-        string startLabel;
-        if (group != "")
+        string name = username + cbName;
+        string startLabel = "User";
+        /*if (group != "")
         {
+
             bool gTest = await ValidateGroupMembership(group, at);
             if (gTest)
             {
@@ -993,13 +994,14 @@ public class DBQueryModel
                 cbk.Title = "ERROR";
                 return cbk;
             }
+
         }
         else
         {
-            name = at.username + cbName;
+            name = username + cbName;
             startLabel = "User";
-        }
-        string query = "MATCH (:" + startLabel + " {username:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})-[r]->(b)\n " +
+        } */
+        string query = "MATCH (:" + startLabel + " {username:'" + username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})-[r]->(b)\n " +
                                     "return cb, r, b\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
@@ -1018,7 +1020,7 @@ public class DBQueryModel
                 //Try-Catching all of them independently since many fields are optional.
                 try
                 {
-                    cb.Title = GetCleanString(at.username, cbNode["name"].As<string>());
+                    cb.Title = GetCleanString(username, cbNode["name"].As<string>());
                 }
                 catch
                 {
@@ -1050,11 +1052,12 @@ public class DBQueryModel
         return cb;
     }
 
-    public static async Task<List<Cookbook>> GetCookbooks(AuthToken at, string group = "")
+    public static async Task<List<Cookbook>> GetCookbooks(string username, string group = "")
     {
-        string name;
-        string startLabel;
+        string name = username;
+        string startLabel = "User";
         List<Cookbook> cbks = new List<Cookbook>();
+        /*
         if (group != "")
         {
             bool gTest = await ValidateGroupMembership(group, at);
@@ -1074,6 +1077,7 @@ public class DBQueryModel
             name = at.username;
             startLabel = "User";
         }
+        */
         string query = "MATCH (:" + startLabel + " {username:'" + name + "'})-[:OWNS]->(cb:Cookbook)\n " +
                                     "return cb\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
@@ -1083,7 +1087,7 @@ public class DBQueryModel
             var cbNode = record["cb"].As<INode>();
             //We only add the name because there are no
             Cookbook cb = new Cookbook();
-            cb.Title = GetCleanString(at.username, cbNode["name"].As<string>());
+            cb.Title = GetCleanString(username, cbNode["name"].As<string>());
             cbks.Add(cb);
         }
         return cbks;
@@ -1161,10 +1165,11 @@ public class DBQueryModel
     }
 
     //WIP
-    public static async Task<Ingredient> GetIngredient(string ingName, AuthToken at, string group = "")
+    public static async Task<Ingredient> GetIngredient(string ingName, string username, string group = "")
     {
-        string name;
-        string startLabel;
+        string name = username + ingName;
+        string startLabel = "User";
+        /*
         if (group != "")
         {
             bool gTest = await ValidateGroupMembership(group, at);
@@ -1184,6 +1189,7 @@ public class DBQueryModel
             name = at.username + ingName;
             startLabel = "User";
         }
+        */
         string query = "MATCH (:" + startLabel + ")-[r]->(t:Ingredient {name: " + ingName + "})\n " +
                                         "return t\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
@@ -1194,9 +1200,9 @@ public class DBQueryModel
 
         try
         {
-            ing.Name = GetCleanString(at.username, iNode["name"].As<string>() ?? string.Empty);
-            ing.Unit = GetCleanString(at.username, iNode["unit"].As<string>() ?? string.Empty);
-            ing.Description = GetCleanString(at.username, iNode["description"].As<string>() ?? string.Empty);
+            ing.Name = GetCleanString(username, iNode["name"].As<string>() ?? string.Empty);
+            //ing.Unit = GetCleanString(username, iNode["unit"].As<string>() ?? string.Empty);
+            ing.Description = GetCleanString(username, iNode["description"].As<string>() ?? string.Empty);
         }
         catch (Exception e)
         {

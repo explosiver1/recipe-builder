@@ -22,7 +22,7 @@ public class CookbooksController : Controller
         {
 
             at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-            viewModel.cookbooks = DBQueryModel.GetCookbooks(at).Result;
+            viewModel.cookbooks = DBQueryModel.GetCookbooks(at.username).Result;
         }
         catch (Exception e)
         {
@@ -42,7 +42,7 @@ public class CookbooksController : Controller
         {
 
             at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-            cookbookModel = DBQueryModel.GetCookbook(name, at).Result;
+            cookbookModel = DBQueryModel.GetCookbook(name, at.username).Result;
         }
         catch (Exception e)
         {
@@ -122,7 +122,7 @@ public class CookbooksController : Controller
         try
         {
             at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-            cb = DBQueryModel.GetCookbook(cookbookName, at).Result;
+            cb = DBQueryModel.GetCookbook(cookbookName, at.username).Result;
         }
         catch (Exception e)
         {
@@ -177,7 +177,7 @@ public class CookbooksController : Controller
     {
         AuthToken at;
         bool test;
-        if (recipeToRemove! != "")
+        if (recipeToRemove != "")
         {
             try
             {

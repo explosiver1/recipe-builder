@@ -5,14 +5,12 @@ namespace RecipeBuilder.Models
         // Attributes
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Unit { get; set; }
 
         // Blank constructor initializing to default values
         public Ingredient()
         {
             Name = string.Empty;
             Description = string.Empty;
-            Unit = string.Empty;
         }// end Blank Constructor
 
         // Methods
@@ -38,7 +36,6 @@ namespace RecipeBuilder.Models
                 return;
             }//end if
 
-            Unit = newUnit;
             Console.WriteLine($"{Name} unit updated to: {newUnit}");
         }// end UpdateUnit
 
@@ -73,10 +70,7 @@ namespace RecipeBuilder.Models
             else
                 Console.WriteLine($"Description: {Description}");
 
-            if (string.IsNullOrWhiteSpace(Unit))
-                Console.WriteLine("Unit is missing.");
-            else
-                Console.WriteLine($"Unit: {Unit}");
+
         }// end DisplayIngredientInfo
     }// end Ingredient
 }// end namespace RecipeBuilder.Models
