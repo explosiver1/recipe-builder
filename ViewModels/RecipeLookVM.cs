@@ -10,5 +10,7 @@ namespace RecipeBuilder.ViewModels
         // public required string userName { get; set; }
 
         public required Recipe recipe { get; set; }// = new Recipe(); // Initialize a new Recipe object
+
+        public string? msg { get; set; }
     }
 }

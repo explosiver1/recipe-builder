@@ -24,9 +24,9 @@ public class CookbooksController : Controller
             at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
             viewModel.cookbooks = DBQueryModel.GetCookbooks(at).Result;
         }
-        catch
+        catch (Exception e)
         {
-            Console.WriteLine("Error Getting Cookbooks");
+            Console.WriteLine("Error Getting Cookbooks: " + e);
         }
 
         return View(viewModel);
@@ -171,21 +171,23 @@ public class CookbooksController : Controller
         return RedirectToAction("Index");
     }
 
+
     [HttpPost]
-    public IActionResult RemoveRecipe(CookbooksCookbookVM ccvm)
+    public IActionResult RemoveRecipe(string cookbookTitle, string recipeToRemove)
     {
         AuthToken at;
         bool test;
-        if (ccvm.recipeToRemove! != "")
+        if (recipeToRemove! != "")
         {
             try
             {
-                Console.WriteLine("Cookbook Title:" + ccvm.cookbook.Title);
-                Console.WriteLine("Recipe to Remove: " + ccvm.recipeToRemove);
+                Console.WriteLine("Cookbook Title:" + cookbookTitle);
+                Console.WriteLine("Recipe to Remove: " + recipeToRemove);
                 at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
                 test = false; //DBQueryModel.CookbookRemoveRecipe(at.username, ccvm.cookbook.Title, ccvm.recipeToRemove);
                 if (!test)
                 {
+                    CookbooksCookbookVM ccvm = new CookbooksCookbookVM();
                     ccvm.msg = "Error: Recipe could not be removed.";
                     return RedirectToAction("Cookbook", ccvm);
                 }
@@ -196,5 +198,36 @@ public class CookbooksController : Controller
             }
         }
         return RedirectToAction("Cookbook");
+    }
+
+    [HttpPost]
+    public IActionResult RemoveCookbook(string cookbookToRemove)
+    {
+        AuthToken at;
+        bool test;
+        if (cookbookToRemove != "")
+        {
+            try
+            {
+                Console.WriteLine("Cookbook To Remove: " + cookbookToRemove!);
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                test = DBQueryModel.DeleteCookbook(cookbookToRemove, at).Result;
+                if (!test)
+                {
+                    CookbooksIndexVM civm = new CookbooksIndexVM();
+                    civm.msg = "Error: Recipe could not be removed.";
+                    return RedirectToAction("Index", civm);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e);
+            }
+        }
+        else
+        {
+            Console.WriteLine("Error: cookbookToRemove is blank.");
+        }
+        return RedirectToAction("Index");
     }
 }

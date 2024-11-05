@@ -23,11 +23,11 @@ public class AuthToken
         //Negative is earlier than, equal is same, greater is later than. Relationship of first parameter to second parameter.
         if (test >= 0)
         {
-            return true;
+            return false;
         }
         else
         {
-            return false;
+            return true;
         }
     }
 

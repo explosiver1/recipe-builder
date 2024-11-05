@@ -30,14 +30,13 @@ public class DBQueryModel
         Console.WriteLine("Creating user...");
         var query = @"
             MERGE (u:User {username: $username})
-            ON CREATE SET 
+            ON CREATE SET
                 u.name = $name,
                 u.email = $email,
                 u.phone = $phone,
                 u.password = $password
             RETURN COUNT(u) > 0
         ";
-
 
         // Opens a session for Neo4j
         var session = driver.AsyncSession();
@@ -67,42 +66,56 @@ public class DBQueryModel
         }
     }
 
-    // CreateCuisine()
-    // TODO - Return success/fail
-    public static async Task<bool> CreateCuisineNode(string cuisine)
-    {
-        var query = @"
-            CREATE (cuisine:Cuisine {name: $cuisineName})
-            ";
+    // This is covered by the tags node
+    // public static async Task<bool> CreateCuisineNode(string cuisine)
+    // {
+    //     var query = @"
+    //         CREATE (cuisine:Cuisine {name: $cuisineName})
+    //         ";
 
-        var session = driver.AsyncSession();
-        try
-        {
-            await session.RunAsync(query, new { cuisineName = cuisine });
-            Console.WriteLine($"Cuisine node {cuisine} created!");
-        }
-        finally
-        {
-            await session.CloseAsync();
-        }
+    //     var session = driver.AsyncSession();
+    //     try
+    //     {
+    //         await session.RunAsync(query, new { cuisineName = cuisine });
+    //         Console.WriteLine($"Cuisine node {cuisine} created!");
+    //     }
+    //     finally
+    //     {
+    //         await session.CloseAsync();
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
     // CreateRecipe()
-    // TODO - test results/add group authentication
-    public static async Task<bool> CreateRecipeNode(string username, string recipe, string description, string difficulty, string servings, string servingsize)
+    // TODO - Test results
+    public static async Task<bool> CreateRecipeNode(string username, string recipe, string description = "", string rating = "", string difficulty = "", string servings = "", string servingsize = "", string cookTime = "", string prepTime = "")
     {
+
+        Console.WriteLine("Entering CreateRecipeNode with parameters:\n" +
+            "username: " + username + "\n" +
+            "recipe: " + recipe + "\n" +
+            "description: " + description + "\n" +
+            "rating: " + rating + "\n" +
+            "difficulty: " + difficulty + "\n" +
+            "servings: " + servings + "\n" +
+            "servingize: " + servingsize + "\n" +
+            "cookTime: " + cookTime + "\n" +
+            "prepTime: " + prepTime + "\n");
+
         var query = @"
-            MATCH (user:User {username: $user})
+            MATCH (user:User {username: $username})
             MERGE (recipe:Recipe {name: $recipeName})
-            ON CREATE SET 
-                recipe.description = $description
-                recipe.difficulty = $difficulty
-                recipe.servings = $servings
-                recipe.servingsize = $servingsize
-            MERGE (user)-[:OWNS]->(recipe)
-            RETURN COUNT(recipe) > 0
+            ON CREATE SET
+                recipe.description = $description,
+                recipe.rating = $rating,
+                recipe.difficulty = $difficulty,
+                recipe.servings = $servings,
+                recipe.servingSize = $servingsize,
+                recipe.cookTime = $cookTime,
+                recipe.prepTime = $prepTime
+            MERGE (user)-[x:OWNS]->(recipe)
+            RETURN COUNT(x) > 0
         ";
 
         var recipeName = username + recipe;
@@ -110,14 +123,13 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { username, recipeName, description, difficulty, servings, servingsize});
+            var response = await session.RunAsync(query, new { username, recipeName, description, rating, difficulty, servings, servingsize, cookTime, prepTime });
 
             // Pulls all responses from the query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
 
             // Checks if there is a record and gets the first record which should be the bool response
             bool recipeCreated = records.Any() && records.First()[0].As<bool>();
-
             Console.WriteLine($"Recipe {recipeName} created!");
             return recipeCreated;
         }
@@ -133,9 +145,56 @@ public class DBQueryModel
         }
     }
 
+    // MergeRecipe()
+    // Used when adding a recipe to a cookbook or to a meal
+    public static async Task<bool> ConnectRecipeNode(string username, string parent, string recipe)
+    {
+        string query;
+
+        if (parent.Contains(""))
+        {
+            query = @"
+            test
+            ";
+        }
+        else
+        {
+            query = @"
+            test
+            ";
+        }
+
+        var parentName = username + parent;
+        var recipeName = username + recipe;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            var response = await session.RunAsync(query, new { parentName, recipeName });
+            Console.WriteLine($"Parent node {parentName} connected to {recipe}!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool nodesConnected = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + nodesConnected);
+            return nodesConnected;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
 
     // GetRecipes()
-    // All Recipes a User Owns
+    // Gets a list of all the recipe names a user owns
     // TODO - Add Group Parameter
     public static async Task<List<string>> GetRecipeNodeNames(string username)
     {
@@ -153,7 +212,7 @@ public class DBQueryModel
 
             await result.ForEachAsync(record =>
             {
-                recipeNames.Add(record["recipeName"].As<string>());
+                recipeNames.Add(GetCleanString(username, record["recipeName"].As<string>()));
             });
 
             Console.WriteLine($"Found {recipeNames.Count} recipes for user {username}!");
@@ -171,8 +230,10 @@ public class DBQueryModel
     public static async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
         var query = @"
+            MATCH (user:User {name: $user})
             MERGE (ingredient:Ingredient {name: $ingredientName})
-            RETURN COUNT(ingredient) > 0
+            MERGE (user)-(x:OWNS)->(ingredient)
+            RETURN COUNT(x) > 0
             ";
 
         var ingredientName = username + ingredient;
@@ -203,9 +264,41 @@ public class DBQueryModel
         }
     }
 
+    //This was easier than making the other method do more because of the parameter injection on the query string.
+    public static async Task<List<string>> GetRecipeNodeNamesByIngredient(string username, string ingredient)
+    {
+        var query = @"
+            MATCH (user:User {username: $username})-[:OWNS]->(recipe:Recipe)-[:MADE_WITH]->(i:Ingredient {name: $ingredient})
+            RETURN recipe.name AS recipeName
+            ";
+
+        var session = driver.AsyncSession();
+        var recipeNames = new List<string>();
+
+        try
+        {
+            var result = await session.RunAsync(query, new { username, ingredient });
+
+            await result.ForEachAsync(record =>
+            {
+                recipeNames.Add(record["recipeName"].As<string>());
+            });
+
+            Console.WriteLine($"Found {recipeNames.Count} recipes for user {username}!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+
+        return recipeNames;
+    }
+
+
     // MergeIngredient()
-    // TODO - return success/fail
-    // What's going on with the parent parameter?
+    // TODO - Test results
+    // Used when adding ingredients to Recipe, Shopping List, or Pantry (must create the nodes first)
+    // The parent is the name of the node you are adding ingredients too
     public static async Task<bool> ConnectIngredientNode(string username, string parent, string ingredient)
     {
         string query;
@@ -214,7 +307,8 @@ public class DBQueryModel
             query = @"
             MATCH (parent:Pantry{name:$parentName})
             MATCH (ingredient:Ingredient{name:$ingredientName})
-            CREATE (parent)-[:STORES]->(ingredient)
+            MERGE (parent)-[x:STORES]->(ingredient)
+            RETURN COUNT(x) > 0
             ";
         }
         else if (parent.Contains("ShoppingList"))
@@ -222,7 +316,8 @@ public class DBQueryModel
             query = @"
             MATCH (parent:ShoppingList{name:$parentName})
             MATCH (ingredient:Ingredient{name:$ingredientName})
-            CREATE (parent)-[:PLANS_TO_BUY]->(ingredient)
+            MERGE (parent)-[x:PLANS_TO_BUY]->(ingredient)
+            RETURN COUNT(x) > 0
             ";
         }
         else
@@ -230,7 +325,8 @@ public class DBQueryModel
             query = @"
             MATCH (parent:Recipe{name:$parentName})
             MATCH (ingredient:Ingredient{name:$ingredientName})
-            CREATE (parent)-[:MADE_WITH]->(ingredient)
+            MERGE (parent)-[x:MADE_WITH]->(ingredient)
+            RETURN COUNT(x) > 0
             ";
         }
         var parentName = username + parent;
@@ -239,8 +335,16 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { parentName, ingredientName });
+            var response = await session.RunAsync(query, new { parentName, ingredientName });
             Console.WriteLine($"Parent node {parentName} connected to {ingredient}!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool nodesConnected = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + nodesConnected);
+            return nodesConnected;
         }
         catch (Exception ex)
         {
@@ -251,22 +355,51 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
+    }
 
-        return true;
+    // GetIngredients()
+    // Gets a list of all the names of ingredients a user owns
+    // Unsure if works with no ingredients
+    public static async Task<List<string>> GetIngredientNodeNames(string username)
+    {
+        var query = @"
+        MATCH (user:User {username: $username})-[:OWNS]->(ingredient:Ingredient)
+        RETURN ingredient.name AS ingredientName
+        ";
+
+        var session = driver.AsyncSession();
+        var ingredientNames = new List<string>();
+
+        try
+        {
+            var result = await session.RunAsync(query, new { username });
+
+            await result.ForEachAsync(record =>
+            {
+                ingredientNames.Add(record["ingredientName"].As<string>());
+            });
+
+            Console.WriteLine($"Found {ingredientNames.Count} ingredients for user {username}!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+
+        return ingredientNames;
     }
 
     // CreateCookbookNode()
-    // TODO - return success/fail
-    // TODO - Add Group Parameter
-    public static async Task<bool> CreateCookbookNode(string username, string name, string description)
+    // TODO - Test no description input
+    public static async Task<bool> CreateCookbookNode(string username, string name, string description = "")
     {
         var query = @"
             MATCH (user:User{username: $username})
             MERGE (cookbook:Cookbook {name: $cookbookName})
             ON CREATE SET
                 cookbook.description = $description
-            MERGE (user)-[:OWNS]->(cookbook)
-            RETURN COUNT(cookbook) > 0
+            MERGE (user)-[x:OWNS]->(cookbook)
+            RETURN COUNT(x) > 0
         ";
 
         var cookbookName = username + name;
@@ -297,8 +430,7 @@ public class DBQueryModel
     }
 
     // CreateTool()
-    // TODO - return success/fail
-    // TODO - Match and Connect to User Node
+    // TODO - Test results
     public static async Task<bool> CreateToolNode(string toolName)
     {
         var query = @"
@@ -350,12 +482,10 @@ public class DBQueryModel
     // }
 
     // CreateShopListNode()
-    // TODO - return success/fail
-    // TODO - Match and Connect to User Node
+    // TODO - Test results
     public static async Task<bool> CreateShoppingListNode(string username)
     {
         var query = @"
-            MATCH (user:User{username: $username})
             MERGE (shopList:ShoppingList {name: $shopListName})
             RETURN COUNT(shopList) > 0
             ";
@@ -364,7 +494,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { username, shopListName});
+            var response = await session.RunAsync(query, new { shopListName });
             Console.WriteLine($"Shopping List node {shopListName} created!");
 
             // Pulls all responses from query
@@ -386,42 +516,55 @@ public class DBQueryModel
         }
     }
 
+
     // CreateMealNode()
-    // TODO - return success/fail
-    // TODO - Match to User/Group First
-    public static async Task<bool> CreateMealNode(string username, string meal)
+    // TODO - Test results
+    public static async Task<bool> CreateMealNode(string username, string meal, string date)
     {
         var query = @"
-        CREATE (meal:Meal {
-            name: $mealName,
-            title: $meal
-        })
+            MERGE (meal:Meal { name: $mealName})
+            ON CREATE SET
+                date: $date
+            RETURN COUNT(meal) > 0
         ";
+
         var mealName = username + meal;
 
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { mealName, meal });
+            var response = await session.RunAsync(query, new { mealName, date });
             Console.WriteLine($"Meal node {mealName} created!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool mealCreated = records.Any() && records.First()[0].As<bool>();
+            return mealCreated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
         }
         finally
         {
             await session.CloseAsync();
         }
-
-        return true;
     }
 
+
     // MergeMealNode()
+    // Used for adding all recipes within a meal
     // TODO - return success/fail
-    // TODO - Match to User/Group First
     public static async Task<bool> ConnectMealNode(string username, string meal, string recipe)
     {
         var query = @"
         MATCH (meal:Meal{name:$mealName})
         MATCH (recipe:Recipe{name:$recipeName})
-        CREATE (meal)-[:MADE_WITH]->(recipe)
+        MERGE (meal)-[x:MADE_WITH]->(recipe)
+        RETURN COUNT(x) > 0
         ";
         var mealName = username + meal;
         var recipeName = username + recipe;
@@ -429,8 +572,15 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new { mealName, recipeName });
+            var response = await session.RunAsync(query, new { mealName, recipeName });
             Console.WriteLine($"Meal node {mealName} connected to {recipe}!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool mealConnected = records.Any() && records.First()[0].As<bool>();
+            return mealConnected;
         }
         catch (Exception ex)
         {
@@ -441,36 +591,39 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
-
-        return true;
     }
 
+
     // CreateStepNode()
-    // TODO - success/fail
-    // TODO - Match to User/Group First
-    public static async Task<bool> CreateStepNode(string username, Dictionary<string, object> stepData, string recipe)
+    // TODO - Test results
+    // Order is the step number
+    public static async Task<bool> CreateStepNode(string username, string recipe, string order, string description = "")
     {
         var query = @"
         MATCH (recipe:Recipe {name: $recipeName})
-        CREATE (step:Step {
-            description: $description,
-            step_number: $stepNumber
-        })
-        CREATE (recipe)-[:HAS_STEP]->(step)
+        MERGE (step:Step {name: $stepName})
+        ON CREATE SET
+            step.order = order: $order
+            step.description = description: $description
+        MERGE (recipe)-[x:HAS_STEP]->(step)
+        RETURN COUNT(x) > 0
         ";
 
         var recipeName = username + recipe;
+        var stepName = recipeName + "Step" + order;
 
         var session = driver.AsyncSession();
         try
         {
-            await session.RunAsync(query, new
-            {
-                description = stepData["description"],
-                stepNumber = stepData["step_number"],
-                recipeName
-            });
-            Console.WriteLine($"Step {stepData["step_number"]} created for {recipeName}!");
+            var response = await session.RunAsync(query, new { recipeName, stepName, order, description });
+            Console.WriteLine($"Step {order} created for {recipeName}!");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool mealCreated = records.Any() && records.First()[0].As<bool>();
+            return mealCreated;
         }
         catch (Exception ex)
         {
@@ -481,8 +634,8 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
-        return true;
     }
+
 
     // CreateTagNode()
     // TODO - return success/fail
@@ -492,8 +645,8 @@ public class DBQueryModel
         var query = @"
         MATCH (recipe:Recipe {name: $recipeName})
         MERGE (tag:Tag {name: $tag})
-        MERGE (recipe)-[:TAGGED_WITH]->(tag)
-        RETURN COUNT(tag) > 0
+        MERGE (recipe)-[x:TAGGED_WITH]->(tag)
+        RETURN COUNT(x) > 0
         ";
 
         var recipeName = username + recipe;
@@ -503,7 +656,13 @@ public class DBQueryModel
         {
             var response = await session.RunAsync(query, new { tag, recipeName });
             Console.WriteLine($"Tag {tag} created and connected to {recipeName}!");
-            
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool tagCreated = records.Any() && records.First()[0].As<bool>();
+            return tagCreated;
         }
         catch (Exception ex)
         {
@@ -514,8 +673,6 @@ public class DBQueryModel
         {
             await session.CloseAsync();
         }
-
-        return true;
     }
 
 
@@ -542,21 +699,102 @@ public class DBQueryModel
         }
     }
 
-    //TESTING
-    public async Task<Recipe> GetRecipe(string recName, AuthToken at, string group = "")
+
+    // Playing around with new GetRecipe
+    public static async Task<Recipe> GetRecipe(string username, string recipe, string tool = "", string tag = "")
     {
-        string name;
+        var query = @"
+            MATCH (recipe:Recipe {name: $recipeName})
+            OPTIONAL MATCH (tool:Tool {name: $toolName})
+            OPTIONAL MATCH (tag:Tag {name: $tagName})
+            RETURN recipe.name AS recipeName,
+                recipe.description AS description,
+                recipe.servingSize AS servingSize,
+                recipe.servings AS numServings,
+                recipe.rating AS rating,
+                recipe.difficulty AS difficulty,
+                recipe.prepTime AS prepTime,
+                recipe.cookTime AS cookTime,
+                tool.name AS toolName,
+                tag.name AS tagName
+        ";
+
+        var recipeName = username + recipe;
+        var toolName = !string.IsNullOrEmpty(tool) ? username + tool : null;
+        var tagName = !string.IsNullOrEmpty(tag) ? username + tag : null;
+
+        // Initialize the Neo4j session
+        var session = driver.AsyncSession();
+        Recipe resultRecipe = null;
+
+        try
+        {
+            // Run the query and pass in parameters
+            var result = await session.RunAsync(query, new { recipeName, toolName, tagName });
+
+            // Process each record in the result
+            await result.ForEachAsync(record =>
+            {
+                // Initialize and populate a new Recipe object
+                resultRecipe = new Recipe
+                {
+                    Name = GetCleanString(username, record["recipeName"]?.As<string>() ?? string.Empty),
+                    Description = record["description"]?.As<string>() ?? string.Empty,
+                    servingSize = record["servingSize"]?.As<string>() ?? string.Empty,
+                    numServings = record["numServings"]?.As<int>() ?? 0, // Default to 0 if null
+                    Rating = record["rating"]?.As<int>() ?? 1,            // Default to 1 if null
+                    Difficulty = record["difficulty"]?.As<int>() ?? 1,    // Default to 1 if null
+                    Equipment = new List<string>(),
+                    Tags = new List<string>()
+                };
+
+                // Add tool and tag names to Equipment and Tags lists if they are present
+                var toolNameValue = record["toolName"]?.As<string>();
+                if (!string.IsNullOrEmpty(toolNameValue))
+                {
+                    resultRecipe.Equipment.Add(toolNameValue);
+                }
+
+                var tagNameValue = record["tagName"]?.As<string>();
+                if (!string.IsNullOrEmpty(tagNameValue))
+                {
+                    resultRecipe.Tags.Add(tagNameValue);
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+
+        return resultRecipe;
+    }
+
+
+    /*
+    //TESTING
+    public static async Task<Recipe> GetRecipe(string recName, AuthToken at, string ingredient = "", string group = "")
+    {
+        string recipeName;
         string startLabel;
+        string username;
         if (group != "")
         {
             bool gTest = await ValidateGroupMembership(group, at);
             if (gTest)
             {
-                name = group;
+                Console.WriteLine("Group " + group + " to be used.");
+                recipeName = group;
                 startLabel = "Group";
+                return new Recipe();
             }
             else
             {
+                Console.WriteLine("group validation failed");
                 Recipe r2 = new Recipe();
                 r2.Name = "ERROR";
                 return r2;
@@ -564,30 +802,35 @@ public class DBQueryModel
         }
         else
         {
-            name = recName;
+            Console.WriteLine("No group, using User " + at.username);
+            recipeName = recName; //SanitizeQueryParameters(recName);
+            username = at.username; //SanitizeQueryParameters(at.username);
             startLabel = "User";
         }
-        string query = "MATCH  (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->()-[:CATALOGUES]->(rec:Recipe {name:'" + name + "'})-[r]->(b)\n " +
-                                    //"MATCH (rec)<-[tr]-(c)\n" +
-                                    "return rec, r, b \n"; //tr, c\n";
+        //Changed parameterization to handle single quotes correctly.
+        string query = $@"MATCH  (:{startLabel} {{name: '{at.username}'}})-[:OWNS]->(rec:Recipe {{name: '{recipeName}'}})" + "\n" +
+                                    // "MATCH (rec)<-[tr]-(c)\n" +
+                                    "RETURN rec"; //tr, c\n";
+        Console.WriteLine(query);
+
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
-        //var record = irol.First();
-        //var rNode = record["rec"].As<INode>();
+        // var record = irol.First();
+        // var rNode = record["rec"].As<INode>();
 
         Recipe r = new Recipe();
 
-        //The recipe node is on each record, so we're getting it's info on the first pass only.
-        //The other passes are for getting data from relationships to the recipe.
+        // The recipe node is on each record, so we're getting it's info on the first pass only.
+        // The other passes are for getting data from relationships to the recipe.
         bool firstPass = true;
         foreach (var record in irol)
         {
             var recNode = record["rec"].As<INode>();
-            var rNode = record["r"].As<INode>();
-            var bNode = record["b"].As<INode>();
+            //var rNode = record["r"].As<INode>();
+            //var bNode = record["b"].As<INode>();
             if (firstPass)
             {
-                //Try-Catching all of them independently since many fields are optional.
+                // Try-Catching all of them independently since many fields are optional.
                 try
                 {
                     r.Name = recNode["name"].As<string>();
@@ -597,14 +840,14 @@ public class DBQueryModel
                     r.Name = "Error";
                 }
 
-                try
-                {
-                    r.CookTime = recNode["cooktime"].As<int>();
-                }
-                catch
-                {
-                    r.CookTime = 0;
-                }
+                // try
+                // {
+                //     r.CookTime = recNode["cooktime"].As<int>();
+                // }
+                // catch
+                // {
+                //     r.CookTime = 0;
+                // }
 
                 try
                 {
@@ -634,6 +877,7 @@ public class DBQueryModel
 
                 firstPass = false;
             }
+
             if (rNode != null)
             {
                 switch (rNode["type"].As<string>())
@@ -671,8 +915,9 @@ public class DBQueryModel
                         break;
                 }
             }
+
         }
-        List<Tag> tags = await GetTags(name, at);
+        List<Tag> tags = await GetTagsByRecipe(recipeName, at);
         List<string> tagNames = new List<string>();
         foreach (Tag tag in tags)
         {
@@ -681,11 +926,13 @@ public class DBQueryModel
         r.Tags = tagNames;
         return r;
     }
+    */
 
 
     //TESTING
-    public async Task<bool> DeleteRecipe(string recName, AuthToken at, string group = "")
+    public static async Task<bool> DeleteRecipe(string recName, AuthToken at, string group = "")
     {
+        Console.WriteLine("Entering DeleteRecipe with recName: " + recName);
         string name;
         string startLabel;
         if (group != "")
@@ -703,23 +950,26 @@ public class DBQueryModel
         }
         else
         {
-            name = recName;
+            name = at.username + recName;
             startLabel = "User";
         }
-        string query = "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->()-[:CATALOGUES]->(rec:Recipe {name:'" + name + "'})\n " +
-            "DELETE rec \n" +
-            "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->()-[:CATALOGUES]->(n:Recipe {name:'" + name + "'})\n " +
-            "return NOT(Count(n) >0) ";
+        string query = "MATCH (:" + startLabel + " {username:'" + at.username + "'})-[:OWNS]->(rec:Recipe {name:'" + name + "'})\n " +
+            "DETACH DELETE rec \n" +
+            "WITH rec \n" +
+            "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(rec:Recipe {name:'" + name + "'})\n " +
+            "return NOT(Count(rec) >0) ";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         //response is EagerResult<IReadOnlyList<IRecord>>
         IReadOnlyList<IRecord> irol = response.Result; //The Deconstruct() method has several outbound parameters. Result is one of them, and it can be referenced like a property here. First time I've seen this kind of behavior.'
         var record = irol.First(); //This gets the first IRecord of the list. This should be the only one in this case.
         if (record[0] != null)
         {
+            Console.WriteLine("Result: " + record[0].As<bool>());
             return record[0].As<bool>();
         }
         else
         {
+            Console.WriteLine("Returned record was null");
             return false;
         }
     }
@@ -746,10 +996,10 @@ public class DBQueryModel
         }
         else
         {
-            name = cbName;
+            name = at.username + cbName;
             startLabel = "User";
         }
-        string query = "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})-[r]->(b)\n " +
+        string query = "MATCH (:" + startLabel + " {username:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})-[r]->(b)\n " +
                                     "return cb, r, b\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
@@ -768,7 +1018,7 @@ public class DBQueryModel
                 //Try-Catching all of them independently since many fields are optional.
                 try
                 {
-                    cb.Title = cbNode["name"].As<string>();
+                    cb.Title = GetCleanString(at.username, cbNode["name"].As<string>());
                 }
                 catch
                 {
@@ -828,21 +1078,24 @@ public class DBQueryModel
                                     "return cb\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
-        foreach (IRecord record in irol)
+        foreach (var record in irol)
         {
+            var cbNode = record["cb"].As<INode>();
             //We only add the name because there are no
             Cookbook cb = new Cookbook();
-            cb.Title = record["name"].As<string>();
+            cb.Title = GetCleanString(at.username, cbNode["name"].As<string>());
             cbks.Add(cb);
         }
         return cbks;
     }
 
+    // Doesn't return bool in query response yet
     public static async Task<bool> EditCookBook(string username, string name, string description)
     {
         var query = @"
             MATCH (cookbook:Cookbook {name: $cookbookName})
             SET cookbook.description = $description
+
         ";
 
         var cookbookName = username + name;
@@ -892,11 +1145,13 @@ public class DBQueryModel
         }
         else
         {
-            name = cbName;
+            name = at.username + cbName;
             startLabel = "User";
         }
-        string query = "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})\n " +
-                                    "DELETE cb\n" +
+        string query = "MATCH (:" + startLabel + " {username:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})\n " +
+                                    "WITH cb\n" +
+                                    "DETACH DELETE cb\n" +
+                                    "WITH cb\n" +
                         "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(cbk:Cookbook {name:'" + name + "'})\n " +
                         "return NOT(Count(cbk) > 0)";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
@@ -926,20 +1181,37 @@ public class DBQueryModel
         }
         else
         {
-            name = ingName;
+            name = at.username + ingName;
             startLabel = "User";
         }
-        string query = "MATCH (:" + startLabel + ")-[r]->(:Ingredient {name: " + ingName + "})\n " +
+        string query = "MATCH (:" + startLabel + ")-[r]->(t:Ingredient {name: " + ingName + "})\n " +
                                         "return t\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
         var record = irol.First<IRecord>();
+        var iNode = record["t"].As<INode>();
         Ingredient ing = new Ingredient();
+
+        try
+        {
+            ing.Name = GetCleanString(at.username, iNode["name"].As<string>() ?? string.Empty);
+            ing.Unit = GetCleanString(at.username, iNode["unit"].As<string>() ?? string.Empty);
+            ing.Description = GetCleanString(at.username, iNode["description"].As<string>() ?? string.Empty);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error accessing query results. Exception: " + e);
+        }
         return ing;
     }
 
+    private static async Task<List<Ingredient>> GetIngredientsByRecipe(string recName, AuthToken at)
+    {
+        return new List<Ingredient>();
+    }
+
     //TESTING
-    private static async Task<List<Tag>> GetTags(string recName, AuthToken at, string group = "")
+    private static async Task<List<Tag>> GetTagsByRecipe(string recName, AuthToken at, string group = "")
     {
         string name;
         string startLabel;
@@ -959,7 +1231,7 @@ public class DBQueryModel
         }
         else
         {
-            name = recName;
+            name = at.username + recName;
             startLabel = "User";
         }
         string query = "MATCH (:" + startLabel + ")-[r]->(b:Recipe {name: " + recName + "})\n " +
@@ -973,7 +1245,7 @@ public class DBQueryModel
             var tNode = record["t"].As<INode>();
             try
             {
-                t.Name = tNode["name"].As<string>();
+                t.Name = GetCleanString(at.username, tNode["name"].As<string>());
             }
             catch
             {
@@ -1004,7 +1276,7 @@ public class DBQueryModel
         }
         else
         {
-            name = tagName;
+            name = at.username + tagName;
             startLabel = "User";
         }
         string query = "MATCH (:" + startLabel + ")-[:OWNS]->(:Cookbook)-[:CATALOGUES]->(:Recipe {name: " + recName + "})<-[:DESCRIBES]-(t:Tag)\n " +
@@ -1027,4 +1299,38 @@ public class DBQueryModel
         var record = irol.First<IRecord>();
         return record[0].As<bool>();
     }
+
+    /*
+    private static string SanitizeQueryParameters(string s)
+    {
+        return s.Replace("'", "''");
+    }
+    */
+
+    public static List<string> GetCleanList(string user, List<string> list)
+    {
+        List<string> cleanedList = new List<string>();
+
+        foreach (var item in list)
+        {
+            if (item.StartsWith(user))
+            {
+                string itemName = item.Substring(user.Length);
+                cleanedList.Add(itemName);
+            }
+        }
+        return cleanedList;
+    }
+
+    // id is the part you want you remove (it's usually just username but it may be recipe)
+    // ex. "jeff123BananaBreadStep1"
+    public static string GetCleanString(string id, string item)
+    {
+        if (item.StartsWith(id))
+        {
+            return item.Substring(id.Length);
+        }
+        return item; // Return the original string if no match
+    }
+
 }

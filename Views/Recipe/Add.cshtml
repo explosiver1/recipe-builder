@@ -85,8 +85,30 @@
             <br>
         </div>
 
+        <div class="form-group">
+            <label>Cook Time:</label>
+            <textarea asp-for="recipe.CookTime" class="form-control"></textarea>
+            <br>
+        </div>
+
+        <div class="form-group">
+            <label>Prep Time:</label>
+            <textarea asp-for="recipe.PrepTime" class="form-control"></textarea>
+            <br>
+        </div>
+
         <div class="text-center">
             <button type="submit" class="btn btn-custom">Submit</button>
         </div>
     </form>
+
+    @if (Model != null)
+        {
+            @if (Model.msg != "")
+            {
+            <div>
+            <p>@Model.msg</p>
+            </div>
+            }
+        }
 </div>

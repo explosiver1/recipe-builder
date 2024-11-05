@@ -17,7 +17,8 @@ namespace RecipeBuilder.Models
         [StringLength(500, ErrorMessage = "Description cannot exceed 500 characters.")]
         public string Description { get; set; } = string.Empty;
 
-        public Dictionary<string, int> servingSize { get; set; } = new Dictionary<string, int>();
+        //public Dictionary<string, int> servingSize { get; set; } = new Dictionary<string, int>();
+        public string servingSize { get; set; } = string.Empty;
         public int numServings { get; set; }
         public List<string> Equipment { get; set; } = new List<string>();
 
@@ -48,7 +49,7 @@ namespace RecipeBuilder.Models
             Ingredients = new List<IngredientDetail>();
             Instructions = new List<string>();
             Tags = new List<string>();
-            servingSize = new Dictionary<string, int>();
+            servingSize = string.Empty;//new Dictionary<string, int>();
         }
 
         public bool CreateRecipe(AuthToken at, string recipe, string title, string description)
@@ -63,7 +64,7 @@ namespace RecipeBuilder.Models
             {
                 // Passing the dictionary might be easier but all variable makes it more readable...
                 //.Result added to change Task<bool> to bool; unsure if this is right fix or if this method as a whole also needs to be async
-                bool recipeCreated = false; //DBQueryModel.CreateRecipeNode(at.username, recipe, title, description).Result;
+                bool recipeCreated = false; //DBQueryModel.CreateRecipeNode(at.username, recipe, description, rating, difficulty, servings, servingsize).Result;
                 return recipeCreated;
             }
         }
