@@ -402,7 +402,7 @@ public class DBQueryModel
             RETURN COUNT(x) > 0
         ";
 
-        var cookbookName = name;
+        var cookbookName = username + name;
 
         var session = driver.AsyncSession();
         try
@@ -999,7 +999,7 @@ public class DBQueryModel
             name = at.username + cbName;
             startLabel = "User";
         }
-        string query = "MATCH (:" + startLabel + " {name:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})-[r]->(b)\n " +
+        string query = "MATCH (:" + startLabel + " {username:'" + at.username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})-[r]->(b)\n " +
                                     "return cb, r, b\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
@@ -1018,7 +1018,7 @@ public class DBQueryModel
                 //Try-Catching all of them independently since many fields are optional.
                 try
                 {
-                    cb.Title = cbNode["name"].As<string>();
+                    cb.Title = GetCleanString(at.username, cbNode["name"].As<string>());
                 }
                 catch
                 {
@@ -1083,7 +1083,7 @@ public class DBQueryModel
             var cbNode = record["cb"].As<INode>();
             //We only add the name because there are no
             Cookbook cb = new Cookbook();
-            cb.Title = cbNode["name"].As<string>();
+            cb.Title = GetCleanString(at.username, cbNode["name"].As<string>());
             cbks.Add(cb);
         }
         return cbks;
