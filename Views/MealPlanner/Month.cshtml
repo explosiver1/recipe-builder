@@ -95,9 +95,6 @@
         <h1 class="display-4">@Model.monthName</h1>
         <hr class="rounded">
         <br>
-        <div class="button-container">
-            <a asp-controller="MealPlanner" asp-action="Index" class="button">Meal Schedule</a>
-        </div>
         
         <div class="month">
             @foreach (var week in @Model.monthPlans.weeks)
