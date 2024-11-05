@@ -103,31 +103,22 @@
             @foreach (var week in @Model.monthPlans.weeks)
             {
                 <div class="week-label">
-                    <a asp-controller="MealPlanner" asp-action="Week" asp-route-date=@week.Days[0].Date>Week @(@Model.monthPlans.weeks.IndexOf(week) + 1)</a>
+                    <a asp-controller="MealPlanner" asp-action="Week" asp-route-date="@week.Days[0].Date">Week @(@Model.monthPlans.weeks.IndexOf(week) + 1)</a>
                 </div>
-                    @foreach (var day in week.Days)
-                    {
-                        <div class="day">
-                            @* Make anchor with asp-route-date=@day.Date *@
-                            <p class="day-title">@day.Date.DayOfWeek @day.Date</p> 
-                            @foreach (var meal in day.Meals)
-                            {
-                                <p>
-                                @foreach (var recipe in meal.recipes)
-                                {
-                                    @* if (meal.recipes.IndexOf(recipe) != 0)
-                                    {
-                                        ,&nbsp
-                                    } *@
-                                    @recipe.Name
-                                }
-                                </p>
-                                
-                            }
-                        </div>
-                    }
+                @foreach (var day in week.Days)
+                {
+                    <div class="day">
+                        <p class="day-title">@day.Date.DayOfWeek @day.Date</p>
+                        @foreach (var meal in day.Meals)
+                        {
+                            <p>
+                                @string.Join(", ", meal.recipes.Select(recipe => recipe.Name))
+                            </p>
+                        }
+                    </div>
+                }
             }
-
         </div>
     </div>
 </body>
+
