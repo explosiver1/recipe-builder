@@ -34,10 +34,10 @@ namespace RecipeBuilder.Models
         public int Difficulty { get; set; } = 1;
 
         [Range(0, 600, ErrorMessage = "Prep time must be between 0 and 600 minutes.")]
-        public int PrepTime { get; set; }
+        public int PrepTime { get; set; } = 0;
 
         [Range(0, 600, ErrorMessage = "Cook time must be between 0 and 600 minutes.")]
-        public int CookTime { get; set; }
+        public int CookTime { get; set; } = 0;
 
 
         // Constructor to initialize lists and dictionaries if needed
