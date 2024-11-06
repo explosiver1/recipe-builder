@@ -3,13 +3,38 @@
     ViewData["Title"] = "Edit Recipe";
 }
 
+<style>
+    .plus-button {
+        background-color: #96AE6D;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        transition: background-color 0.2s;
+        margin-left: 10px; 
+    }
+
+    .plus-button:hover {
+        background-color: #4A743E;
+    }
+
+    .ingredient-row, .instruction-row{
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+</style>
+
 <div class="text-center">
     <h2 class="display-4">Edit Recipe</h2>
     <form asp-action="Edit" method="post">
         <div class="form-group">
-            <label asp-for="recipe.Name" class="control-label">Recipe Name:</label>
-            <input asp-for="recipe.Name" class="form-control" />
-            <span asp-validation-for="recipe.Name" class="text-danger"></span>
+            <label asp-for="recipe.Name" class="control-label">Recipe Name: @Model.recipe.Name</label>
         </div>
         
         <div class="form-group">
@@ -25,15 +50,15 @@
         </div>
 
         <div class="form-group">
-            <label asp-for="recipe.Difficulty">Difficulty:</label>
-            <input asp-for="recipe.Difficulty" class="form-control" />
-            <span asp-validation-for="recipe.Difficulty" class="text-danger"></span>
+            <label asp-for="recipe.Rating">Rating:</label>
+            <input asp-for="recipe.Rating" class="form-control" />
+            <span asp-validation-for="recipe.Rating" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-            <label>Ingredients (one per line):</label>
-            <textarea asp-for="IngredientsInput" class="form-control"></textarea>
-            <span asp-validation-for="IngredientsInput" class="text-danger"></span>
+            <label asp-for="recipe.Difficulty">Difficulty:</label>
+            <input asp-for="recipe.Difficulty" class="form-control" />
+            <span asp-validation-for="recipe.Difficulty" class="text-danger"></span>
         </div>
 
         <div class="form-group">
@@ -52,6 +77,12 @@
             <label>Tools/Equipment Needed (comma-separated):</label>
             <input asp-for="EquipmentInput" class="form-control" />
             <span asp-validation-for="EquipmentInput" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label>Ingredients (one per line):</label>
+            <textarea asp-for="IngredientsInput" class="form-control"></textarea>
+            <span asp-validation-for="IngredientsInput" class="text-danger"></span>
         </div>
 
         <div class="form-group">
