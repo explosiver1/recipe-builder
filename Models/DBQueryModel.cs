@@ -232,17 +232,16 @@ public class DBQueryModel
         var query = @"
             MATCH (user:User {name: $user})
             MERGE (ingredient:Ingredient {name: $ingredientName})
-            MERGE (user)-(x:OWNS)->(ingredient)
+            MERGE (user)-[x:OWNS]->(ingredient)
             RETURN COUNT(x) > 0
             ";
 
         var ingredientName = username + ingredient;
-
+        string user = username;
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { ingredientName });
-            Console.WriteLine($"Ingredient node {ingredient} created!");
+            var response = await session.RunAsync(query, new { user, ingredientName });
 
             // Pulls all responses from query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
@@ -250,6 +249,7 @@ public class DBQueryModel
             // Checks if there is a record && gets the first record which should be the bool response
             bool ingredientCreated = records.Any() && records.First()[0].As<bool>();
             Console.WriteLine("Returning Result: " + ingredientCreated);
+            Console.WriteLine($"Ingredient node {ingredient} created!");
             return ingredientCreated;
         }
         catch (Exception ex)
@@ -299,8 +299,9 @@ public class DBQueryModel
     // TODO - Test results
     // Used when adding ingredients to Recipe, Shopping List, or Pantry (must create the nodes first)
     // The parent is the name of the node you are adding ingredients too
-    public static async Task<bool> ConnectIngredientNode(string username, string parent, string ingredient)
+    public static async Task<bool> ConnectIngredientNode(string username, string parent, IngredientDetail ingD)
     {
+        string ingredient = ingD.Ingredient.Name;
         string query;
         if (parent.Contains("Pantry"))
         {
@@ -326,6 +327,9 @@ public class DBQueryModel
             MATCH (parent:Recipe{name:$parentName})
             MATCH (ingredient:Ingredient{name:$ingredientName})
             MERGE (parent)-[x:MADE_WITH]->(ingredient)
+            SET x.unit = $Unit,
+            x.qualifier $Qualifier,
+            x.quantity $Quantity
             RETURN COUNT(x) > 0
             ";
         }
@@ -434,17 +438,18 @@ public class DBQueryModel
     public static async Task<bool> CreateToolNode(string username, string recipe, string tool)
     {
         var query = @"
-            MATCH (recipe:Tool {name: $recipeName})
+            MATCH (recipe:Recipe {name: $recipeName})
             MERGE (tool:Tool {name: $toolName})
             MERGE (recipe)-[x:USES]->(tool)
             RETURN COUNT(x) > 0
         ";
+        string recipeName = recipe;
+        string toolName = tool;
 
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { username, recipe, tool });
-            Console.WriteLine($"Tool {tool} created!");
+            var response = await session.RunAsync(query, new { recipeName, toolName });
 
             // Pulls all responses from query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
@@ -452,6 +457,7 @@ public class DBQueryModel
             // Checks if there is a record && gets the first record which should be the bool response
             bool toolCreated = records.Any() && records.First()[0].As<bool>();
             Console.WriteLine("Returning Result: " + toolCreated);
+            Console.WriteLine($"Tool {tool} created!");
             return toolCreated;
         }
         catch (Exception ex)
@@ -605,8 +611,8 @@ public class DBQueryModel
         MATCH (recipe:Recipe {name: $recipeName})
         MERGE (step:Step {name: $stepName})
         ON CREATE SET
-            step.order = order: $order
-            step.description = description: $description
+            step.order = $order,
+            step.description = $description
         MERGE (recipe)-[x:HAS_STEP]->(step)
         RETURN COUNT(x) > 0
         ";
@@ -1211,6 +1217,39 @@ public class DBQueryModel
             Console.WriteLine("Error accessing query results. Exception: " + e);
         }
         return ing;
+    }
+
+    public static async Task<IngredientDetail> GetIngredientDetail(string username, string ingName, string recipeName)
+    {
+        string name = username + ingName;
+        string startLabel = "User";
+
+        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(:Recipe {name: " + recipeName + "})-[r:MADE_WITH]->(:Ingredient {name: " + recipeName + "})\n " +
+                                    "return r\n";
+        var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
+        IReadOnlyList<IRecord> irol = response.Result;
+        var record = irol.First<IRecord>();
+        var iNode = record["r"].As<INode>();
+        IngredientDetail ingD = new IngredientDetail();
+
+        ingD.Ingredient = GetIngredient(username, ingName).Result;
+        ingD.Name = ingD.Ingredient.Name;
+
+
+        try
+        {
+            ingD.Qualifier = GetCleanString(username, iNode["qualifier"].As<string>() ?? string.Empty);
+            //ing.Unit = GetCleanString(username, iNode["unit"].As<string>() ?? string.Empty);
+            ingD.Quantity = Convert.ToInt32(GetCleanString(username, iNode["quantity"].As<string>() ?? "0"));
+            ingD.Unit = GetCleanString(username, iNode["unit"].As<string>() ?? string.Empty);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error accessing query results. Exception: " + e);
+            ingD.Name = "ERROR";
+        }
+
+        return ingD;
     }
 
     private static async Task<List<Ingredient>> GetIngredientsByRecipe(string recName, AuthToken at)
