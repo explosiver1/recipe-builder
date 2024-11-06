@@ -42,7 +42,7 @@
         justify-content: center;
         align-items: center;
         transition: background-color 0.2s;
-        margin-left: 10px; 
+        margin-left: 10px;
     }
 
     .plus-button:hover {
@@ -119,19 +119,41 @@
         </div>
 
         <div class="form-group">
-            <div id="ingredients-container">
-                <div class="ingredient-row">
-                    <label>Ingredeients (one per line):</label>
-                    <label asp-for="IngredientsInput.Quantity" class="control-label">Amount:</label>
-                    <textarea asp-for="IngredientsInput.Quantity" class="form-control"></textarea>
-                    <label asp-for="IngredientsInput.Unit" class="control-label">Unit:</label>
-                    <textarea asp-for="IngredientsInput.Unit" class="form-control"></textarea>
-                    <label asp-for="IngredientsInput.Name" class="control-label">Name:</label>
-                    <textarea asp-for="IngredientsInput.Name" class="form-control"></textarea>
-                    <label asp-for="IngredientsInput.Qualifier" class="control-label">Qualifier:</label>
-                    <textarea asp-for="IngredientsInput.Qualifier" class="form-control"></textarea>
-                </div>
-            </div>
+
+            <table id="ingredientTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Qualifier</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.IngredientsInput.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <input type="text" name="IngredientsInput[@i].Name" value="@Model.IngredientsInput[i].Name" />
+                            </td>
+                            <td>
+                                <input type="text" name="IngredientsInput[@i].Quantity" value="@Model.IngredientsInput[i].Quantity" />
+                            </td>
+                            <td>
+                                <input type="text" name="IngredientsInput[@i].Unit" value="@Model.IngredientsInput[i].Unit" />
+                            </td>
+                            <td>
+                                <input type="text" name="IngredientsInput[@i].Qualifier" value="@Model.IngredientsInput[i].Qualifier" />
+                            </td>
+                            <td>
+                                <button type="button" onclick="removeIngredientRow(this)">Remove</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
             <div>
                 <span class="plus-button" onclick="addIngredientRow()">+</span>
             </div><br>
@@ -139,10 +161,28 @@
 
         <div class="form-group">
             <div id="instructions-container">
-                <div class="instruction-row">
-                    <label>Instructions (one per line):</label>
-                    <textarea asp-for="InstructionsInput" class="form-control"></textarea>
-                </div>
+                <table id="instructionTable">
+                    <thead>
+                    <tr>
+                        <th>Instruction</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.InstructionsInput.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="text" name="InstructionsInput[@i]" value="@Model.InstructionsInput[i]" />
+                                </td>
+                                <td>
+                                    <button type="button" onclick="removeInstructionRow(this)">Remove</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
             </div>
             <div>
                 <span class="plus-button" onclick="addInstructionRow()">+</span>
@@ -163,29 +203,31 @@
             </div>
             }
         }
+
 </div>
 <script>
     function addIngredientRow(){
-        const newRow = document.createElement("div");
-        newRow.classList.add("ingredient-row");
-        newRow.innerHTML = 
-        '<label asp-for="IngredientsInput.Quantity" class="control-label">Amount:</label>'
-        '<textarea asp-for="IngredientsInput.Quantity" class="form-control"></textarea>'
-        '<label asp-for="IngredientsInput.Unit" class="control-label">Unit:</label>'
-        '<textarea asp-for="IngredientsInput.Unit" class="form-control"></textarea>'
-        '<label asp-for="IngredientsInput.Name" class="control-label">Name:</label>'
-        '<textarea asp-for="IngredientsInput.Name" class="form-control"></textarea>'
-        '<label asp-for="IngredientsInput.Qualifier" class="control-label">Qualifier:</label>'
-        '<textarea asp-for="IngredientsInput.Qualifier" class="form-control"></textarea>'
-        ;
-        document.getElementById("ingredients-container").appendChild(newRow);
+        var rowCount = document.querySelectorAll('#ingredientTable tbody tr').length;
+        var newRow = document.createElement('tr');
+
+        newRow.innerHTML = `
+                <td><input type="text" name="IngredientsInput[${rowCount}].Name" /></td>
+                <td><input type="text" name="IngredientsInput[${rowCount}].Quantity" /></td>
+                <td><input type="text" name="IngredientsInput[${rowCount}].Unit" /></td>
+                <td><input type="text" name="IngredientsInput[${rowCount}].Qualifier" /></td>
+                <td><button type="button" onclick="removeIngredientRow(this)">Remove</button></td>
+            `;
+        document.getElementById("ingredientTable").getElementsByTagName('tbody')[0].appendChild(newRow);
     }
+
     function addInstructionRow(){
-        const newInstruction = document.createElement("div");
-        newInstruction.classList.add("instruction-row");
-        newInstruction.innerHTML = 
-        '<textarea asp-for="InstructionsInput" class="form-control"></textarea>'
-        ;
-        document.getElementById("instructions-container").appendChild(newInstruction);
+        var rowCount = document.querySelectorAll('#instructionTable tbody tr').length;
+        var newRow = document.createElement('tr');
+
+        newRow.innerHTML = `
+            <td><input type="text" name="InstructionsInput[${rowCount}]" /></td>
+            <td><button type="button" onclick="removeInstructionRow(this)">Remove</button></td>
+        `;
+        document.getElementById("instructionTable").getElementsByTagName('tbody')[0].appendChild(newRow);
     }
 </script>

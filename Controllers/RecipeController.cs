@@ -130,10 +130,18 @@ namespace RecipeBuilder.Controllers
                 "   Servings: " + recipeVM.recipe.numServings + "\n" +
                 "Equipment String: " + recipeVM.EquipmentInput + "\n" +
                 "Tags String: " + recipeVM.TagsInput + "\n" +
-                "Ingredients String: " + recipeVM.IngredientsInput + "\n" +
+                //"Ingredients String: " + recipeVM.IngredientsInput + "\n" +
                 "ServingSize String: " + recipeVM.ServingSizeInput + "\n" +
                 "Instructions String: " + recipeVM.InstructionsInput + "\n" +
                 "\n");
+
+            foreach (IngredientDetail ing in recipeVM.IngredientsInput)
+            {
+                Console.WriteLine("Ingredient Name: " + ing.Name + "\n" +
+                "Quantity: " + ing.Quantity + "\n" +
+                "Unit: " + ing.Unit + "\n" +
+                "Qualifier: " + ing.Qualifier + "\n");
+            }
             //if (!ModelState.IsValid)
             //{
             //    Console.WriteLine("Model validation failed:");
@@ -156,10 +164,10 @@ namespace RecipeBuilder.Controllers
                                             .ToList();
 
                 // Parse Ingredients
-                recipeVM.recipe.Ingredients = recipeVM.IngredientsInput.Split('\n')
+                recipeVM.recipe.Ingredients = recipeVM.IngredientsInput; /* .Split('\n')
                                             .Select(line => new IngredientDetail { Name = line.Trim() })
                                             .Where(ingredient => !string.IsNullOrEmpty(ingredient.Name))
-                                            .ToList();
+                                            .ToList(); */
 
                 //Commented this out because the dictionary can't be parsed reliably without knowing the keys the user inputs.
                 // Parse Serving Size (assuming a format like "cup, 2")
@@ -183,10 +191,10 @@ namespace RecipeBuilder.Controllers
                                             .ToList();
 
                 // Parse Instructions
-                recipeVM.recipe.Instructions = recipeVM.InstructionsInput.Split('\n')
+                recipeVM.recipe.Instructions = recipeVM.InstructionsInput; /*.Split('\n')
                                             .Select(instruction => instruction.Trim())
                                             .Where(instruction => !string.IsNullOrEmpty(instruction))
-                                            .ToList();
+                                            .ToList();*/
 
                 // ** Add the recipe to SeedData here **
                 //SeedData.GetRecipeList().Add(recipeVM.recipe);
