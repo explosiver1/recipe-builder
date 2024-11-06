@@ -119,25 +119,7 @@
         </div>
 
         <div class="form-group">
-        @*
-        COMMENTING OUT THIS BLOCK FOR ALTERNATE TABLE
-            <div id="ingredients-container">
-                <div class="ingredient-row">
-                    <label>Ingredients (one per line):</label>
-                    <label asp-for="IngredientsInput[0].Quantity" class="control-label">Amount:</label>
-                    <textarea asp-for="IngredientsInput[0].Quantity" class="form-control"></textarea>
-                    <label asp-for="IngredientsInput[0].Unit" class="control-label">Unit:</label>
-                    <textarea asp-for="IngredientsInput[0].Unit" class="form-control"></textarea>
-                    <label asp-for="IngredientsInput[0].Name" class="control-label">Name:</label>
-                    <textarea asp-for="IngredientsInput[0].Name" class="form-control"></textarea>
-                    <label asp-for="IngredientsInput[0].Qualifier" class="control-label">Qualifier:</label>
-                    <textarea asp-for="IngredientsInput[0].Qualifier" class="form-control"></textarea>
-                </div>
-            </div>
-            <div>
-                <span class="plus-button" onclick="addIngredientRow()">+</span>
-            </div><br>
-        *@
+
             <table id="ingredientTable">
                 <thead>
                     <tr>
@@ -176,24 +158,14 @@
                 <span class="plus-button" onclick="addIngredientRow()">+</span>
             </div><br>
         </div>
-    @*
+
         <div class="form-group">
             <div id="instructions-container">
-
-                <div class="instruction-row">
-                    <label>Instructions (one per line):</label>
-                    @*
-                    COMMENTING THIS OUT FOR TESTING
-                    <textarea asp-for="InstructionsInput[0]" class="form-control"></textarea>
-                    *@
-                </div>
-
-
                 <table id="instructionTable">
                     <thead>
                     <tr>
                         <th>Instruction</th>
-                        <th>Actions></th>
+                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -220,7 +192,6 @@
         <div class="text-center">
             <button type="submit" class="btn btn-custom">Submit</button>
         </div>
-        *@
     </form>
 
     @if (Model != null)
@@ -248,7 +219,7 @@
             `;
         document.getElementById("ingredientTable").getElementsByTagName('tbody')[0].appendChild(newRow);
     }
-    @*
+
     function addInstructionRow(){
         var rowCount = document.querySelectorAll('#instructionTable tbody tr').length;
         var newRow = document.createElement('tr');
@@ -257,7 +228,6 @@
             <td><input type="text" name="InstructionsInput[${rowCount}]" /></td>
             <td><button type="button" onclick="removeInstructionRow(this)">Remove</button></td>
         `;
-
         document.getElementById("instructionTable").getElementsByTagName('tbody')[0].appendChild(newRow);
-    }*@
+    }
 </script>
