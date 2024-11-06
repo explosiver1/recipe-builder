@@ -198,6 +198,7 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
                 Console.WriteLine("About to enter CreateRecipeNode");
+                /*
                 test = DBQueryModel.CreateRecipeNode(at.username,
                     recipeVM.recipe.Name,
                     recipeVM.recipe.Description,
@@ -206,7 +207,9 @@ namespace RecipeBuilder.Controllers
                     recipeVM.recipe.numServings.ToString(),
                     recipeVM.recipe.servingSize,
                     recipeVM.recipe.CookTime.ToString(),
-                    recipeVM.recipe.PrepTime.ToString()).Result;
+                    recipeVM.recipe.PrepTime.ToString()).Result; */
+                test = CtrlModel.SetRecipe(at.username, recipeVM.recipe);
+
             }
             catch (Exception e)
             {

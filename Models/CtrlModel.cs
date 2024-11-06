@@ -67,9 +67,9 @@ public static class CtrlModel
         return DBQueryModel.GetIngredient(ingName, username).Result;
     }
 
-    public static IngredientDetail GetIngredientDetail(string username, string ingName)
+    public static IngredientDetail GetIngredientDetail(string username, string ingName, string recipeName)
     {
-        return new IngredientDetail(); //Fill this in later;
+        return DBQueryModel.GetIngredientDetail(username, ingName, recipeName).Result;
     }
 
     public static List<string> GetIngredientNameList(string username)
@@ -95,10 +95,13 @@ public static class CtrlModel
     }
 
     // Send recipe data from user to DB (& return recipe to the controller?)
-    public static Recipe SetRecipe(string username, Recipe recipe)
+    // Return bool to know if it worked. Test at the controller to know what to return to view.
+    public static bool SetRecipe(string username, Recipe recipe)
     {
+        //RecipeSeedData.AddRecipe(cookbookName, recipe);
         // Update to DB method
-        bool recipeAdded = DBQueryModel.CreateRecipeNode(username,
+
+        bool test = DBQueryModel.CreateRecipeNode(username,
             recipe.Name,
             recipe.Description,
             recipe.Rating.ToString(),
@@ -107,14 +110,56 @@ public static class CtrlModel
             recipe.servingSize,
             recipe.CookTime.ToString(),
             recipe.PrepTime.ToString())
-            .Result; //RecipeSeedData.AddRecipe(cookbookName, recipe);
-        if (recipeAdded)
+            .Result;
+
+        //These aren't read as a success or failure for the program yet. Only success/fail of the recipe node is returned at present.
+        foreach (string tag in recipe.Tags)
         {
-            return recipe;
+            bool tmp = DBQueryModel.CreateTagNode(tag, recipe.Name, username).Result;
+        }
+
+        foreach (string tool in recipe.Equipment)
+        {
+            bool tmp = DBQueryModel.CreateToolNode(username, tool, recipe.Name).Result;
+        }
+
+        foreach (IngredientDetail ingredient in recipe.Ingredients)
+        {
+            bool tmp = DBQueryModel.CreateIngredientNode(username, ingredient.Ingredient.Name).Result;
+
+            if (tmp)
+            {
+                tmp = DBQueryModel.ConnectIngredientNode(username, recipe.Name, ingredient).Result;
+            }
+        }
+        int i = 0;
+        foreach (string instruction in recipe.Instructions)
+        {
+            i += 1;
+            bool tmp = DBQueryModel.CreateStepNode(username, recipe.Name, i.ToString(), instruction).Result;
+        }
+        return test;
+    }
+    /*
+if (recipeAdded)
+{
+    return recipe;
+}
+else
+{
+    return new Recipe(); //Update for how to handle recipe addition failure
+} */
+
+
+    public static bool SetIngredient(string username, IngredientDetail ingD, string recipeName)
+    {
+        if (DBQueryModel.CreateIngredientNode(username, ingD.Ingredient.Name).Result)
+        {
+            return DBQueryModel.ConnectIngredientNode(username, recipeName, ingD).Result;
         }
         else
         {
-            return new Recipe(); //Update for how to handle recipe addition failure
+            return false;
         }
     }
 
