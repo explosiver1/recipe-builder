@@ -192,6 +192,87 @@ public class DBQueryModel
         }
     }
 
+    // Unsure how to handle tool and tag since it needs both new and old names passed to be able to delete the previous node
+    public static async Task<bool> EditRecipe(string username, string recipe, string tool = "", string order = "", string stepDescription = "", string recipeDescription = "", string rating = "", string difficulty = "", string servings = "", string servingSize = "", string cookTime = "", string prepTime = "")
+    {
+        string query = @"
+            MATCH (recipe:Recipe{name:$recipeName})
+            OPTIONAL MATCH (step:Step{order:$order})
+            ";
+
+        var recipeName = username + recipe;
+        var toolName = username + tool;
+        var parameters = new Dictionary<string, object> { { "name", recipeName }, {"order", order} };
+        var updates = new List<string>();
+
+        // Dynamically add SET clauses for non-empty parameters
+        if (!string.IsNullOrEmpty(stepDescription))
+        {
+            updates.Add("step.description = $stepDescription");
+            parameters["description"] = stepDescription;
+        }
+        if (!string.IsNullOrEmpty(recipeDescription))
+        {
+            updates.Add("recipe.description = $recipeDescription");
+            parameters["description"] = recipeDescription;
+        }
+        if (!string.IsNullOrEmpty(rating))
+        {
+            updates.Add("recipe.rating = $rating");
+            parameters["rating"] = rating;
+        }
+        if (!string.IsNullOrEmpty(difficulty))
+        {
+            updates.Add("recipe.difficulty = $difficulty");
+            parameters["difficulty"] = difficulty;
+        }
+        if (!string.IsNullOrEmpty(servings))
+        {
+            updates.Add("recipe.servings = $servings");
+            parameters["servings"] = servings;
+        }
+        if (!string.IsNullOrEmpty(servingSize))
+        {
+            updates.Add("recipe.servingSize = $servingSize");
+            parameters["servingSize"] = servingSize;
+        }
+        if (!string.IsNullOrEmpty(cookTime))
+        {
+            updates.Add("recipe.cookTime = $cookTime");
+            parameters["cookTime"] = cookTime;
+        }
+        if (!string.IsNullOrEmpty(prepTime))
+        {
+            updates.Add("recipe.prepTime = $prepTime");
+            parameters["prepTime"] = prepTime;
+        }
+
+        // Join updates with commas and complete the query
+        query += "SET " + string.Join(", ", updates) + " RETURN COUNT(recipe) > 0";
+
+        var session = driver.AsyncSession();
+        try
+        {
+            var response = await session.RunAsync(query, parameters);
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool recipeEdited = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + recipeEdited);
+            return recipeEdited;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
 
     // GetRecipes()
     // Gets a list of all the recipe names a user owns
@@ -1095,13 +1176,13 @@ public class DBQueryModel
         return cbks;
     }
 
-    // Doesn't return bool in query response yet
+    // bool respone doesn't tell much
     public static async Task<bool> EditCookBook(string username, string name, string description)
     {
         var query = @"
             MATCH (cookbook:Cookbook {name: $cookbookName})
             SET cookbook.description = $description
-
+            RETURN COUNT()
         ";
 
         var cookbookName = username + name;
