@@ -12,7 +12,7 @@ namespace RecipeBuilder.ViewModels
         public string cookbookName { get; set; } = string.Empty;
         public Recipe recipe { get; set; } = new Recipe();
         public string TagsInput { get; set; } = string.Empty; // Comma-separated tags
-        public string IngredientsInput { get; set; } = string.Empty; // One ingredient per line
+        public IngredientDetail IngredientsInput { get; set; } = new IngredientDetail(); // One ingredient per line
         public string ServingSizeInput { get; set; } = string.Empty; // e.g., "cup, 2"
         public string EquipmentInput { get; set; } = string.Empty; // Comma-separated tools/equipment
         public string InstructionsInput { get; set; } = string.Empty; // One instruction per line

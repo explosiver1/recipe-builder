@@ -23,12 +23,37 @@
     .btn-custom:hover {
         background-color: #96AE6D;
     }
+
+    .ingredient-row, .instruction-row{
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .plus-button {
+        background-color: #96AE6D;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 18px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        transition: background-color 0.2s;
+        margin-left: 10px; 
+    }
+
+    .plus-button:hover {
+        background-color: #4A743E;
+    }
 </style>
 
 <div class="text-center">
     <h1 class="display-4">Create Recipe</h1>
 </div>
-<div class="">
+<div class="container">
     <form asp-action="Add" method="post">
         <div class="form-group">
             <label asp-for="recipe.Name" class="control-label">Recipe Name:</label>
@@ -50,14 +75,14 @@
         </div>
 
         <div class="form-group">
-            <label asp-for="recipe.Difficulty">Difficulty:</label>
-            <input asp-for="recipe.Difficulty" class="form-control" />
+            <label asp-for="recipe.Rating">Rating:</label>
+            <input asp-for="recipe.Rating" class="form-control" />
             <br>
         </div>
 
         <div class="form-group">
-            <label>Ingredients (one per line):</label>
-            <textarea asp-for="IngredientsInput" class="form-control"></textarea>
+            <label asp-for="recipe.Difficulty">Difficulty:</label>
+            <input asp-for="recipe.Difficulty" class="form-control" />
             <br>
         </div>
 
@@ -80,21 +105,48 @@
         </div>
 
         <div class="form-group">
-            <label>Instructions (one per line):</label>
-            <textarea asp-for="InstructionsInput" class="form-control"></textarea>
-            <br>
-        </div>
-
-        <div class="form-group">
             <label>Cook Time:</label>
             <textarea asp-for="recipe.CookTime" class="form-control"></textarea>
+            <p>mins</p>
             <br>
         </div>
 
         <div class="form-group">
             <label>Prep Time:</label>
             <textarea asp-for="recipe.PrepTime" class="form-control"></textarea>
+            <p>mins</p>
             <br>
+        </div>
+
+        <div class="form-group">
+            <div id="ingredients-container">
+                <div class="ingredient-row">
+                    <label>Ingredeients (one per line):</label>
+                    <label asp-for="IngredientsInput.Quantity" class="control-label">Amount:</label>
+                    <textarea asp-for="IngredientsInput.Quantity" class="form-control"></textarea>
+                    <label asp-for="IngredientsInput.Unit" class="control-label">Unit:</label>
+                    <textarea asp-for="IngredientsInput.Unit" class="form-control"></textarea>
+                    <label asp-for="IngredientsInput.Name" class="control-label">Name:</label>
+                    <textarea asp-for="IngredientsInput.Name" class="form-control"></textarea>
+                    <label asp-for="IngredientsInput.Qualifier" class="control-label">Qualifier:</label>
+                    <textarea asp-for="IngredientsInput.Qualifier" class="form-control"></textarea>
+                </div>
+            </div>
+            <div>
+                <span class="plus-button" onclick="addIngredientRow()">+</span>
+            </div><br>
+        </div>
+
+        <div class="form-group">
+            <div id="instructions-container">
+                <div class="instruction-row">
+                    <label>Instructions (one per line):</label>
+                    <textarea asp-for="InstructionsInput" class="form-control"></textarea>
+                </div>
+            </div>
+            <div>
+                <span class="plus-button" onclick="addInstructionRow()">+</span>
+            </div><br>
         </div>
 
         <div class="text-center">
@@ -112,3 +164,28 @@
             }
         }
 </div>
+<script>
+    function addIngredientRow(){
+        const newRow = document.createElement("div");
+        newRow.classList.add("ingredient-row");
+        newRow.innerHTML = 
+        '<label asp-for="IngredientsInput.Quantity" class="control-label">Amount:</label>'
+        '<textarea asp-for="IngredientsInput.Quantity" class="form-control"></textarea>'
+        '<label asp-for="IngredientsInput.Unit" class="control-label">Unit:</label>'
+        '<textarea asp-for="IngredientsInput.Unit" class="form-control"></textarea>'
+        '<label asp-for="IngredientsInput.Name" class="control-label">Name:</label>'
+        '<textarea asp-for="IngredientsInput.Name" class="form-control"></textarea>'
+        '<label asp-for="IngredientsInput.Qualifier" class="control-label">Qualifier:</label>'
+        '<textarea asp-for="IngredientsInput.Qualifier" class="form-control"></textarea>'
+        ;
+        document.getElementById("ingredients-container").appendChild(newRow);
+    }
+    function addInstructionRow(){
+        const newInstruction = document.createElement("div");
+        newInstruction.classList.add("instruction-row");
+        newInstruction.innerHTML = 
+        '<textarea asp-for="InstructionsInput" class="form-control"></textarea>'
+        ;
+        document.getElementById("instructions-container").appendChild(newInstruction);
+    }
+</script>

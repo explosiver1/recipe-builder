@@ -44,15 +44,7 @@
 </style>
 <body>
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="d-flex">
-        @*<form asp-action="" method="get" class="form-inline"> * need to know which model to pull from for Tag search*@
-        <div class="input-group input-group-sm">
-            <input type="text" class="form-control" placeholder="Search by Tags..." name="TagSearch" value="@ViewData["CurrentTagFilter"]" style="max-width: 150px;" />
-            <div class="input-group-append">
-                <button class="btn btn-primary" type="submit">Search</button>
-            </div>
-        </div>
-        @*</form>*@
+    <div class="d-flex" style= "width: 120px;">
     </div>
     <h2 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">@Model.cookbook.Title Cookbook</h2>
     <hr class="rounded">
