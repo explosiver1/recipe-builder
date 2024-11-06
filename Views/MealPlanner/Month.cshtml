@@ -87,17 +87,15 @@
         margin-bottom: 40px;
         text-align: center; 
     }
+
 </style>
 
 <body>
     <div class="container">
         <h1 class="display-4">Monthly Meal Planner</h1>
-        <h1 class="display-4">@Model.monthName</h1>
+        <h2 style="color: #4A743E;" class="text-center">@Model.monthName</h2>
         <hr class="rounded">
         <br>
-        <div class="button-container">
-            <a asp-controller="MealPlanner" asp-action="Index" class="button">Meal Schedule</a>
-        </div>
         
         <div class="month">
             @foreach (var week in @Model.monthPlans.weeks)

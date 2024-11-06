@@ -84,16 +84,12 @@
         <h1 class="display-4">Weekly Meal Planner</h1>
         <hr class="rounded">
         <br>
-        <div class="button-container">
-            <a asp-controller="MealPlanner" asp-action="Index" class="button">Meal Schedule</a>
-        </div>
         
         <div class="schedule">
             @foreach (MPDay day in @Model.selectedWeek.Days)
             {
                 <div class="day">
                     <a class="schedule-title" asp-area="" asp-controller="MealPlanner" asp-action="Daily" asp-route-date="@day.Date">@day.Date.DayOfWeek @day.Date</a>
-                    @* <h2 class="schedule-title">@day.Date.DayOfWeek @day.Date</h2> *@
                     @if (@day.Meals.Count > 0)
                     {
                         foreach (MPMeal meal in @day.Meals)
