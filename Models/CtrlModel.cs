@@ -158,7 +158,7 @@ public static class CtrlModel
             if (tmp)
             {
                 Console.WriteLine("Creating ingredient " + ingredient.Name + " Succeeded");
-                tmp = DBQueryModel.ConnectIngredientNode(username, recipe.Name, ingredient).Result;
+                tmp = DBQueryModel.ConnectIngredientNode(username, recipe.Name, ingredient.Name, ingredient.Unit, ingredient.Qualifier, ingredient.Quantity).Result;
 
                 if (tmp)
                 {
@@ -190,22 +190,12 @@ public static class CtrlModel
         }
         return test;
     }
-    /*
-if (recipeAdded)
-{
-    return recipe;
-}
-else
-{
-    return new Recipe(); //Update for how to handle recipe addition failure
-} */
-
 
     public static bool SetIngredient(string username, IngredientDetail ingD, string recipeName)
     {
         if (DBQueryModel.CreateIngredientNode(username, ingD.Ingredient.Name).Result)
         {
-            return DBQueryModel.ConnectIngredientNode(username, recipeName, ingD).Result;
+            return DBQueryModel.ConnectIngredientNode(username, recipeName, ingD.Name, ingD.Unit, ingD.Qualifier, ingD.Quantity).Result;
         }
         else
         {

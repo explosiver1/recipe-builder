@@ -306,6 +306,7 @@ public class DBQueryModel
         return recipeNames;
     }
 
+    // CreateIngredient()
     public static async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
         Console.WriteLine("Entering CreateIngredientNode with parameters: " + username + ", " + ingredient);
@@ -353,45 +354,6 @@ public class DBQueryModel
         }
     }
 
-
-    // // CreateIngredient()
-    // // TODO - return success/fail
-    // public static async Task<bool> CreateIngredientNode(string username, string ingredient)
-    // {
-    //     var query = @"
-    //         MATCH (user:User {name: $username})
-    //         MERGE (ingredient:Ingredient {name: $ingredientName})
-    //         MERGE (user)-[x:OWNS]->(ingredient)
-    //         RETURN COUNT(x) > 0
-    //         ";
-
-    //     var ingredientName = username + ingredient;
-    //     var session = driver.AsyncSession();
-    //     try
-    //     {
-    //         var response = await session.RunAsync(query, new { username, ingredientName });
-
-    //         // Pulls all responses from query
-    //         IReadOnlyList<IRecord> records = await response.ToListAsync();
-
-    //         // Checks if there is a record && gets the first record which should be the bool response
-    //         bool ingredientCreated = records.Any() && records.First()[0].As<bool>();
-    //         Console.WriteLine("Returning Result: " + ingredientCreated);
-    //         Console.WriteLine($"Ingredient node {ingredient} created!");
-    //         return ingredientCreated;
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Console.WriteLine($"An error occurred: {ex.Message}");
-    //         return false;
-    //     }
-    //     finally
-    //     {
-    //         // Ensures the session is closed
-    //         await session.CloseAsync();
-    //     }
-    // }
-
     //This was easier than making the other method do more because of the parameter injection on the query string.
     public static async Task<List<string>> GetRecipeNodeNamesByIngredient(string username, string ingredient)
     {
@@ -424,19 +386,10 @@ public class DBQueryModel
 
 
     // MergeIngredient()
-    // TODO - Test results
     // Used when adding ingredients to Recipe, Shopping List, or Pantry (must create the nodes first)
     // The parent is the name of the node you are adding ingredients too
-    public static async Task<bool> ConnectIngredientNode(string username, string parent, IngredientDetail ingD)
+    public static async Task<bool> ConnectIngredientNode(string username, string parent, string ingredient, string unit = "", string qualifier = "", double quantity = 0)
     {
-
-        Console.WriteLine("Entering ConnectIngredientNode with parameters: " + username + ", " + parent + ", " + ingD);
-        Console.WriteLine("Ingredient Detail Params; Name: " + ingD.Name + ", Unit: " + ingD.Unit + ", Quantity: " + ingD.Quantity + ", Qualifier: " + ingD.Qualifier + ", Ingredient: Name: " + ingD.Ingredient.Name);
-
-        var ingredient = ingD.Ingredient.Name;
-        var unit = ingD.Unit;
-        var qualifier = ingD.Qualifier;
-        var quantity = ingD.Quantity;
         var parentName = username + parent;
         var ingredientName = username + ingredient;
 
