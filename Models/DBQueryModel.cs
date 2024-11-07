@@ -310,15 +310,15 @@ public class DBQueryModel
     {
         Console.WriteLine("Entering CreateIngredientNode with parameters: " + username + ", " + ingredient);
         var query = @"
-            MATCH (user:User {username: $username}) 
+            MATCH (user:User {username: $username})
             MERGE (ingredient:Ingredient {name: $ingredientName})
             MERGE (user)-[x:OWNS]->(ingredient)
-            RETURN (user IS NOT NULL) AS userExists, 
-                (ingredient IS NOT NULL) AS ingredientExists, 
+            RETURN (user IS NOT NULL) AS userExists,
+                (ingredient IS NOT NULL) AS ingredientExists,
                 EXISTS((user)-[:OWNS]->(ingredient)) AS relationshipCreated
         ";
-      
-        var ingredientName = ingredient; 
+
+        var ingredientName = username + ingredient;
 
         var session = driver.AsyncSession();
 
@@ -431,7 +431,7 @@ public class DBQueryModel
 
         Console.WriteLine("Entering ConnectIngredientNode with parameters: " + username + ", " + parent + ", " + ingD);
         Console.WriteLine("Ingredient Detail Params; Name: " + ingD.Name + ", Unit: " + ingD.Unit + ", Quantity: " + ingD.Quantity + ", Qualifier: " + ingD.Qualifier + ", Ingredient: Name: " + ingD.Ingredient.Name);
-       
+
         var ingredient = ingD.Ingredient.Name;
         var unit = ingD.Unit;
         var qualifier = ingD.Qualifier;
@@ -439,7 +439,7 @@ public class DBQueryModel
         var parentName = username + parent;
         var ingredientName = username + ingredient;
 
-        var parameters = new Dictionary<string, object> { {"parentName", parentName}, {"ingredientName", ingredientName}};
+        var parameters = new Dictionary<string, object> { { "parentName", parentName }, { "ingredientName", ingredientName } };
 
         string query;
         if (parent.Contains("Pantry"))
@@ -476,7 +476,7 @@ public class DBQueryModel
             parameters["qualifier"] = qualifier;
             parameters["quantity"] = quantity;
         }
-        
+
         var session = driver.AsyncSession();
         try
         {
@@ -1512,7 +1512,7 @@ public class DBQueryModel
     {
         string name = username + recName;
         string startLabel = "User";
-        string query = "MATCH (:" + startLabel + ")-[r]->(b:Recipe)-[]-(t:instruction)\n " +
+        string query = "MATCH (:" + startLabel + ")-[r]->(b:Recipe)-[]-(t:Step)\n " +
             "WHERE b.name = '" + name + "'\n" +
             "return t\n" +
             "ORDER BY t.order";
