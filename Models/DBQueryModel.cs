@@ -310,6 +310,7 @@ public class DBQueryModel
     // TODO - return success/fail
     public static async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
+        Console.WriteLine("Entering CreateIngredientNode with parameters: " + username + ", " + ingredient);
         var query = @"
             MATCH (user:User {name: $user})
             MERGE (ingredient:Ingredient {name: $ingredientName})
@@ -317,7 +318,7 @@ public class DBQueryModel
             RETURN COUNT(x) > 0
             ";
 
-        var ingredientName = username + ingredient;
+        string ingredientName = username + ingredient;
         string user = username;
         var session = driver.AsyncSession();
         try
@@ -382,6 +383,8 @@ public class DBQueryModel
     // The parent is the name of the node you are adding ingredients too
     public static async Task<bool> ConnectIngredientNode(string username, string parent, IngredientDetail ingD)
     {
+        Console.WriteLine("Entering ConnectIngredientNode with parameters: " + username + ", " + parent + ", " + ingD);
+        Console.WriteLine("Ingredient Detail Params; Name: " + ingD.Name + ", Unit: " + ingD.Unit + ", Quantity: " + ingD.Quantity + ", Qualifier: " + ingD.Qualifier + ", Ingredient: Name: " + ingD.Ingredient.Name);
         string ingredient = ingD.Ingredient.Name;
         string query;
         if (parent.Contains("Pantry"))
@@ -861,6 +864,8 @@ public class DBQueryModel
             {
                 resultRecipe.Tags.Add(t.Name);
             }
+
+            resultRecipe.Instructions = GetInstuctionsByRecipe(recipeName, username).Result;
 
             //Add foreach for tools here once we implement it. We may leave it as a comma delimited string for time.
         }
@@ -1442,6 +1447,36 @@ public class DBQueryModel
             }
             lt.Add(t);
         }
+        return lt;
+    }
+
+    //TESTING
+    private static async Task<List<string>> GetInstuctionsByRecipe(string recName, string username)
+    {
+        string name = username + recName;
+        string startLabel = "User";
+        string query = "MATCH (:" + startLabel + ")-[r]->(b:Recipe)-[]-(t:instruction)\n " +
+            "WHERE b.name = '" + name + "'\n" +
+            "return t\n" +
+            "ORDER BY t.order";
+        var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
+        IReadOnlyList<IRecord> irol = response.Result;
+        List<string> lt = new List<string>();
+        foreach (var record in irol)
+        {
+            string t;
+            var tNode = record["t"].As<INode>();
+            try
+            {
+                t = GetCleanString(username, tNode["name"].As<string>());
+            }
+            catch
+            {
+                t = "";
+            }
+            lt.Add(t);
+        }
+        lt.Sort();
         return lt;
     }
 

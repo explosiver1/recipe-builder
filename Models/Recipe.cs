@@ -78,6 +78,27 @@ namespace RecipeBuilder.Models
             }
         }
 
+        public void PrintAllStats()
+        {
+            Console.WriteLine("Recipe: Name: " + Name + ", Description: " + Description + ", PrepTime: " + PrepTime.ToString() + ", CookTime: " + CookTime.ToString() + ", servingSize: " + servingSize + ", numServings: " + numServings.ToString() + ", Rating: " + Rating.ToString() + ", Difficulty: " + Difficulty.ToString());
+            foreach (string s in Equipment)
+            {
+                Console.WriteLine("    Equipment: " + s);
+            }
+            foreach (IngredientDetail ing in Ingredients)
+            {
+                Console.WriteLine("     Ingredient: Name: " + ing.Name + ", Unit: " + ing.Unit + ", Quantity: " + ing.Quantity + ", " + ing.Qualifier);
+            }
+            foreach (string s in Instructions)
+            {
+                Console.WriteLine("    Instructions: " + s);
+            }
+            foreach (string s in Tags)
+            {
+                Console.WriteLine("    Tags: " + s);
+            }
+        }
+
         public void RemoveIngredient(IngredientDetail ingredientDetail)
         {
             if (Ingredients.Contains(ingredientDetail))

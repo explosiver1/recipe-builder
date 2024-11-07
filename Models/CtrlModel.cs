@@ -151,6 +151,7 @@ public static class CtrlModel
 
         foreach (IngredientDetail ingredient in recipe.Ingredients)
         {
+
             bool tmp = DBQueryModel.CreateIngredientNode(username, ingredient.Name).Result;
 
             if (tmp)
