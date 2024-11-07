@@ -284,7 +284,7 @@ namespace RecipeBuilder.Controllers
                 {
                     throw new Exception("Authentication Expired. Please login again.");
                 }
-                recipeModel = DBQueryModel.GetRecipe(at.username, recipeName).Result;
+                recipeModel = CtrlModel.GetRecipe(at.username, recipeName)!; //DBQueryModel.GetRecipe(at.username, recipeName).Result;
 
                 Console.WriteLine(@$"Recipe Found. Name: {recipeModel.Name}");
             }
