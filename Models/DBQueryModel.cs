@@ -306,32 +306,38 @@ public class DBQueryModel
         return recipeNames;
     }
 
-    // CreateIngredient()
-    // TODO - return success/fail
     public static async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
         var query = @"
-            MATCH (user:User {name: $user})
+            MATCH (user:User {username: $username}) 
             MERGE (ingredient:Ingredient {name: $ingredientName})
             MERGE (user)-[x:OWNS]->(ingredient)
-            RETURN COUNT(x) > 0
-            ";
+            RETURN (user IS NOT NULL) AS userExists, 
+                (ingredient IS NOT NULL) AS ingredientExists, 
+                EXISTS((user)-[:OWNS]->(ingredient)) AS relationshipCreated
+        ";
 
-        var ingredientName = username + ingredient;
-        string user = username;
+        var ingredientName = ingredient; 
         var session = driver.AsyncSession();
+
         try
         {
-            var response = await session.RunAsync(query, new { user, ingredientName });
+            Console.WriteLine("Executing query to create ingredient node and relationship...");
 
-            // Pulls all responses from query
-            IReadOnlyList<IRecord> records = await response.ToListAsync();
+            // Run the query with parameters and retrieve a single response
+            var response = await session.RunAsync(query, new { username, ingredientName });
+            var record = await response.SingleAsync();
 
-            // Checks if there is a record && gets the first record which should be the bool response
-            bool ingredientCreated = records.Any() && records.First()[0].As<bool>();
-            Console.WriteLine("Returning Result: " + ingredientCreated);
-            Console.WriteLine($"Ingredient node {ingredient} created!");
-            return ingredientCreated;
+            // Check if user and ingredient nodes exist and are connected
+            bool userExists = record["userExists"].As<bool>();
+            bool ingredientExists = record["ingredientExists"].As<bool>();
+            bool relationshipCreated = record["relationshipCreated"].As<bool>();
+
+            // Log detailed results
+            Console.WriteLine($"User exists: {userExists}, Ingredient exists: {ingredientExists}, Relationship created: {relationshipCreated}");
+
+            // Return true if all conditions are met
+            return userExists && ingredientExists && relationshipCreated;
         }
         catch (Exception ex)
         {
@@ -340,10 +346,48 @@ public class DBQueryModel
         }
         finally
         {
-            // Ensures the session is closed
             await session.CloseAsync();
         }
     }
+
+
+    // // CreateIngredient()
+    // // TODO - return success/fail
+    // public static async Task<bool> CreateIngredientNode(string username, string ingredient)
+    // {
+    //     var query = @"
+    //         MATCH (user:User {name: $username})
+    //         MERGE (ingredient:Ingredient {name: $ingredientName})
+    //         MERGE (user)-[x:OWNS]->(ingredient)
+    //         RETURN COUNT(x) > 0
+    //         ";
+
+    //     var ingredientName = username + ingredient;
+    //     var session = driver.AsyncSession();
+    //     try
+    //     {
+    //         var response = await session.RunAsync(query, new { username, ingredientName });
+
+    //         // Pulls all responses from query
+    //         IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+    //         // Checks if there is a record && gets the first record which should be the bool response
+    //         bool ingredientCreated = records.Any() && records.First()[0].As<bool>();
+    //         Console.WriteLine("Returning Result: " + ingredientCreated);
+    //         Console.WriteLine($"Ingredient node {ingredient} created!");
+    //         return ingredientCreated;
+    //     }
+    //     catch (Exception ex)
+    //     {
+    //         Console.WriteLine($"An error occurred: {ex.Message}");
+    //         return false;
+    //     }
+    //     finally
+    //     {
+    //         // Ensures the session is closed
+    //         await session.CloseAsync();
+    //     }
+    // }
 
     //This was easier than making the other method do more because of the parameter injection on the query string.
     public static async Task<List<string>> GetRecipeNodeNamesByIngredient(string username, string ingredient)
@@ -382,7 +426,15 @@ public class DBQueryModel
     // The parent is the name of the node you are adding ingredients too
     public static async Task<bool> ConnectIngredientNode(string username, string parent, IngredientDetail ingD)
     {
-        string ingredient = ingD.Ingredient.Name;
+        var ingredient = ingD.Ingredient.Name;
+        var unit = ingD.Unit;
+        var qualifier = ingD.Qualifier;
+        var quantity = ingD.Quantity;
+        var parentName = username + parent;
+        var ingredientName = username + ingredient;
+
+        var parameters = new Dictionary<string, object> { {"parentName", parentName}, {"ingredientName", ingredientName}};
+
         string query;
         if (parent.Contains("Pantry"))
         {
@@ -408,19 +460,21 @@ public class DBQueryModel
             MATCH (parent:Recipe{name:$parentName})
             MATCH (ingredient:Ingredient{name:$ingredientName})
             MERGE (parent)-[x:MADE_WITH]->(ingredient)
-            SET x.unit = $Unit,
-            x.qualifier $Qualifier,
-            x.quantity $Quantity
+            SET x.unit = $unit,
+                x.qualifier = $qualifier,
+                x.quantity = $quantity
             RETURN COUNT(x) > 0
             ";
-        }
-        var parentName = username + parent;
-        var ingredientName = username + ingredient;
 
+            parameters["unit"] = unit;
+            parameters["qualifier"] = qualifier;
+            parameters["quantity"] = quantity;
+        }
+        
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { parentName, ingredientName });
+            var response = await session.RunAsync(query, parameters);
             Console.WriteLine($"Parent node {parentName} connected to {ingredient}!");
 
             // Pulls all responses from query

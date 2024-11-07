@@ -151,6 +151,8 @@ public static class CtrlModel
 
         foreach (IngredientDetail ingredient in recipe.Ingredients)
         {
+
+            Console.WriteLine("Passing ingredient " + ingredient.Name + " Succeeded");
             bool tmp = DBQueryModel.CreateIngredientNode(username, ingredient.Name).Result;
 
             if (tmp)
