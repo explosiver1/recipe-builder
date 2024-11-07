@@ -168,6 +168,10 @@ namespace RecipeBuilder.Controllers
                                             .Select(line => new IngredientDetail { Name = line.Trim() })
                                             .Where(ingredient => !string.IsNullOrEmpty(ingredient.Name))
                                             .ToList(); */
+                foreach (IngredientDetail ing in recipeVM.recipe.Ingredients)
+                {
+                    ing.Ingredient.Name = ing.Name;
+                }
 
                 //Commented this out because the dictionary can't be parsed reliably without knowing the keys the user inputs.
                 // Parse Serving Size (assuming a format like "cup, 2")
@@ -305,7 +309,8 @@ namespace RecipeBuilder.Controllers
             {
                 recipe = recipeModel
             };
-
+            Console.WriteLine("Checking Recipe before sending back ViewModel...");
+            viewModel.recipe.PrintAllStats();
             return View(viewModel);
         }
 
