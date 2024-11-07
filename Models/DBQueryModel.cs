@@ -202,7 +202,7 @@ public class DBQueryModel
 
         var recipeName = username + recipe;
         var toolName = username + tool;
-        var parameters = new Dictionary<string, object> { { "name", recipeName }, {"order", order} };
+        var parameters = new Dictionary<string, object> { { "name", recipeName }, { "order", order } };
         var updates = new List<string>();
 
         // Dynamically add SET clauses for non-empty parameters
@@ -524,8 +524,8 @@ public class DBQueryModel
             MERGE (recipe)-[x:USES]->(tool)
             RETURN COUNT(x) > 0
         ";
-        string recipeName = recipe;
-        string toolName = tool;
+        string recipeName = username + recipe;
+        string toolName = username + tool;
 
         var session = driver.AsyncSession();
         try
@@ -814,7 +814,7 @@ public class DBQueryModel
 
         // Initialize the Neo4j session
         var session = driver.AsyncSession();
-        Recipe resultRecipe = null;
+        Recipe resultRecipe = new Recipe();
 
         try
         {
@@ -850,6 +850,19 @@ public class DBQueryModel
                     resultRecipe.Tags.Add(tagNameValue);
                 }
             });
+
+            foreach (Ingredient ing in GetIngredientsByRecipe(username, recipe).Result)
+            {
+                IngredientDetail ingD = GetIngredientDetail(username, ing.Name, recipe).Result;
+                resultRecipe.Ingredients.Add(ingD);
+            }
+
+            foreach (Tag t in GetTagsByRecipe(recipe, username).Result)
+            {
+                resultRecipe.Tags.Add(t.Name);
+            }
+
+            //Add foreach for tools here once we implement it. We may leave it as a comma delimited string for time.
         }
         catch (Exception ex)
         {
@@ -1291,7 +1304,7 @@ public class DBQueryModel
         {
             ing.Name = GetCleanString(username, iNode["name"].As<string>() ?? string.Empty);
             //ing.Unit = GetCleanString(username, iNode["unit"].As<string>() ?? string.Empty);
-            ing.Description = GetCleanString(username, iNode["description"].As<string>() ?? string.Empty);
+            //ing.Description = GetCleanString(username, iNode["description"].As<string>() ?? string.Empty);
         }
         catch (Exception e)
         {
@@ -1302,10 +1315,11 @@ public class DBQueryModel
 
     public static async Task<IngredientDetail> GetIngredientDetail(string username, string ingName, string recipeName)
     {
-        string name = username + ingName;
+        string rname = username + recipeName;
+        string iname = username + ingName;
         string startLabel = "User";
 
-        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(:Recipe {name: " + recipeName + "})-[r:MADE_WITH]->(:Ingredient {name: " + recipeName + "})\n " +
+        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(:Recipe {name: '" + rname + "'})-[r:MADE_WITH]->(:Ingredient {name: " + iname + "})\n " +
                                     "return r\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
@@ -1319,10 +1333,10 @@ public class DBQueryModel
 
         try
         {
-            ingD.Qualifier = GetCleanString(username, iNode["qualifier"].As<string>() ?? string.Empty);
+            ingD.Qualifier = iNode["qualifier"].As<string>() ?? string.Empty;
             //ing.Unit = GetCleanString(username, iNode["unit"].As<string>() ?? string.Empty);
-            ingD.Quantity = Convert.ToInt32(GetCleanString(username, iNode["quantity"].As<string>() ?? "0"));
-            ingD.Unit = GetCleanString(username, iNode["unit"].As<string>() ?? string.Empty);
+            ingD.Quantity = Convert.ToInt32(iNode["quantity"].As<string>() ?? "0");
+            ingD.Unit = iNode["unit"].As<string>() ?? string.Empty;
         }
         catch (Exception e)
         {
@@ -1333,16 +1347,62 @@ public class DBQueryModel
         return ingD;
     }
 
-    private static async Task<List<Ingredient>> GetIngredientsByRecipe(string recName, AuthToken at)
+    public static async Task<List<Ingredient>> GetIngredientsByRecipe(string username, string recipeName)
     {
-        return new List<Ingredient>();
+        string name = username + recipeName;
+        string startLabel = "User";
+        /*
+        if (group != "")
+        {
+            bool gTest = await ValidateGroupMembership(group, at);
+            if (gTest)
+            {
+                name = group;
+                startLabel = "Group";
+            }
+            else
+            {
+                Ingredient ingerr = new Ingredient();
+                return ingerr;
+            }
+        }
+        else
+        {
+            name = at.username + ingName;
+            startLabel = "User";
+        }
+        */
+        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(r:Recipe)-[:MADE_WITH]->(t:Ingredient)\n " +
+            "WHERE r.name = '" + name + "'\n" +
+            "return t\n";
+        var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
+        IReadOnlyList<IRecord> irol = response.Result;
+        List<Ingredient> ingList = new List<Ingredient>();
+        foreach (var record in irol)
+        {
+            var iNode = record["t"].As<INode>();
+            Ingredient ing = new Ingredient();
+
+            try
+            {
+                ing.Name = GetCleanString(username, iNode["name"].As<string>() ?? string.Empty);
+                //ing.Unit = GetCleanString(username, iNode["unit"].As<string>() ?? string.Empty);
+                //ing.Description = GetCleanString(username, iNode["description"].As<string>() ?? string.Empty);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error accessing query results. Exception: " + e);
+            }
+        }
+        return ingList;
     }
 
     //TESTING
-    private static async Task<List<Tag>> GetTagsByRecipe(string recName, AuthToken at, string group = "")
+    private static async Task<List<Tag>> GetTagsByRecipe(string recName, string username, string group = "")
     {
-        string name;
-        string startLabel;
+        string name = username + recName;
+        string startLabel = "User";
+        /*
         if (group != "")
         {
             bool gTest = await ValidateGroupMembership(group, at);
@@ -1361,9 +1421,10 @@ public class DBQueryModel
         {
             name = at.username + recName;
             startLabel = "User";
-        }
-        string query = "MATCH (:" + startLabel + ")-[r]->(b:Recipe {name: " + recName + "})\n " +
-                                        "return t\n";
+        } */
+        string query = "MATCH (:" + startLabel + ")-[r]->(b:Recipe)-[]-(t:Tag)\n " +
+            "WHERE b.name = '" + name + "'\n" +
+            "return t\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
         List<Tag> lt = new List<Tag>();
@@ -1373,7 +1434,7 @@ public class DBQueryModel
             var tNode = record["t"].As<INode>();
             try
             {
-                t.Name = GetCleanString(at.username, tNode["name"].As<string>());
+                t.Name = GetCleanString(username, tNode["name"].As<string>());
             }
             catch
             {
@@ -1407,9 +1468,9 @@ public class DBQueryModel
             name = at.username + tagName;
             startLabel = "User";
         }
-        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(:Cookbook)-[:CATALOGUES]->(:Recipe {name: " + recName + "})<-[:DESCRIBES]-(t:Tag)\n " +
+        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(:Cookbook)-[:CATALOGUES]->(:Recipe {name: " + recName + "})-[]->(t:Tag)\n " +
                                             "DELETE t\n" +
-                                            "MATCH (:User )-[:OWNS]->(:Cookbook)-[:CATALOGUES]->(:Recipe {name: " + recName + "})<-[:DESCRIBES]-(tt:Tag)\n " +
+                                            "MATCH (:User )-[:OWNS]->(:Cookbook)-[:CATALOGUES]->(:Recipe {name: " + recName + "})-[]->(tt:Tag)\n " +
                                                                                 "return NOT(COUNT(tt) > 0)\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;

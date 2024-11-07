@@ -38,7 +38,7 @@
                     @foreach (var ing in @Model.recipe.Ingredients)
                     {
                         <li>
-                            @ing.Quantity @ing.Unit @ing.Ingredient.Name
+                            @ing.Quantity @ing.Unit @ing.Qualifier @ing.Ingredient.Name
                             <button class="add-to-cart-btn" onclick="addToCart('@ing.Ingredient.Name',this)">Add to Cart</button>
                         </li>
                         <br>
