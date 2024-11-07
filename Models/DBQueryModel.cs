@@ -317,7 +317,7 @@ public class DBQueryModel
                 EXISTS((user)-[:OWNS]->(ingredient)) AS relationshipCreated
         ";
 
-        var ingredientName = ingredient; 
+        var ingredientName = username + ingredient; 
         var session = driver.AsyncSession();
 
         try
