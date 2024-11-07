@@ -52,7 +52,7 @@
         </div>
         <div class="col-md-8">
             <h4>Instructions:</h4>
-            <ol>
+            <ul>
                 @if (@Model.recipe.Instructions !=  null)
                 {
                     @foreach (var inst in @Model.recipe.Instructions)
@@ -60,7 +60,7 @@
                         <li>@inst</li>
                     }
                 }
-            </ol>
+            </ul>
         </div>
     </div>
 </div>
