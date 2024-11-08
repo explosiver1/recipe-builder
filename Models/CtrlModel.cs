@@ -25,6 +25,12 @@ public static class CtrlModel
         return cookbookObj;
     }
 
+    static CtrlModel()
+    {
+        pantryItems.AddRange(SeedData.myIngredients.Take(2)); // Example: add first two items for testing
+        shoppingList.Items = new List<Ingredient> { SeedData.ChocolateChips };
+    }
+
     public static List<Recipe> GetRecipeList(string username)//string userName)
 
     {
@@ -229,9 +235,9 @@ else
     // Retrieves an ingredient by name from the shopping list, allowing a nullable return
     public static Ingredient? GetIngredientByName(string name)
     {
-        if (shoppingList.Items == null) return null;
-
-        return shoppingList.Items.FirstOrDefault(i => i.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false);
+        var ingredient = shoppingList.Items?.FirstOrDefault(i => i.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false)
+                    ?? pantryItems.FirstOrDefault(i => i.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false);
+        return ingredient;
     }
 
     // Retrieve all pantry items
@@ -411,5 +417,42 @@ else
         }
         Console.WriteLine("Returning Month Data");
         return month;
+    }
+
+    public static void MoveItemFromShoppingListToPantry(Ingredient ingredient)
+    {
+        if (ingredient == null || string.IsNullOrEmpty(ingredient.Name))
+        {
+            Console.WriteLine("Cannot add ingredient without a name.");
+            return;
+        }
+
+        if (!pantryItems.Any(i => i.Name == ingredient.Name))
+        {
+            pantryItems.Add(ingredient);
+            Console.WriteLine($"{ingredient.Name} added to the pantry.");
+        }
+        else
+        {
+            Console.WriteLine($"{ingredient.Name} is already in the pantry.");
+        }
+    }
+
+    public static bool MoveItemBetweenLists(string itemName, bool toPantry)
+    {
+        var ingredient = GetIngredientByName(itemName);
+        if (ingredient == null) return false;
+
+        if (toPantry)
+        {
+            RemoveItemFromShoppingList(ingredient);
+            AddItemToPantry(ingredient);
+        }
+        else
+        {
+            RemoveItemFromPantry(ingredient);
+            AddItemToShoppingList(ingredient);
+        }
+        return true;
     }
 }

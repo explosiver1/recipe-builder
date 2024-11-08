@@ -22,7 +22,6 @@
             color: #4A743E;
         }
 
-        /* scoped bulleted list for pantry items inside #pantryContainer */
         #pantryContainer ul {
             list-style-type: disc; 
             padding-left: 20px; 
@@ -33,19 +32,25 @@
             margin: 10px 0; 
         }
 
-        /* scoped link styling within #pantryContainer */
-        #pantryContainer a {
-            margin-left: 10px;
-            text-decoration: none; 
-            color: #96AE6D; 
+        #pantryContainer form {
+            display: inline; /* Keep the form inline with the text */
         }
 
-        #pantryContainer a:hover {
+        #pantryContainer a, #pantryContainer button {
+            margin-left: 10px;
+            text-decoration: none; 
+            color: #96AE6D;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        #pantryContainer a:hover, #pantryContainer button:hover {
             text-decoration: underline;
         }
     </style>
     <script>
-        // remove an item from the pantry list
+        // remove an item from the pantry list (client-side only)
         function removeItem(event) {
             const item = event.target.closest('li'); // get closest list item
             if (item) {
@@ -68,8 +73,15 @@
             @foreach (var item in Model.items)
             {
                 <li>
-                    @item.Name 
-                    <a asp-controller="ShoppingList" asp-action="AddItemToShoppingList" asp-route-itemName="@item.Name">Add Item To Shopping List</a>
+                    @item.Name
+
+                    <!-- Form to add item to the shopping list -->
+                    <form asp-controller="Pantry" asp-action="AddItemToShoppingList" method="post">
+                        <input type="hidden" name="itemName" value="@item.Name" />
+                        <button type="submit">Add Item To Shopping List</button>
+                    </form>
+
+                    <!-- Client-side remove functionality -->
                     <a href="#" onclick="removeItem(event)">Remove</a>
                 </li>
             }

@@ -26,7 +26,7 @@ public static class SeedData
     //public static Ingredient Name = new Ingredient{Name="", Description="", Unit=""};
 
     /* INGREDIENT LIST */
-    public static List<Ingredient> myIngredients = [Sugar, Egg, BrownSugar, PowderedSugar, Flour, Vanilla, BakingSoda, BakingPowder, Butter, Oil, ChocolateChips];
+    public static List<Ingredient> myIngredients = new List<Ingredient> { Sugar, Egg, BrownSugar, PowderedSugar, Flour, Vanilla, BakingSoda, BakingPowder, Butter, Oil, ChocolateChips };
 
     /* RECIPES */
     public static Recipe ChocolateChipCookies = new Recipe

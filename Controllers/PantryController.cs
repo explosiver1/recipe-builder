@@ -3,54 +3,55 @@ using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
 using RecipeBuilder.ViewModels;
 
-namespace RecipeBuilder.Controllers;
-
-public class PantryController : Controller
+namespace RecipeBuilder.Controllers
 {
-    // Display all items in the pantry
-    [HttpGet]
-    public IActionResult Index()
+    public class PantryController : Controller
     {
-        PantryIndexVM viewModel = new PantryIndexVM
+        // Display all items in the pantry
+        [HttpGet]
+        public IActionResult Index()
         {
-            items = CtrlModel.GetPantryItems()
-        };
+            PantryIndexVM viewModel = new PantryIndexVM
+            {
+                items = CtrlModel.GetPantryItems()
+            };
 
-        // Log items to confirm they are being passed to the view
-        Console.WriteLine("Current pantry items:");
-        foreach (var item in viewModel.items)
+            // Log items to confirm they are being passed to the view
+            Console.WriteLine("Current pantry items:");
+            foreach (var item in viewModel.items)
+            {
+                Console.WriteLine(item.Name);
+            }
+
+            return View(viewModel);
+        }
+        
+        [HttpPost]
+        public IActionResult AddItemToShoppingList(string itemName)
         {
-            Console.WriteLine(item.Name);
+            bool success = CtrlModel.MoveItemBetweenLists(itemName, toPantry: false);
+            return success ? RedirectToAction("Index") : NotFound();
         }
 
-        return View(viewModel);
-    }
-
-    // Add an item to the pantry from the shopping list
-    [HttpPost]
-    public IActionResult AddItemFromShoppingList(string itemName)
-    {
-        var ingredient = CtrlModel.GetIngredientByName(itemName);
-        if (ingredient == null)
+        [HttpPost]
+        public IActionResult AddItemFromShoppingList(string itemName)
         {
-            return NotFound();
+            bool success = CtrlModel.MoveItemBetweenLists(itemName, toPantry: true);
+            return success ? RedirectToAction("Index") : NotFound();
         }
 
-        CtrlModel.AddItemToPantry(ingredient);
-        return RedirectToAction("Index");
-    }
-
-    // Remove an item from the pantry
-    [HttpPost]
-    public IActionResult Remove(string itemName)
-    {
-        var ingredient = CtrlModel.GetIngredientByName(itemName);
-        if (ingredient == null)
+        // Remove an item from the pantry
+        [HttpPost]
+        public IActionResult Remove(string itemName)
         {
-            return NotFound();
-        }
+            var ingredient = CtrlModel.GetIngredientByName(itemName);
+            if (ingredient == null)
+            {
+                return NotFound();
+            }
 
-        CtrlModel.RemoveItemFromPantry(ingredient);
-        return RedirectToAction("Index");
+            CtrlModel.RemoveItemFromPantry(ingredient);
+            return RedirectToAction("Index");
+        }
     }
 }
