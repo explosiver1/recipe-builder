@@ -318,7 +318,7 @@ public class DBQueryModel
                 EXISTS((user)-[:OWNS]->(ingredient)) AS relationshipCreated
         ";
 
-        var ingredientName = username + ingredient; 
+        var ingredientName = username + ingredient;
 
 
         var session = driver.AsyncSession();
@@ -894,36 +894,57 @@ public class DBQueryModel
                     numServings = record["numServings"]?.As<int>() ?? 0, // Default to 0 if null
                     Rating = record["rating"]?.As<int>() ?? 1,            // Default to 1 if null
                     Difficulty = record["difficulty"]?.As<int>() ?? 1,    // Default to 1 if null
+                    PrepTime = record["prepTime"]?.As<int>() ?? 0,
+                    CookTime = record["cookTime"]?.As<int>() ?? 0,
                     Equipment = new List<string>(),
                     Tags = new List<string>()
                 };
-
+                //I commented this out since I'm adding them via foreach. I'm also not passing names for them in.
+                //We wouldn't need to look them up if we already have them.
                 // Add tool and tag names to Equipment and Tags lists if they are present
-                var toolNameValue = record["toolName"]?.As<string>();
-                if (!string.IsNullOrEmpty(toolNameValue))
-                {
-                    resultRecipe.Equipment.Add(toolNameValue);
-                }
+                //var toolNameValue = record["toolName"]?.As<string>();
+                //if (!string.IsNullOrEmpty(toolNameValue))
+                //{
+                //    resultRecipe.Equipment.Add(toolNameValue);
+                //}
 
-                var tagNameValue = record["tagName"]?.As<string>();
-                if (!string.IsNullOrEmpty(tagNameValue))
-                {
-                    resultRecipe.Tags.Add(tagNameValue);
-                }
+                //var tagNameValue = record["tagName"]?.As<string>();
+                //if (!string.IsNullOrEmpty(tagNameValue))
+                //{
+                //    resultRecipe.Tags.Add(tagNameValue);
+                //s}
             });
 
-            foreach (Ingredient ing in GetIngredientsByRecipe(username, recipe).Result)
+            List<Tag> tList = GetTagsByRecipe(recipe, username).Result;
+            if (tList.Any())
             {
-                IngredientDetail ingD = GetIngredientDetail(username, ing.Name, recipe).Result;
-                resultRecipe.Ingredients.Add(ingD);
+                foreach (Tag t in GetTagsByRecipe(recipe, username).Result)
+                {
+                    resultRecipe.Tags.Add(t.Name);
+                }
             }
 
-            foreach (Tag t in GetTagsByRecipe(recipe, username).Result)
+            List<string> iList = GetInstuctionsByRecipe(recipe, username).Result;
+            if (iList.Any())
             {
-                resultRecipe.Tags.Add(t.Name);
+                resultRecipe.Instructions = iList;
             }
 
-            resultRecipe.Instructions = GetInstuctionsByRecipe(recipeName, username).Result;
+            List<Ingredient> ingList = GetIngredientsByRecipe(username, recipe).Result;
+            if (ingList.Any())
+            {
+                Console.WriteLine("Ingredient List is not empty");
+                foreach (Ingredient ing in ingList)
+                {
+                    Console.WriteLine("Finding IngredientDetail for " + ing);
+                    IngredientDetail ingD = GetIngredientDetail(username, ing.Name, recipe).Result;
+                    Console.WriteLine("Retrieved IngredientDetail");
+                    Console.WriteLine("ingD: Name: " + ingD.Name + ", Quantity: " + ingD.Quantity + ", Unit: " + ingD.Unit + ", Qualifier: " + ingD.Qualifier);
+                    resultRecipe.Ingredients.Add(ingD);
+                }
+            }
+
+            //resultRecipe.Instructions = GetInstuctionsByRecipe(recipeName, username).Result;
 
             //Add foreach for tools here once we implement it. We may leave it as a comma delimited string for time.
         }
@@ -1330,7 +1351,7 @@ public class DBQueryModel
     }
 
     //WIP
-    public static async Task<Ingredient> GetIngredient(string ingName, string username, string group = "")
+    public static async Task<Ingredient> GetIngredient(string username, string ingName, string group = "")
     {
         string name = username + ingName;
         string startLabel = "User";
@@ -1355,51 +1376,60 @@ public class DBQueryModel
             startLabel = "User";
         }
         */
-        string query = "MATCH (:" + startLabel + ")-[r]->(t:Ingredient {name: " + ingName + "})\n " +
-                                        "return t\n";
-        var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
-        IReadOnlyList<IRecord> irol = response.Result;
-        var record = irol.First<IRecord>();
-        var iNode = record["t"].As<INode>();
+        string query = "MATCH (u:" + startLabel + ")-[]->(t:Ingredient)\n" +
+            "WHERE t.name = '" + name + "'\n" +
+            "return t\n";
+
+        Console.WriteLine("GetIngredient Query String: " + query);
+
         Ingredient ing = new Ingredient();
 
         try
         {
-            ing.Name = GetCleanString(username, iNode["name"].As<string>() ?? string.Empty);
+            var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
+            IReadOnlyList<IRecord> irol = response.Result;
+            var record = irol.First<IRecord>();
+            var tNode = record["t"].As<INode>();
+            ing.Name = GetCleanString(username, tNode["name"].As<string>());
             //ing.Unit = GetCleanString(username, iNode["unit"].As<string>() ?? string.Empty);
             //ing.Description = GetCleanString(username, iNode["description"].As<string>() ?? string.Empty);
         }
         catch (Exception e)
         {
-            Console.WriteLine("Error accessing query results. Exception: " + e);
+            Console.WriteLine("Error accessing GetIngredient query results. Exception: " + e);
+            return new Ingredient() { Name = "ERROR" };
         }
         return ing;
     }
 
     public static async Task<IngredientDetail> GetIngredientDetail(string username, string ingName, string recipeName)
     {
+        Console.WriteLine("Entering GetIngredientDetail with " + username + ", " + ingName + ", " + recipeName);
         string rname = username + recipeName;
         string iname = username + ingName;
         string startLabel = "User";
 
-        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(:Recipe {name: '" + rname + "'})-[r:MADE_WITH]->(:Ingredient {name: " + iname + "})\n " +
-                                    "return r\n";
+        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(rec:Recipe)-[r:MADE_WITH]->(i:Ingredient)\n " +
+            "WHERE rec.name = '" + rname + "' AND " + "i.name = '" + iname + "'\n" +
+            "return r\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
         var record = irol.First<IRecord>();
-        var iNode = record["r"].As<INode>();
+        var iRel = record["r"].As<IRelationship>(); //Relationships use IRelationship instead of INode.
         IngredientDetail ingD = new IngredientDetail();
-
-        ingD.Ingredient = GetIngredient(username, ingName).Result;
+        Console.WriteLine("Retrieving Ingredient " + ingName);
+        ingD.Ingredient = new Ingredient() { Name = ingName };// GetIngredient(username, ingName).Result; GetIngredient was failing, but I realized we don't even need it here.  //
+        Console.WriteLine("Retrieved Ingredient ");
+        Console.WriteLine("ingD.Ingredient: Name: " + ingD.Ingredient.Name);
         ingD.Name = ingD.Ingredient.Name;
 
 
         try
         {
-            ingD.Qualifier = iNode["qualifier"].As<string>() ?? string.Empty;
+            ingD.Qualifier = iRel["qualifier"].As<string>() ?? string.Empty;
             //ing.Unit = GetCleanString(username, iNode["unit"].As<string>() ?? string.Empty);
-            ingD.Quantity = Convert.ToInt32(iNode["quantity"].As<string>() ?? "0");
-            ingD.Unit = iNode["unit"].As<string>() ?? string.Empty;
+            ingD.Quantity = Convert.ToDouble(iRel["quantity"].As<string>() ?? "0");
+            ingD.Unit = iRel["unit"].As<string>() ?? string.Empty;
         }
         catch (Exception e)
         {
@@ -1412,6 +1442,7 @@ public class DBQueryModel
 
     public static async Task<List<Ingredient>> GetIngredientsByRecipe(string username, string recipeName)
     {
+        Console.WriteLine("Entering GetIngredientsByRecipe with username: " + username + ", recipeName: " + recipeName);
         string name = username + recipeName;
         string startLabel = "User";
         /*
@@ -1435,7 +1466,7 @@ public class DBQueryModel
             startLabel = "User";
         }
         */
-        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(r:Recipe)-[:MADE_WITH]->(t:Ingredient)\n " +
+        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(r:Recipe)-[]-(t:Ingredient)\n " +
             "WHERE r.name = '" + name + "'\n" +
             "return t\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
@@ -1456,7 +1487,14 @@ public class DBQueryModel
             {
                 Console.WriteLine("Error accessing query results. Exception: " + e);
             }
+            ingList.Add(ing);
         }
+        Console.WriteLine("List of Ingredients Found: ");
+        foreach (Ingredient ing in ingList)
+        {
+            Console.WriteLine("     " + ing.Name);
+        }
+        Console.WriteLine("Exiting GetIngredientsByRecipe");
         return ingList;
     }
 
@@ -1526,7 +1564,7 @@ public class DBQueryModel
             var tNode = record["t"].As<INode>();
             try
             {
-                t = GetCleanString(username, tNode["name"].As<string>());
+                t = tNode["description"].As<string>();
             }
             catch
             {
