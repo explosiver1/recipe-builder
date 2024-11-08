@@ -132,7 +132,7 @@
                     </li>
                 }
             } else {
-                <p></p>
+                <p>No items in the shopping list.</p>
             }
         </ul>
     </div>
@@ -211,5 +211,25 @@
                 textSpan.classList.remove("completed");  // remove strikethrough if checkbox is unselected
             }
         }
+
+        // Function to add an item from the shopping list to the pantry
+        function addToPantry(itemName) {
+            fetch(`/ShoppingList/AddItemToPantry?itemName=${itemName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert(`${itemName} added to pantry!`);
+                    location.reload(); // Optionally reload to see the changes
+                } else {
+                    alert("Failed to add item to pantry.");
+                }
+            });
+        }
+
     </script>
 </body>

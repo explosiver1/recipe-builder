@@ -64,4 +64,18 @@ public class ShoppingListController : Controller
         CtrlModel.CheckItemOffShoppingList(ingredient); // Method to check off item
         return RedirectToAction("Index");
     }
+
+    [HttpPost]
+    public IActionResult AddItemToPantry(string itemName)
+    {
+        var ingredient = CtrlModel.GetIngredientByName(itemName);
+        if (ingredient == null)
+        {
+            return NotFound();
+        }
+
+        CtrlModel.AddItemToPantry(ingredient);
+        CtrlModel.RemoveItemFromShoppingList(ingredient); 
+        return RedirectToAction("Index");
+    }
 }
