@@ -357,6 +357,7 @@ public class DBQueryModel
     //This was easier than making the other method do more because of the parameter injection on the query string.
     public static async Task<List<string>> GetRecipeNodeNamesByIngredient(string username, string ingredient)
     {
+        ingredient = username + ingredient;
         var query = @"
             MATCH (user:User {username: $username})-[:OWNS]->(recipe:Recipe)-[:MADE_WITH]->(i:Ingredient {name: $ingredient})
             RETURN recipe.name AS recipeName
@@ -381,7 +382,7 @@ public class DBQueryModel
             await session.CloseAsync();
         }
 
-        return recipeNames;
+        return GetCleanList(username, recipeNames);
     }
 
 
@@ -485,7 +486,7 @@ public class DBQueryModel
             await session.CloseAsync();
         }
 
-        return ingredientNames;
+        return GetCleanList(username, ingredientNames);
     }
 
     // CreateCookbookNode()

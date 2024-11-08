@@ -12,6 +12,20 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Index(string? id, string msg = "")
         {
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             if (id == "-9999" && msg != "")
             {
                 Console.WriteLine("Received error message on Recipe/Index: " + msg);
@@ -22,16 +36,10 @@ namespace RecipeBuilder.Controllers
 
             List<Recipe> recipeList;
             RecipeIndexVM viewModel = new RecipeIndexVM();
-            AuthToken at;
             string rPrint = "Recipes Received: ";
 
             try
             {
-                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-                if (!at.Validate())
-                {
-                    throw new Exception("Authentication Expired. Please login again.");
-                }
                 recipeList = new List<Recipe>();
                 if (id == null)
                 {
@@ -61,7 +69,7 @@ namespace RecipeBuilder.Controllers
             catch (Exception e)
             {
                 Console.WriteLine("Error fetching recipes. Exception " + e);
-                return View("-9999", "Error getting recipes. Exception " + e);
+                return Index("-9999", "Error getting recipes. Exception " + e);
             }
 
             Console.WriteLine(rPrint);
@@ -72,6 +80,19 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Add(string msg = "")
         {
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             var viewModel = new RecipeAddVM
             {
                 recipe = new Recipe() // Initialize an empty recipe
@@ -88,10 +109,22 @@ namespace RecipeBuilder.Controllers
         public IActionResult RemoveRecipe(string recipeToRemove)
         {
             AuthToken at;
-            bool test;
             try
             {
                 at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            bool test;
+            try
+            {
                 test = DBQueryModel.DeleteRecipe(recipeToRemove, at).Result;
             }
             catch (Exception e)
@@ -116,6 +149,19 @@ namespace RecipeBuilder.Controllers
         [HttpPost]
         public IActionResult Add(RecipeAddVM recipeVM)
         {
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             Console.WriteLine("POST Add action hit"); // Logging to console
             //Printing out the whole thing just to be sure.
             Console.WriteLine("RecipeAddVM Properties: \n" +
@@ -151,10 +197,7 @@ namespace RecipeBuilder.Controllers
             //    }
             //    return View(recipeVM); // Return the form with validation errors
             //}
-
-            AuthToken at;
             bool test;
-
             try
             {
                 // Parse Tags
@@ -204,11 +247,6 @@ namespace RecipeBuilder.Controllers
                 //SeedData.GetRecipeList().Add(recipeVM.recipe);
 
                 Console.WriteLine("Entering try block on Account/Add");
-                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-                if (!at.Validate())
-                {
-                    throw new Exception("Authentication Expired. Please login again.");
-                }
                 Console.WriteLine("About to enter CreateRecipeNode");
                 /*
                 test = DBQueryModel.CreateRecipeNode(at.username,
@@ -244,6 +282,19 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Edit(string cookbookName, string recipeName)
         {
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             // Get the recipe data (replace with actual fetch logic)
             var recipe = SeedData.GetRecipe(recipeName);
 
@@ -269,6 +320,19 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Look(string recipeName, string msg = "")
         {
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             if (msg != "")
             {
                 RecipeLookVM rlvm = new RecipeLookVM { recipe = new Recipe() };
@@ -278,16 +342,10 @@ namespace RecipeBuilder.Controllers
             }
             //Recipe? recipeModel = SeedData.GetRecipe(recipeName);
             //Debug.WriteLine(recipeModel != null ? $"Recipe found: {recipeModel.Name}" : "Recipe not found");
-            AuthToken at;
             Recipe recipeModel;
 
             try
             {
-                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-                if (!at.Validate())
-                {
-                    throw new Exception("Authentication Expired. Please login again.");
-                }
                 recipeModel = CtrlModel.GetRecipe(at.username, recipeName)!; //DBQueryModel.GetRecipe(at.username, recipeName).Result;
 
                 Console.WriteLine(@$"Recipe Found. Name: {recipeModel.Name}");
@@ -318,6 +376,19 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Select(string selectedRecipe)
         {
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
             return View(); // Can expand this later
         }
     }
