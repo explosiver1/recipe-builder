@@ -4,6 +4,7 @@ using RecipeBuilder.Models;
 using RecipeBuilder.ViewModels;
 using System.Collections.Generic;
 using System.Globalization;
+using Newtonsoft.Json;
 
 namespace RecipeBuilder.Controllers
 {
@@ -13,7 +14,20 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Index(DateOnly date)
         {
-            
+            //If user isn't logged in, don't allow access to this page - redirect to main site page
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
 
             var currentDate = date;
             var startOfWeek = DateHelper.GetStartOfWeek(currentDate);
@@ -49,6 +63,21 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Month(DateOnly date)
         {
+            //If user isn't logged in, don't allow access to this page - redirect to main site page
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             // Initialize VM to be sent to view
             MealPlannerMonthVM monthVM = new MealPlannerMonthVM();
             Console.WriteLine("Created blank monthVM for {0}", date);
@@ -85,6 +114,21 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Daily(DateOnly date)
         {
+            //If user isn't logged in, don't allow access to this page - redirect to main site page
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             var viewModel = new MealPlannerDailyVM
             {
                 mealPlanner = new MealPlanner
@@ -101,6 +145,21 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Week(DateOnly date)
         {
+            //If user isn't logged in, don't allow access to this page - redirect to main site page
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            
             var currentDate = date;//DateOnly.FromDateTime(DateTime.Now);
             var startOfWeek = DateHelper.GetStartOfWeek(currentDate);
             var datesInWeek = DateHelper.GetDatesForWeek(startOfWeek);
@@ -128,6 +187,7 @@ namespace RecipeBuilder.Controllers
         // Helper method to get meal plans for a date range (for the month view)
         private List<MealPlanner> GetMealPlansForDateRange(DateOnly startDate, DateOnly endDate)
         {
+
             var mealPlans = new List<MealPlanner>();
 
             for (var date = startDate; date <= endDate; date = date.AddDays(1))

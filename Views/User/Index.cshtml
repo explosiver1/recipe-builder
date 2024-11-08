@@ -1,8 +1,80 @@
+@model RecipeBuilder.ViewModels.UserIndexVM
+
 @{
-    ViewData["Title"] = "User Accout";
+    ViewData["Title"] = "User Home";
 }
+<style>
+    .btn-custom {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #4A743E; 
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-custom:hover {
+        background-color: #96AE6D;
+    }
+    .block {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
+        background-color: #F5F5F5;
+        border-radius: 5px;
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        text-align: center;
+    }
+</style>
 
 <div class="text-center">
-    <h1>Heading</h1>
-    <p>Let's get ready to cook!</p>
+    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for general search*@
+    <h1 class="display-4" style="color: #4A743E;">Home</h1>
+    @*</form>*@
+</div>
+<div class="row">
+    <h2 class="display-4" style="color: #4A743E;">Cookbooks:</h2>
+    @if (Model.cookbooks.Count != 0)
+    {
+        @foreach (var cookbook in Model.cookbooks)
+        {
+            <div class="col-md-4">
+                <div class="block">
+                    <h4 style="color: #4A743E;">@cookbook.Title</h4><br>
+                    <a asp-controller="Cookbooks" asp-action="Cookbook" asp-route-id=@cookbook.Title class="btn-custom">View Cookbook</a>
+                </div>
+            </div>
+       }
+    }
+    else
+    {
+        <p>No Cookbooks Found.</p>
+    }
+</div>
+<div class="row">
+    <h2 class="display-4" style="color: #4A743E;">Recipes:</h2>
+    @if (Model.recipes.Count != 0)
+    {
+        @foreach (var recipe in Model.recipes)
+        {
+            <div class="col-md-4">
+                <div class="block">
+                <h4 style="color: #4A743E;">@recipe.Name</h4><br>
+                <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe.Name class="btn-custom">View Recipe</a>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <p>No Recipes Found.</p>
+    }
 </div>

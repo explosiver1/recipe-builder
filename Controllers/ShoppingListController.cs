@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
 using RecipeBuilder.ViewModels;
+using Newtonsoft.Json;
 
 namespace RecipeBuilder.Controllers;
 
@@ -10,6 +11,21 @@ public class ShoppingListController : Controller
     [HttpGet]
     public IActionResult Index()
     {
+        //If user isn't logged in, don't allow access to this page - redirect to main site page
+        AuthToken at;
+        try
+        {
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            if (!at.Validate())
+            {
+                throw new Exception("Authentication Expired. Please login again.");
+            }
+        }
+        catch (Exception e)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         ShoppingListIndexVM viewModel = new ShoppingListIndexVM
         {
             items = CtrlModel.GetShoppingListItems() // Assume this returns a list of all shopping list items
@@ -21,6 +37,21 @@ public class ShoppingListController : Controller
     [HttpGet]
     public IActionResult Add()
     {
+        //If user isn't logged in, don't allow access to this page - redirect to main site page
+        AuthToken at;
+        try
+        {
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            if (!at.Validate())
+            {
+                throw new Exception("Authentication Expired. Please login again.");
+            }
+        }
+        catch (Exception e)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         return View();
     }
 

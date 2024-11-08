@@ -12,6 +12,7 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Index(string? id, string msg = "")
         {
+            //If user isn't logged in, don't allow access to this page - redirect to main site page
             AuthToken at;
             try
             {
