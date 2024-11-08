@@ -8,7 +8,7 @@ rather than multiple */
 public static class CtrlModel
 {
     private static ShoppingList shoppingList = new ShoppingList();
-    private static List<Ingredient> pantryItems = new List<Ingredient>();
+    private static List<IngredientDetail> pantryItems = new List<IngredientDetail>();
 
     /* GET METHODS */
 
@@ -27,8 +27,8 @@ public static class CtrlModel
 
     static CtrlModel()
     {
-        pantryItems.AddRange(SeedData.myIngredients.Take(2)); // Example: add first two items for testing
-        shoppingList.Items = new List<Ingredient> { SeedData.ChocolateChips };
+        //pantryItems.AddRange(SeedData.myIngredients.Take(2)); // Example: add first two items for testing
+        shoppingList.Items = new List<IngredientDetail>(); //{ SeedData.ChocolateChips };
     }
 
     public static List<Recipe> GetRecipeList(string username)//string userName)
@@ -84,7 +84,7 @@ public static class CtrlModel
         return DBQueryModel.GetIngredient(ingName, username).Result;
     }
 
-    public static IngredientDetail GetIngredientDetail(string username, string ingName, string recipeName)
+    public static IngredientDetail GetIngredientDetail(string username, string ingName, string recipeName, string list = "")
     {
         return DBQueryModel.GetIngredientDetail(username, ingName, recipeName).Result;
     }
@@ -220,19 +220,19 @@ public static class CtrlModel
     }
 
     // Retrieves all items in the shopping list
-    public static List<Ingredient> GetShoppingListItems()
+    public static List<IngredientDetail> GetShoppingListItems()
     {
-        return shoppingList.Items ?? new List<Ingredient>();
+        return shoppingList.Items ?? new List<IngredientDetail>();
     }
 
     // Adds an ingredient to the shopping list
-    public static bool AddItemToShoppingList(Ingredient ingredient)
+    public static bool AddItemToShoppingList(IngredientDetail ingredient)
     {
         if (ingredient == null) return false;
 
         if (shoppingList.Items == null)
         {
-            shoppingList.Items = new List<Ingredient>();
+            shoppingList.Items = new List<IngredientDetail>();
         }
 
         if (!shoppingList.Items.Contains(ingredient))
@@ -249,7 +249,7 @@ public static class CtrlModel
     }
 
     // Removes an ingredient from the shopping list
-    public static void RemoveItemFromShoppingList(Ingredient ingredient)
+    public static void RemoveItemFromShoppingList(IngredientDetail ingredient)
     {
         if (ingredient == null || shoppingList.Items == null || !shoppingList.Items.Contains(ingredient))
         {
@@ -262,7 +262,7 @@ public static class CtrlModel
     }
 
     // Checks off an ingredient in the shopping list (can also remove it if desired)
-    public static void CheckItemOffShoppingList(Ingredient ingredient)
+    public static void CheckItemOffShoppingList(IngredientDetail ingredient)
     {
         if (ingredient == null || shoppingList.Items == null || !shoppingList.Items.Contains(ingredient))
         {
@@ -275,7 +275,7 @@ public static class CtrlModel
     }
 
     // Retrieves an ingredient by name from the shopping list, allowing a nullable return
-    public static Ingredient? GetIngredientByName(string name)
+    public static IngredientDetail? GetIngredientByName(string name)
     {
         var ingredient = shoppingList.Items?.FirstOrDefault(i => i.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false)
                     ?? pantryItems.FirstOrDefault(i => i.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false);
@@ -283,15 +283,15 @@ public static class CtrlModel
     }
 
     // Retrieve all pantry items
-    public static List<Ingredient> GetPantryItems()
+    public static List<IngredientDetail> GetPantryItems()
     {
-        AddItemToPantry(SeedData.Butter);
-        AddItemToPantry(SeedData.BakingSoda);
+        //AddItemToPantry(SeedData.Butter);
+        //AddItemToPantry(SeedData.BakingSoda);
         return pantryItems;
     }
 
     // Add an ingredient to the pantry
-    public static void AddItemToPantry(Ingredient ingredient)
+    public static void AddItemToPantry(IngredientDetail ingredient)
     {
         if (ingredient == null || string.IsNullOrEmpty(ingredient.Name))
         {
@@ -311,7 +311,7 @@ public static class CtrlModel
     }
 
     // Remove an ingredient from the pantry
-    public static void RemoveItemFromPantry(Ingredient ingredient)
+    public static void RemoveItemFromPantry(IngredientDetail ingredient)
     {
         if (ingredient == null || !pantryItems.Contains(ingredient))
         {
@@ -319,7 +319,7 @@ public static class CtrlModel
             return;
         }
 
-        pantryItems.Remove(ingredient);
+        //pantryItems.Remove(ingredient);
         Console.WriteLine($"{ingredient.Name} removed from the pantry.");
     }
 
@@ -365,7 +365,7 @@ public static class CtrlModel
 
 
     // Placeholder method to simulate getting all meals
-    public static List<MealSet> GetAllMeals()
+    public static List<MealSet> GetAllMeals(string username)
     {
         // Placeholder logic - return a list of simulated meals
         Console.WriteLine("Simulating retrieval of all meals...");
@@ -377,34 +377,18 @@ public static class CtrlModel
         };
     }
 
-    // Placeholder method to simulate retrieving meals from Neo4j
-    public static List<MealSet> GetMealsFromNeo4j()
-    {
-        // Placeholder logic for retrieving data
-        Console.WriteLine("Simulating retrieving meals from Neo4j...");
-
-        // Return a simulated list of meals
-        return new List<MealSet>
-        {
-            new MealSet { Name = "Cookies", Description = "Simulated Description 1" },
-            new MealSet { Name = "Chocolate Cookies", Description = "Simulated Description 2" }
-        };
-    }
 
     // Placeholder method to simulate retrieving meals for a specific date
-    public static List<MealSet> getMealsForDate(DateOnly date)
+    public static List<MealSet> getMealsForDate(DateOnly date, string username)
     {
-        Console.WriteLine($"Simulating retrieval of meals for date: {date}");
+        //Console.WriteLine($"Simulating retrieval of meals for date: {date}");
 
         // Simulate unique data for different dates for testing
-        return new List<MealSet>
-        {
-            new MealSet { Name = $"Meal for {date}", Description = $"Description for meal on {date}" }
-        };
+        return DBQueryModel.GetMealPlanByDay(username, date.ToString()).Result;
     }
 
     // Get MealPlanner Monthly Data
-    public static MPMonth getMealsForMonth(DateOnly date)
+    public static MPMonth getMealsForMonth(DateOnly date, string username)
     {
         Console.WriteLine("Starting CtrlModel.getMealsForMonth method for {0}", date);
         // Get the date range for the current month
@@ -439,7 +423,7 @@ public static class CtrlModel
                 MPDay currentDay = new MPDay
                 {
                     Date = day,
-                    Meals = CtrlModel.getMealsForDate(day).Select(meal => new MPMeal
+                    Meals = CtrlModel.getMealsForDate(day, username).Select(meal => new MPMeal
                     {
                         mealDescription = meal.Description,
                         recipes = meal.Recipes
@@ -461,7 +445,7 @@ public static class CtrlModel
         return month;
     }
 
-    public static void MoveItemFromShoppingListToPantry(Ingredient ingredient)
+    public static void MoveItemFromShoppingListToPantry(IngredientDetail ingredient)
     {
         if (ingredient == null || string.IsNullOrEmpty(ingredient.Name))
         {
@@ -469,30 +453,35 @@ public static class CtrlModel
             return;
         }
 
-        if (!pantryItems.Any(i => i.Name == ingredient.Name))
+        //if (!pantryItems.Any(i => i.Name == ingredient.Name))
+        //pantryItems.Add(ingredient);
+        try
         {
-            pantryItems.Add(ingredient);
-            Console.WriteLine($"{ingredient.Name} added to the pantry.");
         }
-        else
+        catch (Exception e)
         {
-            Console.WriteLine($"{ingredient.Name} is already in the pantry.");
+
         }
+
     }
 
-    public static bool MoveItemBetweenLists(string itemName, bool toPantry)
+
+    public static bool MoveItemBetweenLists(string username, string itemName, bool toPantry)
     {
-        var ingredient = GetIngredientByName(itemName);
-        if (ingredient == null) return false;
+        IngredientDetail ingredient = new IngredientDetail();//GetIngredientByName(itemName);
 
         if (toPantry)
         {
+            ingredient = GetIngredientDetail(username, itemName, "", "ShoppingList");
+            if (ingredient == null) return false;
             RemoveItemFromShoppingList(ingredient);
             AddItemToPantry(ingredient);
         }
         else
         {
-            RemoveItemFromPantry(ingredient);
+            ingredient = GetIngredientDetail(username, itemName, "", "Pantry");
+            if (ingredient == null) return false;
+            //RemoveItemFromPantry(ingredient);
             AddItemToShoppingList(ingredient);
         }
         return true;

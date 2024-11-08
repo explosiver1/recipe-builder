@@ -623,21 +623,21 @@ public class DBQueryModel
 
     // CreateMealNode()
     // TODO - Test results
-    public static async Task<bool> CreateMealNode(string username, string meal, string date)
+    public static async Task<bool> CreateMealNode(string username, MealSet meal)
     {
         var query = @"
+            MATCH (u:User {name: $username})
             MERGE (meal:Meal { name: $mealName})
-            ON CREATE SET
-                date: $date
+            MERGE (u)-[:OWNS]->(meal)
             RETURN COUNT(meal) > 0
         ";
 
-        var mealName = username + meal;
+        var mealName = username + meal.Name;
 
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { mealName, date });
+            var response = await session.RunAsync(query, new { mealName });
             Console.WriteLine($"Meal node {mealName} created!");
 
             // Pulls all responses from query
@@ -1561,6 +1561,88 @@ public class DBQueryModel
         IReadOnlyList<IRecord> irol = response.Result;
         var record = irol.First<IRecord>();
         return record[0].As<bool>();
+    }
+
+    //FILL IN
+    //The Inner Lists are the meal for that day.
+    public static async Task<List<MealSet>> GetMealPlanByDay(string username, string date)
+    {
+        return new List<MealSet>();
+    }
+
+    //Adds ingredient to pantry.
+    //If the item is already there, it needs to add to the existing quantity of item.
+    //Make sure Units are consistent
+    public static async Task<bool> AddToPantry(string username, IngredientDetail ingD)
+    {
+        return true;
+    }
+
+    //Basically AddToPantry with a negative number.
+    public static async Task<bool> RemoveFromPantry(string username, IngredientDetail ingD)
+    {
+        return true;
+    }
+
+    //Gets all pantry items a user has.
+    //Ignore items where quantity <= 0. I think anyways.
+    public static async Task<IngredientDetail> GetPantry(string username)
+    {
+        return new IngredientDetail();
+    }
+
+    //Connects recipe node to cookbook node
+    public static async Task<bool> AddToCookbook(string username, string cookbookName, string recipeName)
+    {
+        return true;
+    }
+
+    //Detaches recipe node from cookbook node
+    public static async Task<bool> RemoveFromCookbook(string username, string cookbookName, string recipeName)
+    {
+        return true;
+    }
+
+    //Detaches and deletes a meal node.
+    public static async Task<bool> DeleteMeal(string username, string mealName)
+    {
+        return true;
+    }
+
+    //Connects a recipe node to a meal node
+    public static async Task<bool> AddToMeal(string username, string recipeName, string mealName)
+    {
+        return true;
+    }
+
+    //Detaches a recipe node from a meal node
+    public static async Task<bool> RemoveFromMeal(string username, string recipeName, string mealName)
+    {
+        return true;
+    }
+
+    //Connects a recipe node to the meal plan node with a date parameter
+    public static async Task<bool> ScheduleRecipe(string username, string recipeName, string date)
+    {
+        return true;
+    }
+
+    //Detaches a recipe node from the schedule
+    public static async Task<bool> UnScheduleRecipe(string username, string recipeName, string date)
+    {
+        return true;
+    }
+
+    //Connects an Inredient node to the shoppin list with ingredientDetail parameters.
+    public static async Task<bool> AddToShoppingList(string username, IngredientDetail ingD)
+    {
+        return true;
+    }
+
+    //Detaches an ingredient from the shopping list.
+    public static async Task<bool> RemoveFromShoppingList(string username, string ingName)
+    {
+        return true;
     }
 
     //TESTING
