@@ -47,6 +47,8 @@ public static class CtrlModel
         // Will need updated to match DBQueryModel's Method & Parameters
         //Recipe recipe = DBQueryModel.GetRecipe(recipeName);
         Recipe recipe = DBQueryModel.GetRecipe(username, recipeName).Result; //SeedData.GetRecipe(recipeName);
+        //Console.WriteLine("Printing recipe retrieved in GetRecipe()");
+        //recipe.PrintAllStats();
         return recipe;
     }
 
