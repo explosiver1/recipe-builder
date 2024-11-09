@@ -30,23 +30,4 @@ public class HomeController : Controller
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
-
-    public IActionResult Private()
-    {
-        HomePrivateVM viewModel = new HomePrivateVM();
-        try
-        {
-            AuthToken at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-            viewModel.cookbooks = CtrlModel.GetCookbookList(at.username);
-            viewModel.recipes = CtrlModel.GetRecipeList(at.username);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error retrieving cookbooks and recipes. Exception: " + e);
-            RedirectToAction("Index", "Account");
-        }
-
-
-        return View(viewModel);
-    }
 }

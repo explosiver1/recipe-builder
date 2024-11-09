@@ -12,16 +12,24 @@ public class CookbooksController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        // Uncomment the following line if you want to use seed data
-        // CookbooksIndexVM viewModel = new CookbooksIndexVM { Cookbooks = RecipeSeedData.cookbooks };
+        //If user isn't logged in, don't allow access to this page - redirect to main site page
         AuthToken at;
-        // For now, return an empty view model or integrate with a database
+        try
+        {
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            if (!at.Validate())
+            {
+                throw new Exception("Authentication Expired. Please login again.");
+            }
+        }
+        catch (Exception e)
+        {
+            return RedirectToAction("Index", "Home");
+        }
         CookbooksIndexVM viewModel = new CookbooksIndexVM();
         //cookbooks = CtrlModel.GetCookbookList()// Empty list for now, until data source is implemented
         try
         {
-
-            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
             viewModel.cookbooks = DBQueryModel.GetCookbooks(at.username).Result;
         }
         catch (Exception e)
@@ -36,12 +44,23 @@ public class CookbooksController : Controller
     [HttpGet]
     public IActionResult Cookbook(string name, string msg = "")
     {
+        //If user isn't logged in, don't allow access to this page - redirect to main site page
         AuthToken at;
+        try
+        {
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            if (!at.Validate())
+            {
+                throw new Exception("Authentication Expired. Please login again.");
+            }
+        }
+        catch (Exception e)
+        {
+            return RedirectToAction("Index", "Home");
+        }
         Cookbook cookbookModel;
         try
         {
-
-            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
             cookbookModel = DBQueryModel.GetCookbook(name, at.username).Result;
         }
         catch (Exception e)
@@ -59,6 +78,21 @@ public class CookbooksController : Controller
     [HttpGet]
     public IActionResult Add(string msg = "")
     {
+        //If user isn't logged in, don't allow access to this page - redirect to main site page
+        AuthToken at;
+        try
+        {
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            if (!at.Validate())
+            {
+                throw new Exception("Authentication Expired. Please login again.");
+            }
+        }
+        catch (Exception e)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         if (msg != "")
         {
             CookbooksAddVM cavm = new CookbooksAddVM();
@@ -116,12 +150,25 @@ public class CookbooksController : Controller
     {
         // Uncomment the following line if you want to use seed data
         // var cookbook = RecipeSeedData.cookbooks.FirstOrDefault(c => c.Title == cookbookName);
+        //If user isn't logged in, don't allow access to this page - redirect to main site page
         AuthToken at;
+        try
+        {
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            if (!at.Validate())
+            {
+                throw new Exception("Authentication Expired. Please login again.");
+            }
+        }
+        catch (Exception e)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         Cookbook cb;
 
         try
         {
-            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
             cb = DBQueryModel.GetCookbook(cookbookName, at.username).Result;
         }
         catch (Exception e)
@@ -129,12 +176,6 @@ public class CookbooksController : Controller
             cb = new Cookbook();
             cb.Title = "Error, cookbook " + cookbookName + "could not be retrieved. Exception: " + e;
         }
-        /*
-        if (cookbook == null)
-        {
-            return NotFound(); // If no cookbook found
-        } */
-
 
         var viewModel = new CookbooksEditVM
         {

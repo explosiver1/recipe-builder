@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
 using RecipeBuilder.ViewModels;
+using Newtonsoft.Json;
 
 namespace RecipeBuilder.Controllers
 {
@@ -11,7 +12,22 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-            PantryIndexVM viewModel = new PantryIndexVM
+           //If user isn't logged in, don't allow access to this page - redirect to main site page
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            
+           PantryIndexVM viewModel = new PantryIndexVM
             {
                 items = CtrlModel.GetPantryItems()
             };

@@ -9,10 +9,10 @@ namespace RecipeBuilder.Controllers;
 
 public class AccountController : Controller
 {
-    public IActionResult Index()
-    {
-        return View();
-    }
+    // public IActionResult Index()
+    // {
+    //     return View();
+    // }
 
     [HttpGet]
     public IActionResult Login(string msg = "")
@@ -104,10 +104,10 @@ public class AccountController : Controller
 
     }
 
-    public IActionResult Recovery()
-    {
-        return View();
-    }
+    // public IActionResult Recovery()
+    // {
+    //     return View();
+    // }
 
 
 }
