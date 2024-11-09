@@ -34,14 +34,14 @@
 
 <div class="form-group">
     <label for="CookbookTitle">Cookbook Name:</label>
-    <input type="text" class="form-control" id="CookbookTitle" asp-for="CookbookTitle" required /><br>
-    <span asp-validation-for="CookbookTitle" class="text-danger"></span>
+    <input type="text" class="form-control" id="CookbookTitle" asp-for="@Model.newcookbook.Title" required /><br>
+    <span asp-validation-for="@Model.newcookbook.Title" class="text-danger"></span>
 </div>
 
 <div class="form-group">
     <label for="CookbookDescription">Description:</label>
-    <textarea class="form-control" id="CookbookDescription" asp-for="CookbookDescription" required></textarea><br>
-    <span asp-validation-for="CookbookDescription" class="text-danger"></span>
+    <textarea class="form-control" id="CookbookDescription" asp-for="@Model.newcookbook.Description" required></textarea><br>
+    <span asp-validation-for="@Model.newcookbook.Description" class="text-danger"></span>
 </div>
 
 <div class="form-group">
@@ -57,17 +57,18 @@
                 </tr>
             </thead>
             <tbody>
-                @for (int i = 0; i < Model.RecipeInput.Count; i++)
+
+                @for (int i = 0; i < Model.UserRecipesNames.Count; i++)
                 {
                     <tr>
-                        @if(Model.Recipes != null && Model.Recipes.Any())
+                        @if(Model.UserRecipesNames != null && Model.UserRecipesNames.Any())
                         {
                             <td>
-                                <select name="RecipeInput[@i]" value="@Model.RecipeInput[i]">
+                                <select name="RecipeInput[@i]" value="@Model.newcookbook.RecipeNames">
                                     <option value="" disabled selected>Select a Recipe</option>
-                                    @foreach(Recipe recipe in Model.Recipes)
+                                    @foreach(string recipeName in Model.UserRecipesNames)
                                     {
-                                        <option value="@recipe.RecipeId">@recipe.Name</option>
+                                        <option value="@recipeName">@recipeName</option>
                                     }
                                 </select>
                             </td>

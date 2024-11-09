@@ -104,10 +104,10 @@ public class CookbooksController : Controller
 
     // Add method (POST): Handles form submission to create a new cookbook
     [HttpPost]
-    public IActionResult Add(CookbooksAddVM newCookbook)
+    public IActionResult Add(CookbooksAddVM CookbookVM)
     {
         Console.WriteLine("Creating Cookbook: \n" +
-            "Name: " + newCookbook.CookbookTitle);
+            "Name: " + CookbookVM.newcookbook.Title);
         //if (!ModelState.IsValid)
         //{
         //    Console.WriteLine("Model State Invalid");
@@ -121,7 +121,7 @@ public class CookbooksController : Controller
         {
             at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
             Console.WriteLine("User " + at.username + " Deserialized");
-            test = DBQueryModel.CreateCookbookNode(at.username, newCookbook.CookbookTitle, newCookbook.CookbookDescription).Result;
+            test = DBQueryModel.CreateCookbookNode(at.username, CookbookVM.newcookbook.Title, CookbookVM.newcookbook.Description).Result;
         }
         catch (Exception e)
         {
