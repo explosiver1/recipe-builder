@@ -4,88 +4,106 @@
     ViewData["Title"] = "Pantry";
 }
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pantry</title>
+<div class="text-center">
+    <h1 class="display-4" style="color: #4A743E;">Pantry</h1>
+    <br>
+</div>
 
-    <style>
-        #pantryContainer {
-            background-color: #F4F3EC; 
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 900px;
-            margin: auto; 
-        }
-
-        .text-center h1 {
-            color: #4A743E;
-        }
-
-        #pantryContainer ul {
-            list-style-type: disc; 
-            padding-left: 20px; 
-            color: #4A743E; 
-        }
-
-        #pantryContainer ul li {
-            margin: 10px 0; 
-        }
-
-        #pantryContainer form {
-            display: inline; /* Keep the form inline with the text */
-        }
-
-        #pantryContainer a, #pantryContainer button {
-            margin-left: 10px;
-            text-decoration: none; 
-            color: #96AE6D;
-            border: none;
-            background: none;
-            cursor: pointer;
-        }
-
-        #pantryContainer a:hover, #pantryContainer button:hover {
-            text-decoration: underline;
-        }
-    </style>
-    <script>
-        // remove an item from the pantry list (client-side only)
-        function removeItem(event) {
-            const item = event.target.closest('li'); // get closest list item
-            if (item) {
-                item.remove(); // remove item from the DOM
-            }
-        }
-    </script>
-</head>
-
-<body>
-    <div class="text-center">
-        <h1 class="display-4">Pantry</h1>
-        <br>
-    </div>
-
-    <div id="pantryContainer">
-        <br>
+<div id="pantryContainer" style="background-color: #F4F3EC; padding: 20px; border-radius: 10px; max-width: 900px; margin: auto;">
+    <br>
+    
+    @if (Model.items != null && Model.items.Any())
+    {
         <ul>
-            <!-- dynamic list generated from PantryIndexVM model -->
+            <!-- Loop through and display each pantry item -->
             @foreach (var item in Model.items)
             {
                 <li>
-                    @item.Name
-
-                    <!-- Form to add item to the shopping list -->
-                    <form asp-controller="Pantry" asp-action="AddItemToShoppingList" method="post">
-                        <input type="hidden" name="itemName" value="@item.Name" />
-                        <button type="submit">Add Item To Shopping List</button>
-                    </form>
-
-                    <!-- Client-side remove functionality -->
-                    <a href="#" onclick="removeItem(event)">Remove</a>
+                    <div class="item-left">
+                        <span>@item.Name (@item.Quantity @item.Unit)</span>
+                    </div>
+                    <div class="button-container">
+                        <form asp-controller="Pantry" asp-action="Remove" method="post">
+                            <input type="hidden" name="itemName" value="@item.Name" />
+                            <button type="submit" class="remove-btn">Remove</button>
+                        </form>
+                    </div>
                 </li>
             }
         </ul>
-    </div>
-</body>
-</html>
+    }
+    else
+    {
+        <!-- Message displayed when pantry is empty -->
+        <div class="empty-message">No items in the pantry.</div>
+    }
+</div>
+
+<style>
+    /* button styling */
+    .button-container {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #4A743E !important;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #96AE6D !important;
+    }
+
+    /* remove button styling */
+    .remove-btn {
+        background-color: #dc3545 !important;
+        margin-left: 10px;
+    }
+
+    .remove-btn:hover {
+        background-color: #c82333 !important;
+    }
+
+    /* scoped list item styling within #pantryContainer */
+    #pantryContainer ul {
+        list-style-type: none;
+        padding-left: 0;
+    }
+
+    #pantryContainer ul li {
+        font-size: 18px;
+        margin: 5px 0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    /* ensure text stay on the left side */
+    .item-left {
+        display: flex;
+        align-items: center;
+    }
+
+    /* button container for Remove buttons */
+    .button-container {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .text-center {
+        text-align: center;
+    }
+
+    /* message styling */
+    .empty-message {
+        color: #777 !important;
+        text-align: center !important;
+        font-size: 18px !important;
+        margin: 15px 0 !important;
+    }
+</style>

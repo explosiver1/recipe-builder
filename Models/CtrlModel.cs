@@ -579,4 +579,17 @@ public static class CtrlModel
         }
         return true;
     }
+
+    public static IngredientDetail? GetIngredientDetailFromShoppingList(IngredientDetail ingredientDetail, string username)
+    {
+        // Assuming you already have a method to retrieve the shopping list for the user
+        var shoppingListItems = GetShoppingListItems(username); // Retrieve the shopping list for the user
+
+        // Search for an ingredient that matches on Name, Quantity, and Unit
+        return shoppingListItems.FirstOrDefault(item =>
+            item.Name == ingredientDetail.Name &&
+            item.Quantity == ingredientDetail.Quantity &&
+            item.Unit == ingredientDetail.Unit
+        );
+    }
 }

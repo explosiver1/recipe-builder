@@ -83,7 +83,7 @@ public class ShoppingListController : Controller
 
     // Remove method: Removes an item from the shopping list
     [HttpPost]
-    public IActionResult Remove(string ingredientName)
+    public IActionResult Remove(IngredientDetail ingredient)
     {
         AuthToken at;
         try
@@ -98,13 +98,14 @@ public class ShoppingListController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
-        var ingredient = CtrlModel.GetIngredientByNameFromShoppingList(ingredientName, at.username); // Retrieve ingredient by name
-        if (ingredient == null)
+        
+        var item = CtrlModel.GetIngredientDetailFromShoppingList(ingredient, at.username);
+        if (item == null)
         {
             return NotFound();
         }
 
-        CtrlModel.RemoveItemFromShoppingList(ingredient); // Method to remove ingredient
+        CtrlModel.RemoveItemFromShoppingList(item);
         return RedirectToAction("Index");
     }
 
