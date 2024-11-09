@@ -1653,9 +1653,40 @@ public class DBQueryModel
     }
 
     //Basically AddToPantry with a negative number.
-    public static async Task<bool> RemoveFromPantry(string username, IngredientDetail ingD)
+    public static async Task<bool> RemoveFromPantry(string username, string ingredient)
     {
-        return true;
+        var query = @"
+            MATCH (pantry:Pantry {name: $pantryName})
+            MATCH (ingredient:Ingredient {name: $ingredientName})
+            MATCH (pantry)-[x:STORES]->(ingredient)
+            DETACH DELETE (x)
+            RETURN COUNT(x) = 0
+        ";
+        var pantryName = username + "Pantry";
+        var ingredientName = username + ingredient;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            Console.WriteLine("Executing Query...");
+            var response = await session.RunAsync(query, new { pantryName, ingredientName});
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool removedFromPantry = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + removedFromPantry);
+            return removedFromPantry;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            // Ensures the session is closed
+            await session.CloseAsync();
+        }
     }
 
     //Gets all pantry items a user has.

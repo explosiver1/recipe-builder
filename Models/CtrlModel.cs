@@ -342,7 +342,7 @@ public static class CtrlModel
         //}
         try
         {
-            if (!DBQueryModel.RemoveFromPantry(username, ingredient).Result)
+            if (!DBQueryModel.RemoveFromPantry(username, ingredient.Name).Result)
             {
                 throw new Exception("RemoveFromPantry returned False");
             }
