@@ -220,9 +220,9 @@ public static class CtrlModel
     }
 
     // Retrieves all items in the shopping list
-    public static List<IngredientDetail> GetShoppingListItems()
+    public static List<IngredientDetail> GetShoppingListItems(string username)
     {
-        return shoppingList.Items ?? new List<IngredientDetail>();
+        return DBQueryModel.GetShoppingList(username).Result; //shoppingList.Items ?? new List<IngredientDetail>();
     }
 
     // Adds an ingredient to the shopping list
@@ -262,6 +262,7 @@ public static class CtrlModel
     }
 
     // Checks off an ingredient in the shopping list (can also remove it if desired)
+    //
     public static void CheckItemOffShoppingList(IngredientDetail ingredient)
     {
         if (ingredient == null || shoppingList.Items == null || !shoppingList.Items.Contains(ingredient))
@@ -275,50 +276,81 @@ public static class CtrlModel
     }
 
     // Retrieves an ingredient by name from the shopping list, allowing a nullable return
-    public static IngredientDetail? GetIngredientByName(string name)
+    public static IngredientDetail? GetIngredientByNameFromShoppingList(string ingName, string username)
     {
-        var ingredient = shoppingList.Items?.FirstOrDefault(i => i.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false)
-                    ?? pantryItems.FirstOrDefault(i => i.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false);
-        return ingredient;
+        //var ingredient = shoppingList.Items?.FirstOrDefault(i => i.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false)
+        //            ?? pantryItems.FirstOrDefault(i => i.Name?.Equals(name, StringComparison.OrdinalIgnoreCase) ?? false);
+        //return ingredient;
+
+        try
+        {
+            return DBQueryModel.GetShoppingListIngredient(username, ingName).Result;
+        }
+        catch (Exception e)
+        {
+            return new IngredientDetail();
+        }
     }
 
     // Retrieve all pantry items
-    public static List<IngredientDetail> GetPantryItems()
+    public static List<IngredientDetail> GetPantryItems(string username)
     {
         //AddItemToPantry(SeedData.Butter);
         //AddItemToPantry(SeedData.BakingSoda);
-        return pantryItems;
+        return DBQueryModel.GetPantry(username).Result; //pantryItems;
     }
 
     // Add an ingredient to the pantry
-    public static void AddItemToPantry(IngredientDetail ingredient)
+    public static void AddItemToPantry(IngredientDetail ingredient, string username)
     {
-        if (ingredient == null || string.IsNullOrEmpty(ingredient.Name))
-        {
-            Console.WriteLine("Cannot add ingredient without a name.");
-            return;
-        }
+        //if (ingredient == null || string.IsNullOrEmpty(ingredient.Name))
+        //{
+        //    Console.WriteLine("Cannot add ingredient without a name.");
+        //    return;
+        //}
 
-        if (!pantryItems.Any(i => i.Name == ingredient.Name))
+        //if (!pantryItems.Any(i => i.Name == ingredient.Name))
+        //{
+        //    pantryItems.Add(ingredient);
+        //    Console.WriteLine($"{ingredient.Name} added to the pantry.");
+        //}
+        //else
+        // {
+        //    Console.WriteLine($"{ingredient.Name} is already in the pantry.");
+        //}
+
+        try
         {
-            pantryItems.Add(ingredient);
-            Console.WriteLine($"{ingredient.Name} added to the pantry.");
+            if (!DBQueryModel.AddToPantry(username, ingredient).Result)
+            {
+                throw new Exception("DBQueryModel.AddToPantry returned false.");
+            }
         }
-        else
+        catch (Exception e)
         {
-            Console.WriteLine($"{ingredient.Name} is already in the pantry.");
+            Console.WriteLine("Item could not be added to pantry. Exception: " + e);
         }
     }
 
     // Remove an ingredient from the pantry
-    public static void RemoveItemFromPantry(IngredientDetail ingredient)
+    public static void RemoveItemFromPantry(IngredientDetail ingredient, string username)
     {
-        if (ingredient == null || !pantryItems.Contains(ingredient))
+        //if (ingredient == null || !pantryItems.Contains(ingredient))
+        // {
+        //    Console.WriteLine("Ingredient not found in the pantry.");
+        //    return;
+        //}
+        try
         {
-            Console.WriteLine("Ingredient not found in the pantry.");
-            return;
+            if (!DBQueryModel.RemoveFromPantry(username, ingredient).Result)
+            {
+                throw new Exception("RemoveFromPantry returned False");
+            }
         }
-
+        catch (Exception e)
+        {
+            Console.WriteLine("Pantry Item could not be removed. Exception: " + e);
+        }
         //pantryItems.Remove(ingredient);
         Console.WriteLine($"{ingredient.Name} removed from the pantry.");
     }
@@ -341,40 +373,61 @@ public static class CtrlModel
     }
 
     /* Returns list of all user's saved meals */
-    public static List<MealSet> getMeals()
+    public static List<MealSet> getMeals(string username)
     {
-        List<MealSet> mealSet = SeedData.meals;
+        List<MealSet> mealSet = DBQueryModel.GetMeals(username).Result;
+        //SeedData.meals;
         return mealSet;
     }
 
-    public static MealSet getMeal(string mealName)
+    public static MealSet getMeal(string mealName, string username)
     {
-        return SeedData.getMeal(mealName);
+        return DBQueryModel.GetMeal(username, mealName).Result; //SeedData.getMeal(mealName);
     }
 
     // Placeholder method to simulate saving MealPlanner to Neo4j
-    public static void SaveMealPlannerToNeo4j(MealPlanner mealPlanner)
+    public static void SaveMealPlannerToNeo4j(MealPlanner mealPlanner, string username)
     {
-        // Placeholder logic for saving data to Neo4j
-        Console.WriteLine($"Simulating saving meal planner with date: {mealPlanner.DateString}");
-        foreach (var meal in mealPlanner.ScheduledMeals)
+        try
         {
-            Console.WriteLine($"Simulating saving meal: {meal.Name}, Description: {meal.Description}");
+            // Placeholder logic for saving data to Neo4j
+            //Console.WriteLine($"Simulating saving meal planner with date: {mealPlanner.DateString}");
+            foreach (MealSet meal in mealPlanner.ScheduledMeals)
+            {
+                foreach (Recipe recipe in meal.Recipes)
+                {
+                    if (!DBQueryModel.ScheduleRecipe(username, recipe.Name, meal.Date.ToString()).Result)
+                    {
+                        throw new Exception("Recipe could not be added. Return of false from DBQueryModel.ScheduleRecipe()");
+                    }
+
+                }
+                //Console.WriteLine($"Simulating saving meal: {meal.Name}, Description: {meal.Description}");
+            }
+            Console.WriteLine("Meal Planner Saved");
         }
+        catch (Exception e)
+        {
+            Console.WriteLine("Meal Planner could not be saved. Exception: " + e);
+        }
+
     }
 
 
     // Placeholder method to simulate getting all meals
     public static List<MealSet> GetAllMeals(string username)
     {
+        //This behavior is duplicated, so I'm just redirecting it to where the behavior is done.
+        //This is preferable in case this method name is still being used.
+        return getMeals(username);
         // Placeholder logic - return a list of simulated meals
-        Console.WriteLine("Simulating retrieval of all meals...");
+        //Console.WriteLine("Simulating retrieval of all meals...");
 
-        return new List<MealSet>
-        {
-            new MealSet { Name = "Cookies", Description = "Description for Placeholder Meal 1" },
-            new MealSet { Name = "Chocolate Cookies", Description = "Description for Placeholder Meal 2" }
-        };
+        //return new List<MealSet>
+        //{
+        //    new MealSet { Name = "Cookies", Description = "Description for Placeholder Meal 1" },
+        //    new MealSet { Name = "Chocolate Cookies", Description = "Description for Placeholder Meal 2" }
+        //};
     }
 
 
@@ -445,22 +498,30 @@ public static class CtrlModel
         return month;
     }
 
-    public static void MoveItemFromShoppingListToPantry(IngredientDetail ingredient)
+    public static void MoveItemFromShoppingListToPantry(IngredientDetail ingredient, string username)
     {
-        if (ingredient == null || string.IsNullOrEmpty(ingredient.Name))
-        {
-            Console.WriteLine("Cannot add ingredient without a name.");
-            return;
-        }
+        //if (ingredient == null || string.IsNullOrEmpty(ingredient.Name))
+        //{
+        //    Console.WriteLine("Cannot add ingredient without a name.");
+        //    return;
+        //}
 
         //if (!pantryItems.Any(i => i.Name == ingredient.Name))
         //pantryItems.Add(ingredient);
         try
         {
+            if (!DBQueryModel.RemoveFromShoppingList(username, ingredient.Name).Result)
+            {
+                throw new Exception("DBQueryModel.RemoveFromShoppingList returned false");
+            }
+            if (!DBQueryModel.AddToPantry(username, ingredient).Result)
+            {
+                throw new Exception("DBQueryModel.AddToPantry returned false");
+            }
         }
         catch (Exception e)
         {
-
+            Console.WriteLine("Item could not be moved to pantry from shopping list. Exception: " + e);
         }
 
     }
@@ -475,7 +536,7 @@ public static class CtrlModel
             ingredient = GetIngredientDetail(username, itemName, "", "ShoppingList");
             if (ingredient == null) return false;
             RemoveItemFromShoppingList(ingredient);
-            AddItemToPantry(ingredient);
+            AddItemToPantry(ingredient, username);
         }
         else
         {
@@ -483,6 +544,38 @@ public static class CtrlModel
             if (ingredient == null) return false;
             //RemoveItemFromPantry(ingredient);
             AddItemToShoppingList(ingredient);
+        }
+        return true;
+    }
+
+    public static bool RemoveFromCookbook(string username, string cookbookName, string recipeName)
+    {
+        try
+        {
+            if (!DBQueryModel.RemoveFromCookbook(username, cookbookName, recipeName).Result)
+            {
+                throw new Exception("DBQueryModel.AddToCookbook returned false");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Recipe could not be removed from the cookbook. Exception: " + e);
+        }
+        return true;
+    }
+
+    public static bool AddToCookbook(string username, string cookbookName, string recipeName)
+    {
+        try
+        {
+            if (!DBQueryModel.AddToCookbook(username, cookbookName, recipeName).Result)
+            {
+                throw new Exception("DBQueryModel.AddToCookbook returned false");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Recipe could not be added to cookbook. Exception " + e);
         }
         return true;
     }

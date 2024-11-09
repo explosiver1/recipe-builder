@@ -111,7 +111,7 @@ namespace RecipeBuilder.Models
         }//end AddToMealPlanner
 
         // Add an ingredient to the user's shopping list
-        public void AddToShoppingList(Ingredient ingredient)
+        public void AddToShoppingList(IngredientDetail ingredient)
         {
             if (ingredient == null)
             {
@@ -120,7 +120,7 @@ namespace RecipeBuilder.Models
             }
 
             if (ShoppingList.Items == null)
-                ShoppingList.Items = new List<Ingredient>(); // Initialize if null
+                ShoppingList.Items = new List<IngredientDetail>(); // Initialize if null
 
             ShoppingList.AddItem(ingredient);
             Console.WriteLine($"{ingredient.Name} has been added to the shopping list.");

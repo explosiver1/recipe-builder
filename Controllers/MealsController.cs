@@ -29,12 +29,13 @@ public class MealsController : Controller
         var mealVM = new MealsIndexVM
         {
             // Use the placeholder method to simulate combining data from Neo4j
-            meals = CtrlModel.GetAllMeals().Concat(CtrlModel.GetMealsFromNeo4j()).ToList()
+            // IDK What was happening here. I've left a chunk of the old statement behind the comment.
+            meals = CtrlModel.GetAllMeals(at.username) //.Concat(CtrlModel.GetMealsFromNeo4j()).ToList()
         };
 
         return View(mealVM);
     }
-    
+
     //public IActionResult Index()
     //{
     //    MealsIndexVM mealVM = new MealsIndexVM();
@@ -77,9 +78,9 @@ public class MealsController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
-        
+
         MealsLookVM mealVM = new MealsLookVM();
-        mealVM.meal = CtrlModel.getMeal(id);
+        mealVM.meal = CtrlModel.getMeal(id, at.username);
         return View(mealVM);
     }
 }

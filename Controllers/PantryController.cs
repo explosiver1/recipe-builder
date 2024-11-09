@@ -12,7 +12,7 @@ namespace RecipeBuilder.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-           //If user isn't logged in, don't allow access to this page - redirect to main site page
+            //If user isn't logged in, don't allow access to this page - redirect to main site page
             AuthToken at;
             try
             {
@@ -26,10 +26,10 @@ namespace RecipeBuilder.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            
-           PantryIndexVM viewModel = new PantryIndexVM
+
+            PantryIndexVM viewModel = new PantryIndexVM
             {
-                items = CtrlModel.GetPantryItems()
+                items = CtrlModel.GetPantryItems(at.username)
             };
 
             // Log items to confirm they are being passed to the view
@@ -41,18 +41,44 @@ namespace RecipeBuilder.Controllers
 
             return View(viewModel);
         }
-        
+
         [HttpPost]
         public IActionResult AddItemToShoppingList(string itemName)
         {
-            bool success = CtrlModel.MoveItemBetweenLists(itemName, toPantry: false);
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            bool success = CtrlModel.MoveItemBetweenLists(at.username, itemName, toPantry: false);
             return success ? RedirectToAction("Index") : NotFound();
         }
 
         [HttpPost]
         public IActionResult AddItemFromShoppingList(string itemName)
         {
-            bool success = CtrlModel.MoveItemBetweenLists(itemName, toPantry: true);
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            bool success = CtrlModel.MoveItemBetweenLists(at.username, itemName, toPantry: true);
             return success ? RedirectToAction("Index") : NotFound();
         }
 
@@ -60,13 +86,26 @@ namespace RecipeBuilder.Controllers
         [HttpPost]
         public IActionResult Remove(string itemName)
         {
-            var ingredient = CtrlModel.GetIngredientByName(itemName);
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            var ingredient = CtrlModel.GetIngredientByNameFromShoppingList(itemName, at.username);
             if (ingredient == null)
             {
                 return NotFound();
             }
 
-            CtrlModel.RemoveItemFromPantry(ingredient);
+            CtrlModel.RemoveItemFromPantry(ingredient, at.username);
             return RedirectToAction("Index");
         }
     }

@@ -1570,6 +1570,20 @@ public class DBQueryModel
         return new List<MealSet>();
     }
 
+    //FILL IN
+    //Returns list of all meals.
+    public static async Task<List<MealSet>> GetMeals(string username)
+    {
+        return new List<MealSet>();
+    }
+
+    //FILL IN
+    //Returns list of all meals.
+    public static async Task<MealSet> GetMeal(string username, string mealName)
+    {
+        return new MealSet();
+    }
+
     //Adds ingredient to pantry.
     //If the item is already there, it needs to add to the existing quantity of item.
     //Make sure Units are consistent
@@ -1586,7 +1600,12 @@ public class DBQueryModel
 
     //Gets all pantry items a user has.
     //Ignore items where quantity <= 0. I think anyways.
-    public static async Task<IngredientDetail> GetPantry(string username)
+    public static async Task<List<IngredientDetail>> GetPantry(string username)
+    {
+        return new List<IngredientDetail>();
+    }
+
+    public static async Task<IngredientDetail> GetPantryIngredient(string username, string ingName)
     {
         return new IngredientDetail();
     }
@@ -1644,6 +1663,28 @@ public class DBQueryModel
     {
         return true;
     }
+
+    public static async Task<bool> CheckShoppingListItem(string username, string itemName)
+    {
+        return true;
+    }
+
+    public static async Task<bool> UncheckShoppingListItem(string username, string itemName)
+    {
+        return true;
+    }
+
+    public static async Task<List<IngredientDetail>> GetShoppingList(string username)
+    {
+        return new List<IngredientDetail>();
+    }
+
+    public static async Task<IngredientDetail> GetShoppingListIngredient(string username, string ingName)
+    {
+        return new IngredientDetail();
+    }
+
+
 
     //TESTING
     private static async Task<bool> ValidateGroupMembership(string group, AuthToken at)
