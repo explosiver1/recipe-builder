@@ -48,15 +48,24 @@ public static class CtrlModel
     }
 
     /* Fetch recipe from DB by name & return it to controller */
-    public static Recipe? GetRecipe(string username, string recipeName)
+    public static Recipe GetRecipe(string username, string recipeName)
     {
         // Will need updated to match DBQueryModel's Method & Parameters
         //Recipe recipe = DBQueryModel.GetRecipe(recipeName);
-        Recipe? recipe = DBQueryModel.GetRecipe(username, recipeName).Result; //SeedData.GetRecipe(recipeName);
+        Recipe recipe = DBQueryModel.GetRecipe(username, recipeName).Result; //SeedData.GetRecipe(recipeName);
         return recipe;
     }
 
-
+    public static List<IngredientDetail> GetIngredientsForRecipe(string username, string recipeName)
+    {
+        List<IngredientDetail> recipesIngredients = new List<IngredientDetail>();
+        foreach (Ingredient ing in DBQueryModel.GetIngredientsByRecipe(username, recipeName).Result)
+        {
+            IngredientDetail ingD = DBQueryModel.GetIngredientDetail(username, recipeName, ing.Name).Result;
+            recipesIngredients.Add(ingD);
+        }
+        return recipesIngredients;
+    }
 
     public static List<Ingredient> GetIngredientList(string username)
     {
@@ -122,20 +131,53 @@ public static class CtrlModel
         foreach (string tag in recipe.Tags)
         {
             bool tmp = DBQueryModel.CreateTagNode(tag, recipe.Name, username).Result;
+            if (tmp)
+            {
+                Console.WriteLine("Creating tag " + tag + " Succeeded");
+            }
+            else
+            {
+                Console.WriteLine("Creating tag " + tag + " Failed");
+            }
         }
 
         foreach (string tool in recipe.Equipment)
         {
-            bool tmp = DBQueryModel.CreateToolNode(username, tool, recipe.Name).Result;
+            bool tmp = DBQueryModel.CreateToolNode(username, recipe.Name, tool).Result;
+
+            if (tmp)
+            {
+                Console.WriteLine("Creating tool " + tool + " Succeeded");
+            }
+            else
+            {
+                Console.WriteLine("Creating tool " + tool + " Failed");
+            }
         }
 
         foreach (IngredientDetail ingredient in recipe.Ingredients)
         {
-            bool tmp = DBQueryModel.CreateIngredientNode(username, ingredient.Ingredient.Name).Result;
+            Console.WriteLine("Passing ingredient " + ingredient.Name + " Succeeded");
+
+            bool tmp = DBQueryModel.CreateIngredientNode(username, ingredient.Name).Result;
 
             if (tmp)
             {
+                Console.WriteLine("Creating ingredient " + ingredient.Name + " Succeeded");
                 tmp = DBQueryModel.ConnectIngredientNode(username, recipe.Name, ingredient).Result;
+
+                if (tmp)
+                {
+                    Console.WriteLine("Connecting ingredient " + ingredient.Name + " Succeeded");
+                }
+                else
+                {
+                    Console.WriteLine("Connecting ingredient " + ingredient.Name + " Succeeded");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Creating ingredient " + ingredient.Name + " Failed");
             }
         }
         int i = 0;
@@ -143,6 +185,14 @@ public static class CtrlModel
         {
             i += 1;
             bool tmp = DBQueryModel.CreateStepNode(username, recipe.Name, i.ToString(), instruction).Result;
+            if (tmp)
+            {
+                Console.WriteLine("Creating instruction " + instruction + " Succeeded");
+            }
+            else
+            {
+                Console.WriteLine("Creating instruction " + instruction + " Failed");
+            }
         }
         return test;
     }
