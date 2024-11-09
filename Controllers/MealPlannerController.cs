@@ -41,7 +41,7 @@ namespace RecipeBuilder.Controllers
                         new MPDay
                         {
                             Date = date, // Ensure the Date property exists in MPDay
-                            Meals = CtrlModel.getMealsForDate(date).Select(meal => new MPMeal
+                            Meals = CtrlModel.getMealsForDate(date, at.username).Select(meal => new MPMeal
                             {
                                 mealDescription = meal.Description,
                                 recipes = meal.Recipes
@@ -52,7 +52,7 @@ namespace RecipeBuilder.Controllers
                 ScheduledMealsToday = new MealPlanner
                 {
                     Date = date,
-                    ScheduledMeals = CtrlModel.getMealsForDate(date)
+                    ScheduledMeals = CtrlModel.getMealsForDate(date, at.username)
                 }
             };
 
@@ -87,7 +87,7 @@ namespace RecipeBuilder.Controllers
 
             Console.WriteLine("Calling CtrlModel to get Data");
             // Get month data to VM
-            monthVM.monthPlans = CtrlModel.getMealsForMonth(date); 
+            monthVM.monthPlans = CtrlModel.getMealsForMonth(date, at.username);
             Console.WriteLine("Data received from CtrlModel. Sending to View");
 
             return View(monthVM);
@@ -134,7 +134,7 @@ namespace RecipeBuilder.Controllers
                 mealPlanner = new MealPlanner
                 {
                     Date = date,
-                    ScheduledMeals = CtrlModel.getMealsForDate(date)
+                    ScheduledMeals = CtrlModel.getMealsForDate(date, at.username)
                 }
             };
 
@@ -159,7 +159,7 @@ namespace RecipeBuilder.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            
+
             var currentDate = date;//DateOnly.FromDateTime(DateTime.Now);
             var startOfWeek = DateHelper.GetStartOfWeek(currentDate);
             var datesInWeek = DateHelper.GetDatesForWeek(startOfWeek);
@@ -172,7 +172,7 @@ namespace RecipeBuilder.Controllers
                         new MPDay
                         {
                             Date = date, // Ensure the Date property exists in MPDay
-                            Meals = CtrlModel.getMealsForDate(date).Select(meal => new MPMeal
+                            Meals = CtrlModel.getMealsForDate(date, at.username).Select(meal => new MPMeal
                             {
                                 mealDescription = meal.Description,
                                 recipes = meal.Recipes
@@ -185,14 +185,14 @@ namespace RecipeBuilder.Controllers
         }
 
         // Helper method to get meal plans for a date range (for the month view)
-        private List<MealPlanner> GetMealPlansForDateRange(DateOnly startDate, DateOnly endDate)
+        private List<MealPlanner> GetMealPlansForDateRange(DateOnly startDate, DateOnly endDate, string username)
         {
 
             var mealPlans = new List<MealPlanner>();
 
             for (var date = startDate; date <= endDate; date = date.AddDays(1))
             {
-                var dailyMeals = CtrlModel.getMealsForDate(date);
+                var dailyMeals = CtrlModel.getMealsForDate(date, username);
                 if (dailyMeals.Any())
                 {
                     mealPlans.Add(new MealPlanner
@@ -209,26 +209,26 @@ namespace RecipeBuilder.Controllers
 }
 
 
-        // // POST: /MealPlanner/Remove
-        // [HttpPost]
-        // public IActionResult Remove(string mealSetName)
-        // {
-        //     var mealPlanner = new MealPlanner();
-        //     mealPlanner.RemoveMeal(mealSetName);
+// // POST: /MealPlanner/Remove
+// [HttpPost]
+// public IActionResult Remove(string mealSetName)
+// {
+//     var mealPlanner = new MealPlanner();
+//     mealPlanner.RemoveMeal(mealSetName);
 
-        //     return RedirectToAction("Index");
-        // }
+//     return RedirectToAction("Index");
+// }
 
-                // // POST: /MealPlanner/Month
-        // [HttpPost]
-        // public IActionResult Plan(MealPlannerMonthVM viewModel)
-        // {
-        //     if (ModelState.IsValid)
-        //     {
-        //         // Logic to save or update the meal plan
-        //         viewModel.mealPlanner.ScheduleMeal(new MealSet { Name = "Sample Meal", Description = "A test meal" });
-        //         // interact with the database
-        //         return RedirectToAction("Index");
-        //     }
-        //     return View(viewModel);
-        // }
+// // POST: /MealPlanner/Month
+// [HttpPost]
+// public IActionResult Plan(MealPlannerMonthVM viewModel)
+// {
+//     if (ModelState.IsValid)
+//     {
+//         // Logic to save or update the meal plan
+//         viewModel.mealPlanner.ScheduleMeal(new MealSet { Name = "Sample Meal", Description = "A test meal" });
+//         // interact with the database
+//         return RedirectToAction("Index");
+//     }
+//     return View(viewModel);
+// }

@@ -6,14 +6,14 @@ namespace RecipeBuilder.ViewModels
 {
     public class PantryIndexVM
     {
-        public List<Ingredient> items { get; set; }
+        public List<IngredientDetail> items { get; set; }
 
-        public bool success { get; set;}
+        public bool success { get; set; }
 
         public PantryIndexVM()
         {
-            items = new List<Ingredient>();
+            items = new List<IngredientDetail>();
         }
-        
+
     }
 }
