@@ -9,6 +9,7 @@ namespace RecipeBuilder.ViewModels
         public string CookbookTitle { get; set; }
         public string CookbookDescription { get; set; }
         public List<Recipe>? Recipes { get; set; }
+        public List<string> RecipeInput { get; set; } = new List<string>();
 
         public string? msg { get; set; }
     }

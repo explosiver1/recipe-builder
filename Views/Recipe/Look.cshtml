@@ -10,16 +10,30 @@
             <a asp-controller="Recipe" asp-action="Edit" asp-route-recipeName=@Model.recipe.Name>Edit Recipe</a>
         </div>
         <div class="col-md-8 text-center">
-            <h1 class="display-4" style="margin: 0;">Recipe: @Model.recipe.Name</h1>
+            <h1 class="display-4" style="margin: 0;">Recipe: @Model.recipe.Name</h1><br>
+            <p>@Model.recipe.Description</p>
         </div>
     </div>
     <div class="row">
         <div class="col-md-4">
+            <h4>Tags:</h4>
+            <ul>
+                @if (@Model.recipe.Tags !=  null && @Model.recipe.Tags.Any())
+                {
+                    @foreach (var tag in @Model.recipe.Tags)
+                    {
+                        <li>
+                            @tag
+                        </li>
+                        <br>
+                    }
+                }
+            </ul>
             <h4>Prep Time:</h4>
             <ul>
                 <li>@Model.recipe.PrepTime minutes</li>
             </ul>
-            <h4>Cooktime:</h4>
+            <h4>Cook Time:</h4>
             <ul>
                 <li>@Model.recipe.CookTime minutes</li>
             </ul>
@@ -30,6 +44,27 @@
             <h4>Difficulty:</h4>
             <ul>
                 <li>@Model.recipe.Difficulty</li>
+            </ul>
+            <h4>Number of Servings:</h4>
+            <ul>
+                <li>@Model.recipe.numServings</li>
+            </ul>
+            <h4>Serving Size:</h4>
+            <ul>
+                <li>@Model.recipe.servingSize</li>
+            </ul>
+            <h4>Tools/Equipment:</h4>
+            <ul>
+                @if (@Model.recipe.Equipment !=  null && @Model.recipe.Equipment.Any())
+                {
+                    @foreach (var tool in @Model.recipe.Equipment)
+                    {
+                        <li>
+                            @tool
+                        </li>
+                        <br>
+                    }
+                }
             </ul>
             <h4>Ingredients:</h4>
             <ul>
@@ -45,10 +80,6 @@
                     }
                 }
             </ul>
-            @*<h4>Nutrition:</h4>
-            <ul>
-                <li>Nutrition Info</li>
-            </ul>*@
         </div>
         <div class="col-md-8">
             <h4>Instructions:</h4>
