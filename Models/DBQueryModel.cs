@@ -1567,7 +1567,42 @@ public class DBQueryModel
     //The Inner Lists are the meal for that day.
     public static async Task<List<MealSet>> GetMealPlanByDay(string username, string date)
     {
-        return new List<MealSet>();
+        var query = @"
+            MATCH (:User {name: $username})-[]->(rec:Recipe)-[x:SCHEDULED_FOR]->(:MealPlan)
+            WHERE x.date = $date
+            RETURN rec, x
+        ";
+
+
+        // Initialize the Neo4j session
+        var session = driver.AsyncSession();
+        List<MealSet> mp = new List<MealSet>();
+
+        try
+        {
+            // Run the query and pass in parameters
+            var result = await session.RunAsync(query, new { username, date });
+
+            // Process each record in the result
+            await result.ForEachAsync(record =>
+            {
+                Recipe r = new Recipe()
+                {
+                    Name = GetCleanString(username, record["rec"].As<INode>()["name"].As<string>())
+                };
+                // Initialize and populate a new Recipe object
+                MealSet ms = new MealSet
+                {
+                    Name = "",
+                };
+                mp[record["x"].As<IRelationship>()["order"].As<int>()].Recipes.Add(r);
+            });
+        }
+        catch (Exception e)
+        {
+            return new List<MealSet>();
+        }
+        return mp;
     }
 
     //FILL IN
@@ -1653,9 +1688,28 @@ public class DBQueryModel
     }
 
     //Connects an Inredient node to the shoppin list with ingredientDetail parameters.
+    //Creates it if it doesn't exist too
     public static async Task<bool> AddToShoppingList(string username, IngredientDetail ingD)
     {
-        return true;
+        bool tmp;
+        try
+        {
+            CreateIngredientNode(username, ingD.Name);
+        }
+        catch
+        {
+
+        }
+
+        try
+        {
+            tmp = ConnectIngredientNode(username, "ShoppingList", ingD.Name, ingD.Unit, ingD.Qualifier, ingD.Quantity).Result;
+        }
+        catch
+        {
+            return false;
+        }
+        return tmp;
     }
 
     //Detaches an ingredient from the shopping list.
