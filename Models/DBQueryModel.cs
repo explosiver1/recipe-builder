@@ -1609,14 +1609,67 @@ public class DBQueryModel
     //Returns list of all meals.
     public static async Task<List<MealSet>> GetMeals(string username)
     {
-        return new List<MealSet>();
+        var query = @"
+            MATCH (:User {name: $username})-[]->(rec:Recipe)-[x:MADE_WITH]->(m:Meal)
+            RETURN m
+        ";
+
+
+        // Initialize the Neo4j session
+        var session = driver.AsyncSession();
+        List<MealSet> mp = new List<MealSet>();
+
+        try
+        {
+            // Run the query and pass in parameters
+            var result = await session.RunAsync(query, new { username });
+
+            // Process each record in the result
+            await result.ForEachAsync(record =>
+            {
+                MealSet m = GetMeal(username, record["m"].As<INode>()["name"].As<string>()).Result;
+                mp.Add(m);
+            });
+        }
+        catch (Exception e)
+        {
+            return new List<MealSet>();
+        }
+        return mp;
     }
 
     //FILL IN
     //Returns list of all meals.
     public static async Task<MealSet> GetMeal(string username, string mealName)
     {
-        return new MealSet();
+        var query = @"
+        MATCH (:User {name: $username})-[]->(rec:Recipe)-[x:MADE_WITH]->(m:Meal)
+        WHERE m.name = $mealName
+        RETURN rec
+    ";
+
+
+        // Initialize the Neo4j session
+        var session = driver.AsyncSession();
+        MealSet meal = new MealSet();
+
+        try
+        {
+            // Run the query and pass in parameters
+            var result = await session.RunAsync(query, new { username, mealName });
+
+            // Process each record in the result
+            await result.ForEachAsync(record =>
+            {
+                Recipe r = GetRecipe(username, record["rec"].As<INode>()["name"].As<string>()).Result;
+                meal.Recipes.Add(r);
+            });
+        }
+        catch (Exception e)
+        {
+            return new MealSet();
+        }
+        return meal;
     }
 
     //Adds ingredient to pantry.
@@ -1637,12 +1690,70 @@ public class DBQueryModel
     //Ignore items where quantity <= 0. I think anyways.
     public static async Task<List<IngredientDetail>> GetPantry(string username)
     {
-        return new List<IngredientDetail>();
+        var query = @"
+        MATCH (:User {name: $username})-[]->(:Pantry)-[:STORES]->(i:Ingredient)
+        RETURN i
+    ";
+
+        // Initialize the Neo4j session
+        var session = driver.AsyncSession();
+        List<IngredientDetail> ingDList = new List<IngredientDetail>();
+
+        try
+        {
+            // Run the query and pass in parameters
+            var result = await session.RunAsync(query, new { username });
+
+            // Process each record in the result
+            await result.ForEachAsync(record =>
+            {
+                IngredientDetail ingD = GetPantryIngredient(username, record["i"].As<INode>()["name"].As<string>()).Result;
+                ingDList.Add(ingD);
+            });
+        }
+        catch (Exception e)
+        {
+            return new List<IngredientDetail>();
+        }
+        return ingDList;
     }
 
     public static async Task<IngredientDetail> GetPantryIngredient(string username, string ingName)
     {
-        return new IngredientDetail();
+        var query = @"
+        MATCH (:User {name: $username})-[]->(:Pantry)-[x:STORES]->(i:Ingredient)
+        WHERE i.name = $ingredient
+        RETURN x
+        ";
+
+
+        // Initialize the Neo4j session
+        var session = driver.AsyncSession();
+        string ingredient = username + ingName;
+        IngredientDetail ingD = new IngredientDetail();
+        ingD.Ingredient.Name = ingName;
+        ingD.Name = ingName;
+
+        try
+        {
+            // Run the query and pass in parameters
+            var result = await session.RunAsync(query, new { username, ingredient });
+
+            // Process each record in the result
+            await result.ForEachAsync(record =>
+            {
+                var iNode = record["x"].As<INode>();
+                ingD.Quantity = iNode["quantity"].As<double>();
+                ingD.Unit = iNode["unit"].As<string>();
+                ingD.Qualifier = iNode["qualifier"].As<string>();
+            });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error in DBQueryModel.GetPantryIngredient. Exception: " + e);
+            return new IngredientDetail();
+        }
+        return ingD;
     }
 
     //Connects recipe node to cookbook node
@@ -1698,7 +1809,7 @@ public class DBQueryModel
         }
         catch
         {
-
+            Console.WriteLine("Ingredient Already Exists (Probably)");
         }
 
         try
@@ -1730,12 +1841,70 @@ public class DBQueryModel
 
     public static async Task<List<IngredientDetail>> GetShoppingList(string username)
     {
-        return new List<IngredientDetail>();
+        var query = @"
+        MATCH (:User {name: $username})-[]->(:ShoppingList)-[:PLANS_TO_BUY]->(i:Ingredient)
+        RETURN i
+        ";
+
+        // Initialize the Neo4j session
+        var session = driver.AsyncSession();
+        List<IngredientDetail> ingDList = new List<IngredientDetail>();
+
+        try
+        {
+            // Run the query and pass in parameters
+            var result = await session.RunAsync(query, new { username });
+
+            // Process each record in the result
+            await result.ForEachAsync(record =>
+            {
+                IngredientDetail ingD = GetPantryIngredient(username, record["i"].As<INode>()["name"].As<string>()).Result;
+                ingDList.Add(ingD);
+            });
+        }
+        catch (Exception e)
+        {
+            return new List<IngredientDetail>();
+        }
+        return ingDList;
     }
 
     public static async Task<IngredientDetail> GetShoppingListIngredient(string username, string ingName)
     {
-        return new IngredientDetail();
+        var query = @"
+        MATCH (:User {name: $username})-[]->(:ShoppingList)-[x:PLANS_TO_BUY]->(i:Ingredient)
+        WHERE i.name = $ingredient
+        RETURN x
+        ";
+
+
+        // Initialize the Neo4j session
+        var session = driver.AsyncSession();
+        string ingredient = username + ingName;
+        IngredientDetail ingD = new IngredientDetail();
+        ingD.Ingredient.Name = ingName;
+        ingD.Name = ingName;
+
+        try
+        {
+            // Run the query and pass in parameters
+            var result = await session.RunAsync(query, new { username, ingredient });
+
+            // Process each record in the result
+            await result.ForEachAsync(record =>
+            {
+                var iNode = record["x"].As<INode>();
+                ingD.Quantity = iNode["quantity"].As<double>();
+                ingD.Unit = iNode["unit"].As<string>();
+                ingD.Qualifier = iNode["qualifier"].As<string>();
+            });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error in DBQueryModel.GetPantryIngredient. Exception: " + e);
+            return new IngredientDetail();
+        }
+        return ingD;
     }
 
 
