@@ -321,7 +321,7 @@ public static class CtrlModel
 
         try
         {
-            if (!DBQueryModel.AddToPantry(username, ingredient).Result)
+            if (!DBQueryModel.AddToPantry(username, "Pantry", ingredient.Name, ingredient.Unit, ingredient.Qualifier, ingredient.Quantity).Result)
             {
                 throw new Exception("DBQueryModel.AddToPantry returned false.");
             }
@@ -514,7 +514,7 @@ public static class CtrlModel
             {
                 throw new Exception("DBQueryModel.RemoveFromShoppingList returned false");
             }
-            if (!DBQueryModel.AddToPantry(username, ingredient).Result)
+            if (!DBQueryModel.AddToPantry(username, "Pantry", ingredient.Name, ingredient.Unit, ingredient.Qualifier, ingredient.Quantity).Result)
             {
                 throw new Exception("DBQueryModel.AddToPantry returned false");
             }

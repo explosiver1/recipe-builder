@@ -400,31 +400,45 @@ public class DBQueryModel
         if (parent.Contains("Pantry"))
         {
             query = @"
-            MATCH (parent:Pantry{name:$parentName})
-            MATCH (ingredient:Ingredient{name:$ingredientName})
-            MERGE (parent)-[x:STORES]->(ingredient)
-            RETURN COUNT(x) > 0
+                MATCH (parent:Pantry{name:$parentName})
+                MATCH (ingredient:Ingredient{name:$ingredientName})
+                MERGE (parent)-[x:STORES]->(ingredient)
+                SET x.unit = $unit,
+                    x.qualifier = $qualifier,
+                    x.quantity = $quantity
+                RETURN COUNT(x) > 0
             ";
+
+            parameters["unit"] = unit;
+            parameters["qualifier"] = qualifier;
+            parameters["quantity"] = quantity;
         }
         else if (parent.Contains("ShoppingList"))
         {
             query = @"
-            MATCH (parent:ShoppingList{name:$parentName})
-            MATCH (ingredient:Ingredient{name:$ingredientName})
-            MERGE (parent)-[x:PLANS_TO_BUY]->(ingredient)
-            RETURN COUNT(x) > 0
+                MATCH (parent:ShoppingList{name:$parentName})
+                MATCH (ingredient:Ingredient{name:$ingredientName})
+                MERGE (parent)-[x:PLANS_TO_BUY]->(ingredient)
+                SET x.unit = $unit,
+                    x.qualifier = $qualifier,
+                    x.quantity = $quantity
+                RETURN COUNT(x) > 0
             ";
+
+            parameters["unit"] = unit;
+            parameters["qualifier"] = qualifier;
+            parameters["quantity"] = quantity;
         }
         else
         {
             query = @"
-            MATCH (parent:Recipe{name:$parentName})
-            MATCH (ingredient:Ingredient{name:$ingredientName})
-            MERGE (parent)-[x:MADE_WITH]->(ingredient)
-            SET x.unit = $unit,
-                x.qualifier = $qualifier,
-                x.quantity = $quantity
-            RETURN COUNT(x) > 0
+                MATCH (parent:Recipe{name:$parentName})
+                MATCH (ingredient:Ingredient{name:$ingredientName})
+                MERGE (parent)-[x:MADE_WITH]->(ingredient)
+                SET x.unit = $unit,
+                    x.qualifier = $qualifier,
+                    x.quantity = $quantity
+                RETURN COUNT(x) > 0
             ";
 
             parameters["unit"] = unit;
@@ -487,6 +501,40 @@ public class DBQueryModel
         }
 
         return GetCleanList(username, ingredientNames);
+    }
+
+    public static async Task<bool> CreatePantryNode(string username)
+    {
+        Console.WriteLine("Creating pantry...");
+        var query = @"
+            MATCH (user:User {username: $username})
+            MERGE (pantry:Pantry {name: $pantryName})
+            MERGE (user)-{x:OWNS}->(pantry)
+            RETURN COUNT(x) > 0
+        ";
+
+        var pantryName = username + "Pantry";
+
+        var session = driver.AsyncSession();
+        try
+        {
+            Console.WriteLine("Executing Query...");
+            var response = await session.RunAsync(query, new { username, pantryName});
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            bool pantryCreated = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + pantryCreated);
+            return pantryCreated;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
     }
 
     // CreateCookbookNode()
@@ -1587,9 +1635,21 @@ public class DBQueryModel
     //Adds ingredient to pantry.
     //If the item is already there, it needs to add to the existing quantity of item.
     //Make sure Units are consistent
-    public static async Task<bool> AddToPantry(string username, IngredientDetail ingD)
+    public static async Task<bool> AddToPantry(string username, string pantry, string ingredient, string unit = "", string qualifier = "", double quantity = 0)
     {
-        return true;
+        bool ingredientCreated = DBQueryModel.CreateIngredientNode(username, ingredient).Result;
+
+        // pantry string should just be "Pantry"
+        bool ingredientConnected = DBQueryModel.ConnectIngredientNode(username, pantry, ingredient, unit, qualifier, quantity).Result;
+
+        if(ingredientCreated && ingredientConnected)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     //Basically AddToPantry with a negative number.
