@@ -519,7 +519,7 @@ public class DBQueryModel
         try
         {
             Console.WriteLine("Executing Query...");
-            var response = await session.RunAsync(query, new { username, pantryName});
+            var response = await session.RunAsync(query, new { username, pantryName });
             IReadOnlyList<IRecord> records = await response.ToListAsync();
 
             bool pantryCreated = records.Any() && records.First()[0].As<bool>();
@@ -1579,32 +1579,42 @@ public class DBQueryModel
     }
 
     //TESTING
-    private static async Task<bool> DeleteTag(string tagName, string recName, AuthToken at, string group = "")
+    private static async Task<bool> DetachTagFromRecipe(string username, string tagName, string recName)
     {
         string name;
         string startLabel;
-        if (group != "")
-        {
-            bool gTest = await ValidateGroupMembership(group, at);
-            if (gTest)
-            {
-                name = group;
-                startLabel = "Group";
-            }
-            else
-            {
-                return false;
-            }
-        }
-        else
-        {
-            name = at.username + tagName;
-            startLabel = "User";
-        }
-        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(:Cookbook)-[:CATALOGUES]->(:Recipe {name: " + recName + "})-[]->(t:Tag)\n " +
-                                            "DELETE t\n" +
-                                            "MATCH (:User )-[:OWNS]->(:Cookbook)-[:CATALOGUES]->(:Recipe {name: " + recName + "})-[]->(tt:Tag)\n " +
-                                                                                "return NOT(COUNT(tt) > 0)\n";
+        startLabel = "User";
+        name = username + recName;
+
+        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(rec:Recipe)-[]->(t:Tag)\n " +
+            "WHERE t.name = '" + tagName + "' AND rec.name = '" + name + "'\n" +
+            "WITH t\n" +
+            "DETACH t\n" +
+            "WITH t\n" +
+            "MATCH (:User )-[:OWNS]->(recc:Recipe)-[]->(tt:Tag)\n " +
+            "WHERE tt.name = '" + tagName + "' AND recc.name = '" + name + "'\n" +
+            "return NOT(COUNT(tt) > 0)\n";
+        var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
+        IReadOnlyList<IRecord> irol = response.Result;
+        var record = irol.First<IRecord>();
+        return record[0].As<bool>();
+    }
+
+    private static async Task<bool> DeleteStepsFromRecipe(string username, string recipeName)
+    {
+        string name;
+        string startLabel;
+        startLabel = "User";
+        name = username + recipeName;
+
+        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(rec:Recipe)-[]->(t:Step)\n " +
+            "WHERE rec.name = '" + name + "'\n" +
+            "WITH t\n" +
+            "DETACH DELETE t\n" +
+            "WITH t\n" +
+            "MATCH (:User )-[:OWNS]->(recc:Recipe)-[]->(tt:Step)\n " +
+            "WHERE recc.name = '" + name + "'\n" +
+            "return NOT(COUNT(tt) > 0)\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
         var record = irol.First<IRecord>();
@@ -1730,7 +1740,7 @@ public class DBQueryModel
         // pantry string should just be "Pantry"
         bool ingredientConnected = DBQueryModel.ConnectIngredientNode(username, pantry, ingredient, unit, qualifier, quantity).Result;
 
-        if(ingredientCreated && ingredientConnected)
+        if (ingredientCreated && ingredientConnected)
         {
             return true;
         }
@@ -1757,7 +1767,7 @@ public class DBQueryModel
         try
         {
             Console.WriteLine("Executing Query...");
-            var response = await session.RunAsync(query, new { pantryName, ingredientName});
+            var response = await session.RunAsync(query, new { pantryName, ingredientName });
             IReadOnlyList<IRecord> records = await response.ToListAsync();
 
             // Checks if there is a record && gets the first record which should be the bool response
