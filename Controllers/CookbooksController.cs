@@ -252,7 +252,7 @@ public class CookbooksController : Controller
             {
                 Console.WriteLine("Cookbook To Remove: " + cookbookToRemove!);
                 at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-                test = DBQueryModel.DeleteCookbook(cookbookToRemove, at).Result;
+                test = DBQueryModel.DeleteCookbook(cookbookToRemove, at.username).Result;
                 if (!test)
                 {
                     CookbooksIndexVM civm = new CookbooksIndexVM();

@@ -126,7 +126,7 @@ namespace RecipeBuilder.Controllers
             bool test;
             try
             {
-                test = DBQueryModel.DeleteRecipe(recipeToRemove, at).Result;
+                test = DBQueryModel.DeleteRecipe(recipeToRemove, at.username).Result;
             }
             catch (Exception e)
             {
@@ -188,6 +188,14 @@ namespace RecipeBuilder.Controllers
                 "Quantity: " + ing.Quantity + "\n" +
                 "Unit: " + ing.Unit + "\n" +
                 "Qualifier: " + ing.Qualifier + "\n");
+                if (ing.Qualifier == null)
+                {
+                    ing.Qualifier = string.Empty;
+                }
+                if (ing.Unit == null)
+                {
+                    ing.Unit = string.Empty;
+                }
             }
             //if (!ModelState.IsValid)
             //{
