@@ -306,6 +306,7 @@ public class DBQueryModel
         return recipeNames;
     }
 
+    // CreateIngredient()
     public static async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
         Console.WriteLine("Entering CreateIngredientNode with parameters: " + username + ", " + ingredient);
@@ -318,7 +319,7 @@ public class DBQueryModel
                 EXISTS((user)-[:OWNS]->(ingredient)) AS relationshipCreated
         ";
 
-        var ingredientName = username + ingredient; 
+        var ingredientName = username + ingredient;
 
 
         var session = driver.AsyncSession();
@@ -353,48 +354,10 @@ public class DBQueryModel
         }
     }
 
-
-    // // CreateIngredient()
-    // // TODO - return success/fail
-    // public static async Task<bool> CreateIngredientNode(string username, string ingredient)
-    // {
-    //     var query = @"
-    //         MATCH (user:User {name: $username})
-    //         MERGE (ingredient:Ingredient {name: $ingredientName})
-    //         MERGE (user)-[x:OWNS]->(ingredient)
-    //         RETURN COUNT(x) > 0
-    //         ";
-
-    //     var ingredientName = username + ingredient;
-    //     var session = driver.AsyncSession();
-    //     try
-    //     {
-    //         var response = await session.RunAsync(query, new { username, ingredientName });
-
-    //         // Pulls all responses from query
-    //         IReadOnlyList<IRecord> records = await response.ToListAsync();
-
-    //         // Checks if there is a record && gets the first record which should be the bool response
-    //         bool ingredientCreated = records.Any() && records.First()[0].As<bool>();
-    //         Console.WriteLine("Returning Result: " + ingredientCreated);
-    //         Console.WriteLine($"Ingredient node {ingredient} created!");
-    //         return ingredientCreated;
-    //     }
-    //     catch (Exception ex)
-    //     {
-    //         Console.WriteLine($"An error occurred: {ex.Message}");
-    //         return false;
-    //     }
-    //     finally
-    //     {
-    //         // Ensures the session is closed
-    //         await session.CloseAsync();
-    //     }
-    // }
-
     //This was easier than making the other method do more because of the parameter injection on the query string.
     public static async Task<List<string>> GetRecipeNodeNamesByIngredient(string username, string ingredient)
     {
+        ingredient = username + ingredient;
         var query = @"
             MATCH (user:User {username: $username})-[:OWNS]->(recipe:Recipe)-[:MADE_WITH]->(i:Ingredient {name: $ingredient})
             RETURN recipe.name AS recipeName
@@ -419,24 +382,15 @@ public class DBQueryModel
             await session.CloseAsync();
         }
 
-        return recipeNames;
+        return GetCleanList(username, recipeNames);
     }
 
 
     // MergeIngredient()
-    // TODO - Test results
     // Used when adding ingredients to Recipe, Shopping List, or Pantry (must create the nodes first)
     // The parent is the name of the node you are adding ingredients too
-    public static async Task<bool> ConnectIngredientNode(string username, string parent, IngredientDetail ingD)
+    public static async Task<bool> ConnectIngredientNode(string username, string parent, string ingredient, string unit = "", string qualifier = "", double quantity = 0)
     {
-
-        Console.WriteLine("Entering ConnectIngredientNode with parameters: " + username + ", " + parent + ", " + ingD);
-        Console.WriteLine("Ingredient Detail Params; Name: " + ingD.Name + ", Unit: " + ingD.Unit + ", Quantity: " + ingD.Quantity + ", Qualifier: " + ingD.Qualifier + ", Ingredient: Name: " + ingD.Ingredient.Name);
-
-        var ingredient = ingD.Ingredient.Name;
-        var unit = ingD.Unit;
-        var qualifier = ingD.Qualifier;
-        var quantity = ingD.Quantity;
         var parentName = username + parent;
         var ingredientName = username + ingredient;
 
@@ -532,7 +486,7 @@ public class DBQueryModel
             await session.CloseAsync();
         }
 
-        return ingredientNames;
+        return GetCleanList(username, ingredientNames);
     }
 
     // CreateCookbookNode()
@@ -669,21 +623,21 @@ public class DBQueryModel
 
     // CreateMealNode()
     // TODO - Test results
-    public static async Task<bool> CreateMealNode(string username, string meal, string date)
+    public static async Task<bool> CreateMealNode(string username, MealSet meal)
     {
         var query = @"
+            MATCH (u:User {name: $username})
             MERGE (meal:Meal { name: $mealName})
-            ON CREATE SET
-                date: $date
+            MERGE (u)-[:OWNS]->(meal)
             RETURN COUNT(meal) > 0
         ";
 
-        var mealName = username + meal;
+        var mealName = username + meal.Name;
 
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { mealName, date });
+            var response = await session.RunAsync(query, new { mealName });
             Console.WriteLine($"Meal node {mealName} created!");
 
             // Pulls all responses from query
@@ -894,36 +848,57 @@ public class DBQueryModel
                     numServings = record["numServings"]?.As<int>() ?? 0, // Default to 0 if null
                     Rating = record["rating"]?.As<int>() ?? 1,            // Default to 1 if null
                     Difficulty = record["difficulty"]?.As<int>() ?? 1,    // Default to 1 if null
+                    PrepTime = record["prepTime"]?.As<int>() ?? 0,
+                    CookTime = record["cookTime"]?.As<int>() ?? 0,
                     Equipment = new List<string>(),
                     Tags = new List<string>()
                 };
-
+                //I commented this out since I'm adding them via foreach. I'm also not passing names for them in.
+                //We wouldn't need to look them up if we already have them.
                 // Add tool and tag names to Equipment and Tags lists if they are present
-                var toolNameValue = record["toolName"]?.As<string>();
-                if (!string.IsNullOrEmpty(toolNameValue))
-                {
-                    resultRecipe.Equipment.Add(toolNameValue);
-                }
+                //var toolNameValue = record["toolName"]?.As<string>();
+                //if (!string.IsNullOrEmpty(toolNameValue))
+                //{
+                //    resultRecipe.Equipment.Add(toolNameValue);
+                //}
 
-                var tagNameValue = record["tagName"]?.As<string>();
-                if (!string.IsNullOrEmpty(tagNameValue))
-                {
-                    resultRecipe.Tags.Add(tagNameValue);
-                }
+                //var tagNameValue = record["tagName"]?.As<string>();
+                //if (!string.IsNullOrEmpty(tagNameValue))
+                //{
+                //    resultRecipe.Tags.Add(tagNameValue);
+                //s}
             });
 
-            foreach (Ingredient ing in GetIngredientsByRecipe(username, recipe).Result)
+            List<Tag> tList = GetTagsByRecipe(recipe, username).Result;
+            if (tList.Any())
             {
-                IngredientDetail ingD = GetIngredientDetail(username, ing.Name, recipe).Result;
-                resultRecipe.Ingredients.Add(ingD);
+                foreach (Tag t in GetTagsByRecipe(recipe, username).Result)
+                {
+                    resultRecipe.Tags.Add(t.Name);
+                }
             }
 
-            foreach (Tag t in GetTagsByRecipe(recipe, username).Result)
+            List<string> iList = GetInstuctionsByRecipe(recipe, username).Result;
+            if (iList.Any())
             {
-                resultRecipe.Tags.Add(t.Name);
+                resultRecipe.Instructions = iList;
             }
 
-            resultRecipe.Instructions = GetInstuctionsByRecipe(recipeName, username).Result;
+            List<Ingredient> ingList = GetIngredientsByRecipe(username, recipe).Result;
+            if (ingList.Any())
+            {
+                Console.WriteLine("Ingredient List is not empty");
+                foreach (Ingredient ing in ingList)
+                {
+                    Console.WriteLine("Finding IngredientDetail for " + ing);
+                    IngredientDetail ingD = GetIngredientDetail(username, ing.Name, recipe).Result;
+                    Console.WriteLine("Retrieved IngredientDetail");
+                    Console.WriteLine("ingD: Name: " + ingD.Name + ", Quantity: " + ingD.Quantity + ", Unit: " + ingD.Unit + ", Qualifier: " + ingD.Qualifier);
+                    resultRecipe.Ingredients.Add(ingD);
+                }
+            }
+
+            //resultRecipe.Instructions = GetInstuctionsByRecipe(recipeName, username).Result;
 
             //Add foreach for tools here once we implement it. We may leave it as a comma delimited string for time.
         }
@@ -1330,7 +1305,7 @@ public class DBQueryModel
     }
 
     //WIP
-    public static async Task<Ingredient> GetIngredient(string ingName, string username, string group = "")
+    public static async Task<Ingredient> GetIngredient(string username, string ingName, string group = "")
     {
         string name = username + ingName;
         string startLabel = "User";
@@ -1355,51 +1330,60 @@ public class DBQueryModel
             startLabel = "User";
         }
         */
-        string query = "MATCH (:" + startLabel + ")-[r]->(t:Ingredient {name: " + ingName + "})\n " +
-                                        "return t\n";
-        var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
-        IReadOnlyList<IRecord> irol = response.Result;
-        var record = irol.First<IRecord>();
-        var iNode = record["t"].As<INode>();
+        string query = "MATCH (u:" + startLabel + ")-[]->(t:Ingredient)\n" +
+            "WHERE t.name = '" + name + "'\n" +
+            "return t\n";
+
+        Console.WriteLine("GetIngredient Query String: " + query);
+
         Ingredient ing = new Ingredient();
 
         try
         {
-            ing.Name = GetCleanString(username, iNode["name"].As<string>() ?? string.Empty);
+            var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
+            IReadOnlyList<IRecord> irol = response.Result;
+            var record = irol.First<IRecord>();
+            var tNode = record["t"].As<INode>();
+            ing.Name = GetCleanString(username, tNode["name"].As<string>());
             //ing.Unit = GetCleanString(username, iNode["unit"].As<string>() ?? string.Empty);
             //ing.Description = GetCleanString(username, iNode["description"].As<string>() ?? string.Empty);
         }
         catch (Exception e)
         {
-            Console.WriteLine("Error accessing query results. Exception: " + e);
+            Console.WriteLine("Error accessing GetIngredient query results. Exception: " + e);
+            return new Ingredient() { Name = "ERROR" };
         }
         return ing;
     }
 
     public static async Task<IngredientDetail> GetIngredientDetail(string username, string ingName, string recipeName)
     {
+        Console.WriteLine("Entering GetIngredientDetail with " + username + ", " + ingName + ", " + recipeName);
         string rname = username + recipeName;
         string iname = username + ingName;
         string startLabel = "User";
 
-        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(:Recipe {name: '" + rname + "'})-[r:MADE_WITH]->(:Ingredient {name: " + iname + "})\n " +
-                                    "return r\n";
+        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(rec:Recipe)-[r:MADE_WITH]->(i:Ingredient)\n " +
+            "WHERE rec.name = '" + rname + "' AND " + "i.name = '" + iname + "'\n" +
+            "return r\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
         IReadOnlyList<IRecord> irol = response.Result;
         var record = irol.First<IRecord>();
-        var iNode = record["r"].As<INode>();
+        var iRel = record["r"].As<IRelationship>(); //Relationships use IRelationship instead of INode.
         IngredientDetail ingD = new IngredientDetail();
-
-        ingD.Ingredient = GetIngredient(username, ingName).Result;
+        Console.WriteLine("Retrieving Ingredient " + ingName);
+        ingD.Ingredient = new Ingredient() { Name = ingName };// GetIngredient(username, ingName).Result; GetIngredient was failing, but I realized we don't even need it here.  //
+        Console.WriteLine("Retrieved Ingredient ");
+        Console.WriteLine("ingD.Ingredient: Name: " + ingD.Ingredient.Name);
         ingD.Name = ingD.Ingredient.Name;
 
 
         try
         {
-            ingD.Qualifier = iNode["qualifier"].As<string>() ?? string.Empty;
+            ingD.Qualifier = iRel["qualifier"].As<string>() ?? string.Empty;
             //ing.Unit = GetCleanString(username, iNode["unit"].As<string>() ?? string.Empty);
-            ingD.Quantity = Convert.ToInt32(iNode["quantity"].As<string>() ?? "0");
-            ingD.Unit = iNode["unit"].As<string>() ?? string.Empty;
+            ingD.Quantity = Convert.ToDouble(iRel["quantity"].As<string>() ?? "0");
+            ingD.Unit = iRel["unit"].As<string>() ?? string.Empty;
         }
         catch (Exception e)
         {
@@ -1412,6 +1396,7 @@ public class DBQueryModel
 
     public static async Task<List<Ingredient>> GetIngredientsByRecipe(string username, string recipeName)
     {
+        Console.WriteLine("Entering GetIngredientsByRecipe with username: " + username + ", recipeName: " + recipeName);
         string name = username + recipeName;
         string startLabel = "User";
         /*
@@ -1435,7 +1420,7 @@ public class DBQueryModel
             startLabel = "User";
         }
         */
-        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(r:Recipe)-[:MADE_WITH]->(t:Ingredient)\n " +
+        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(r:Recipe)-[]-(t:Ingredient)\n " +
             "WHERE r.name = '" + name + "'\n" +
             "return t\n";
         var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
@@ -1456,7 +1441,14 @@ public class DBQueryModel
             {
                 Console.WriteLine("Error accessing query results. Exception: " + e);
             }
+            ingList.Add(ing);
         }
+        Console.WriteLine("List of Ingredients Found: ");
+        foreach (Ingredient ing in ingList)
+        {
+            Console.WriteLine("     " + ing.Name);
+        }
+        Console.WriteLine("Exiting GetIngredientsByRecipe");
         return ingList;
     }
 
@@ -1526,7 +1518,7 @@ public class DBQueryModel
             var tNode = record["t"].As<INode>();
             try
             {
-                t = GetCleanString(username, tNode["name"].As<string>());
+                t = tNode["description"].As<string>();
             }
             catch
             {
@@ -1570,6 +1562,129 @@ public class DBQueryModel
         var record = irol.First<IRecord>();
         return record[0].As<bool>();
     }
+
+    //FILL IN
+    //The Inner Lists are the meal for that day.
+    public static async Task<List<MealSet>> GetMealPlanByDay(string username, string date)
+    {
+        return new List<MealSet>();
+    }
+
+    //FILL IN
+    //Returns list of all meals.
+    public static async Task<List<MealSet>> GetMeals(string username)
+    {
+        return new List<MealSet>();
+    }
+
+    //FILL IN
+    //Returns list of all meals.
+    public static async Task<MealSet> GetMeal(string username, string mealName)
+    {
+        return new MealSet();
+    }
+
+    //Adds ingredient to pantry.
+    //If the item is already there, it needs to add to the existing quantity of item.
+    //Make sure Units are consistent
+    public static async Task<bool> AddToPantry(string username, IngredientDetail ingD)
+    {
+        return true;
+    }
+
+    //Basically AddToPantry with a negative number.
+    public static async Task<bool> RemoveFromPantry(string username, IngredientDetail ingD)
+    {
+        return true;
+    }
+
+    //Gets all pantry items a user has.
+    //Ignore items where quantity <= 0. I think anyways.
+    public static async Task<List<IngredientDetail>> GetPantry(string username)
+    {
+        return new List<IngredientDetail>();
+    }
+
+    public static async Task<IngredientDetail> GetPantryIngredient(string username, string ingName)
+    {
+        return new IngredientDetail();
+    }
+
+    //Connects recipe node to cookbook node
+    public static async Task<bool> AddToCookbook(string username, string cookbookName, string recipeName)
+    {
+        return true;
+    }
+
+    //Detaches recipe node from cookbook node
+    public static async Task<bool> RemoveFromCookbook(string username, string cookbookName, string recipeName)
+    {
+        return true;
+    }
+
+    //Detaches and deletes a meal node.
+    public static async Task<bool> DeleteMeal(string username, string mealName)
+    {
+        return true;
+    }
+
+    //Connects a recipe node to a meal node
+    public static async Task<bool> AddToMeal(string username, string recipeName, string mealName)
+    {
+        return true;
+    }
+
+    //Detaches a recipe node from a meal node
+    public static async Task<bool> RemoveFromMeal(string username, string recipeName, string mealName)
+    {
+        return true;
+    }
+
+    //Connects a recipe node to the meal plan node with a date parameter
+    public static async Task<bool> ScheduleRecipe(string username, string recipeName, string date)
+    {
+        return true;
+    }
+
+    //Detaches a recipe node from the schedule
+    public static async Task<bool> UnScheduleRecipe(string username, string recipeName, string date)
+    {
+        return true;
+    }
+
+    //Connects an Inredient node to the shoppin list with ingredientDetail parameters.
+    public static async Task<bool> AddToShoppingList(string username, IngredientDetail ingD)
+    {
+        return true;
+    }
+
+    //Detaches an ingredient from the shopping list.
+    public static async Task<bool> RemoveFromShoppingList(string username, string ingName)
+    {
+        return true;
+    }
+
+    public static async Task<bool> CheckShoppingListItem(string username, string itemName)
+    {
+        return true;
+    }
+
+    public static async Task<bool> UncheckShoppingListItem(string username, string itemName)
+    {
+        return true;
+    }
+
+    public static async Task<List<IngredientDetail>> GetShoppingList(string username)
+    {
+        return new List<IngredientDetail>();
+    }
+
+    public static async Task<IngredientDetail> GetShoppingListIngredient(string username, string ingName)
+    {
+        return new IngredientDetail();
+    }
+
+
 
     //TESTING
     private static async Task<bool> ValidateGroupMembership(string group, AuthToken at)

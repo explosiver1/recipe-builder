@@ -3,7 +3,7 @@ namespace RecipeBuilder.Models
     public class ShoppingList
     {
         // Attributes
-        public List<Ingredient>? Items { get; set; }
+        public List<IngredientDetail>? Items { get; set; }
 
         // Blank constructor that initializes Items to null
         public ShoppingList()
@@ -12,7 +12,7 @@ namespace RecipeBuilder.Models
         }// end Blank Constructor
 
         // Add an item with validation
-        public void AddItem(Ingredient ingredient)
+        public void AddItem(IngredientDetail ingredient)
         {
             if (ingredient == null)
             {
@@ -21,14 +21,14 @@ namespace RecipeBuilder.Models
             }//end if
 
             if (Items == null)
-                Items = new List<Ingredient>(); // Initialize if null
+                Items = new List<IngredientDetail>(); // Initialize if null
 
             Items.Add(ingredient);
             Console.WriteLine($"{ingredient.Name} added to the shopping list.");
         } // end AddItem
 
         // Remove an item with validation
-        public void RemoveItem(Ingredient ingredient)
+        public void RemoveItem(IngredientDetail ingredient)
         {
             if (ingredient == null || !Items.Contains(ingredient))
             {
@@ -41,7 +41,7 @@ namespace RecipeBuilder.Models
         } // end RemoveItem
 
         // Check off an item with validation
-        public void CheckItemOff(Ingredient ingredient)
+        public void CheckItemOff(IngredientDetail ingredient)
         {
             if (ingredient == null || !Items.Contains(ingredient))
             {

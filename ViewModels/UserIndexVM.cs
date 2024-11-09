@@ -4,7 +4,7 @@ using RecipeBuilder.Models;
 
 namespace RecipeBuilder.ViewModels;
 
-public class HomePrivateVM()
+public class UserIndexVM()
 {
     public List<Cookbook> cookbooks {get; set;} = new List<Cookbook>();
     public List<Recipe> recipes {get; set;} = new List<Recipe>();
