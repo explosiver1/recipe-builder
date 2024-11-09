@@ -16,6 +16,7 @@ namespace RecipeBuilder.Models
             Qualifier = string.Empty;
             Quantity = 0;
             Unit = string.Empty;
+            Name = string.Empty;
         }//end Blank Constructor
 
         // Methods

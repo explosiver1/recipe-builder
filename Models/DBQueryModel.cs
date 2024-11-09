@@ -103,6 +103,15 @@ public class DBQueryModel
             "cookTime: " + cookTime + "\n" +
             "prepTime: " + prepTime + "\n");
 
+        description = string.IsNullOrEmpty(description) ? "" : description;
+        rating = string.IsNullOrEmpty(rating) ? "" : rating;
+        difficulty = string.IsNullOrEmpty(difficulty) ? "" : difficulty;
+        servings = string.IsNullOrEmpty(servings) ? "" : servings;
+        servingsize = string.IsNullOrEmpty(servingsize) ? "" : servingsize;
+        cookTime = string.IsNullOrEmpty(cookTime) ? "" : cookTime;
+        prepTime = string.IsNullOrEmpty(prepTime) ? "" : prepTime;
+
+
         var query = @"
             MATCH (user:User {username: $username})
             MERGE (recipe:Recipe {name: $recipeName})
@@ -394,6 +403,11 @@ public class DBQueryModel
         var parentName = username + parent;
         var ingredientName = username + ingredient;
 
+        unit = string.IsNullOrEmpty(unit) ? "" : unit;
+        qualifier = string.IsNullOrEmpty(qualifier) ? "" : qualifier;
+
+        Console.WriteLine("unit: " + unit + "  qualifier: " + qualifier + "  quantity: " + quantity);
+
         var parameters = new Dictionary<string, object> { { "parentName", parentName }, { "ingredientName", ingredientName } };
 
         string query;
@@ -449,6 +463,10 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
+            if(qualifier == null)
+            {
+                Console.WriteLine("Qualifier is Null!");
+            }
             var response = await session.RunAsync(query, parameters);
             Console.WriteLine($"Parent node {parentName} connected to {ingredient}!");
 
@@ -541,6 +559,8 @@ public class DBQueryModel
     // TODO - Test no description input
     public static async Task<bool> CreateCookbookNode(string username, string name, string description = "")
     {
+            description = string.IsNullOrEmpty(description) ? "" : description;
+
         var query = @"
             MATCH (user:User{username: $username})
             MERGE (cookbook:Cookbook {name: $cookbookName})
@@ -751,6 +771,8 @@ public class DBQueryModel
     // Order is the step number
     public static async Task<bool> CreateStepNode(string username, string recipe, string order, string description = "")
     {
+        description = string.IsNullOrEmpty(description) ? "" : description;
+
         var query = @"
         MATCH (recipe:Recipe {name: $recipeName})
         MERGE (step:Step {name: $stepName})
