@@ -355,6 +355,10 @@ public static class CtrlModel
         Console.WriteLine($"{ingredient.Name} removed from the pantry.");
     }
 
+    public static void EditItemInPantry(IngredientDetail itemToEdit, string userName)
+    {
+
+    }
     public static Dictionary<string, List<string>> GetABCListDict(List<string> myList)
     {
         myList.Sort();
@@ -371,6 +375,24 @@ public static class CtrlModel
         }
         return myDictionary;
     }
+
+    public static Dictionary<string, List<IngredientDetail>> GetABCListDict(List<IngredientDetail> myList)
+    {
+        List<IngredientDetail> ABCList = myList.OrderBy(x => x.Name).ToList();
+        Dictionary<string, List<IngredientDetail>> myDictionary = new Dictionary<string, List<IngredientDetail>>();
+        foreach (IngredientDetail item in ABCList)
+        {
+            string firstLetter = item.Name[0].ToString().ToUpper();
+
+            if (!myDictionary.ContainsKey(firstLetter))
+            {
+                myDictionary.Add(firstLetter, new List<IngredientDetail>());
+            }
+            myDictionary[firstLetter].Add(item);
+        }
+        return myDictionary;
+    }
+
 
     /* Returns list of all user's saved meals */
     public static List<MealSet> getMeals(string username)
@@ -591,5 +613,10 @@ public static class CtrlModel
             item.Quantity == ingredientDetail.Quantity &&
             item.Unit == ingredientDetail.Unit
         );
+    }
+
+    public static void updateIngredientDetailName(IngredientDetail detail)
+    {
+        detail.Name = detail.Ingredient.Name;
     }
 }

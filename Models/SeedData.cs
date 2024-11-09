@@ -98,6 +98,7 @@ public static class SeedData
             "Allow cookies to cool on the pan briefly before transferring to a wire cooling rack."
         ]
     };
+    
     // public static Recipe Name = new Recipe{
     //     Name="", Description="",
     //     Difficulty=0, Rating=0, PrepTime=0, CookTime=0,
@@ -176,12 +177,70 @@ public static class SeedData
 
     public static List<Recipe> GetRecipeList()
     {
+        foreach (Recipe recipe in myRecipes)
+        {
+            foreach (IngredientDetail ingredientDetail in recipe.Ingredients)
+            {
+                CtrlModel.updateIngredientDetailName(ingredientDetail);
+            }
+        }
         return myRecipes;
     }
 
     public static List<Ingredient> GetIngredientList()
     {
         return myIngredients;
+    }
+
+        public static List<IngredientDetail> GetIngredientDetailList()
+    {
+        List<IngredientDetail> ingredientDetails = new List<IngredientDetail>();
+        foreach (Ingredient ingredient in myIngredients)
+        {
+            ingredientDetails.Add(new IngredientDetail{Name=ingredient.Name});
+        }
+        return ingredientDetails;
+    }
+
+    public static List<IngredientDetail> pantryItems = [
+            new IngredientDetail{Ingredient = Flour, Qualifier = "All-Purpose", Quantity = 2.75, Unit = "Cups"},
+            new IngredientDetail{Ingredient = BakingSoda, Qualifier = "", Quantity = 1, Unit = "tsp"},
+            new IngredientDetail{Ingredient = BakingPowder, Qualifier = "", Quantity = 0.5, Unit = "tsp"},
+            new IngredientDetail{Ingredient = Butter, Qualifier = "Softened", Quantity = 1, Unit = "Cup"},
+            new IngredientDetail{Ingredient = Sugar, Qualifier = "", Quantity = 1.5, Unit = "Cups"},
+            new IngredientDetail{Ingredient = Egg, Qualifier = "", Quantity = 1, Unit = "Egg"},
+            new IngredientDetail{Ingredient = Vanilla, Qualifier = "", Quantity = 1, Unit = "tsp"}
+        ];
+    
+    public static List<IngredientDetail> shoppingListItems = [
+            new IngredientDetail{Ingredient = Butter, Qualifier = "Salted, Softened", Quantity = 2, Unit = "Sticks"},
+            new IngredientDetail{Ingredient = Sugar, Qualifier = "", Quantity = 0.75, Unit = "Cup"},
+            new IngredientDetail{Ingredient = BrownSugar, Qualifier = "Packed", Quantity = 0.75, Unit = "Cup"},
+            new IngredientDetail{Ingredient = Vanilla, Qualifier = "", Quantity = 1, Unit = "tsp"},
+            new IngredientDetail{Ingredient = Egg, Qualifier = "Large", Quantity = 2, Unit = "Eggs"},
+            new IngredientDetail{Ingredient = Flour, Qualifier = "All-Purpose", Quantity = 2.25, Unit = "Cup"},
+            new IngredientDetail{Ingredient = Flour, Qualifier = "All-Purpose", Quantity = 2, Unit = "Tbsp"},
+            new IngredientDetail{Ingredient = BakingSoda, Qualifier = "", Quantity = 1, Unit = "tsp"},
+            new IngredientDetail{Ingredient = Salt, Qualifier = "", Quantity = 1, Unit = "tsp"},
+            new IngredientDetail{Ingredient = ChocolateChips, Qualifier = "", Quantity = 2, Unit = "Cups"}
+        ];
+    public static List<IngredientDetail> GetPantryItems()
+    {
+        foreach (var item in pantryItems)
+        {
+            CtrlModel.updateIngredientDetailName(item);
+        }
+        return pantryItems;
+    }
+
+
+    public static List<IngredientDetail> GetShoppingListItems()
+    {
+        foreach (var item in shoppingListItems)
+        {
+            CtrlModel.updateIngredientDetailName(item);
+        }
+        return shoppingListItems;
     }
 
     public static List<string> GetIngredientNameList()
@@ -266,8 +325,5 @@ public static class SeedData
         }
         return new MealSet();
     }
-
-
-
 
 }
