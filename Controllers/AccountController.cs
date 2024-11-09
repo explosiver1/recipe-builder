@@ -41,7 +41,7 @@ public class AccountController : Controller
         {
             AuthToken at = new AuthToken(username);
             HttpContext.Session.SetString("authToken", JsonConvert.SerializeObject(at));
-            return RedirectToAction("Private", "Home");
+            return RedirectToAction("Index", "User");
         }
         else
         {
