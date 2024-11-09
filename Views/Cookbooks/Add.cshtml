@@ -34,33 +34,60 @@
 
 <div class="form-group">
     <label for="CookbookTitle">Cookbook Name:</label>
-    <input type="text" class="form-control" id="CookbookTitle" asp-for="CookbookTitle" required /><br>
-    <span asp-validation-for="CookbookTitle" class="text-danger"></span>
+    <input type="text" class="form-control" id="CookbookTitle" asp-for="@Model.newcookbook.Title" required /><br>
+    <span asp-validation-for="@Model.newcookbook.Title" class="text-danger"></span>
 </div>
 
 <div class="form-group">
     <label for="CookbookDescription">Description:</label>
-    <textarea class="form-control" id="CookbookDescription" asp-for="CookbookDescription" required></textarea><br>
-    <span asp-validation-for="CookbookDescription" class="text-danger"></span>
+    <textarea class="form-control" id="CookbookDescription" asp-for="@Model.newcookbook.Description" required></textarea><br>
+    <span asp-validation-for="@Model.newcookbook.Description" class="text-danger"></span>
 </div>
-
-@*@if (selectedRecipe != null)
-{
-    <div class="form-group">
-        <label>Recipes Added:</label>
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">Recipe1</h5> *selectedRecipe.Name*
-                <p class="card-text">Description Recipe1</p> *selectedRecipe.Description*
-                * A remove option will go here *
-            </div>
-        </div>
-    </div>
-}*@
 
 <div class="form-group">
     <label for="AddedRecipes">Add Recipes:</label>
-    <a asp-controller="Recipe" asp-action="Select">Select Recipe</a><br>
+</div>
+<div class="form-group">
+    <div id="recipe-container">
+        <table id="recipeTable">
+            <thead>
+                <tr>
+                    <th>Recipes</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @for (int i = 0; i < Model.UserRecipesNames.Count; i++)
+                {
+                    <tr>
+                        @if(Model.UserRecipesNames != null && Model.UserRecipesNames.Any())
+                        {
+                            <td>
+                                <select name="RecipeInput[@i]" value="@Model.newcookbook.RecipeNames">
+                                    <option value="" disabled selected>Select a Recipe</option>
+                                    @foreach(string recipeName in Model.UserRecipesNames)
+                                    {
+                                        <option value="@recipeName">@recipeName</option>
+                                    }
+                                </select>
+                            </td>
+                        }
+                        else
+                        {
+                            <p>Wrong Recipes?</p>
+                        }
+                        <td>
+                            <button type="button" onclick="removeRecipeRow(this)">Remove</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div>
+        <span class="plus-button" onclick="addRecipeRow()">+</span>
+    </div><br>
 </div>
 
         @if (Model != null)
@@ -77,3 +104,13 @@
 <br><button type="submit" class="btn btn-custom">Save Cookbook</button><br>
 <br>
 </form>
+<script>
+    function addRecipeRow(){
+        var rowCount = document.querySelectorAll('#recipeTable tbody tr').length;
+        var initialDropdown = document.querySelector('#recipeTable tbody tr').outerHTML;
+        var newRow = document.createElement('tr');
+
+        newRow.innerHTML = initialDropdown;
+        document.getElementById("recipeTable").getElementsByTagName('tbody')[0].appendChild(newRow);
+    }
+</script>

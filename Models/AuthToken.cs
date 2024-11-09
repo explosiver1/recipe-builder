@@ -31,4 +31,9 @@ public class AuthToken
         }
     }
 
+    public void LogOut()
+    {
+        expiration = creation;
+    }
+
 }

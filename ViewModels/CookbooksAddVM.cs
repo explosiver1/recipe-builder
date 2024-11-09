@@ -6,10 +6,8 @@ namespace RecipeBuilder.ViewModels
 {
     public class CookbooksAddVM
     {
-        public string CookbookTitle { get; set; }
-        public string CookbookDescription { get; set; }
-        public List<Recipe>? Recipes { get; set; }
-
+        public Cookbook newcookbook { get; set; }
+        public List<string> UserRecipesNames { get; set; } = new List<string>();
         public string? msg { get; set; }
     }
 }

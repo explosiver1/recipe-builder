@@ -30,4 +30,20 @@ public class HomeController : Controller
     {
         return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
+
+    public IActionResult Logout()
+    {
+        try
+        {
+            AuthToken at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            at.LogOut();
+            HttpContext.Session.SetString("authToken", JsonConvert.SerializeObject(at));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error at logout. Were you logged in?");
+        }
+
+        return View("Index");
+    }
 }
