@@ -17,17 +17,25 @@ public class ServerSettings
         //XML is super WIP. Idk how to use it well yet.
 
         // Load the XML file
-        XDocument doc = XDocument.Load("settings.xml");
-
-        // Query elements using LINQ
-        var elements = from el in doc.Descendants("Credentials")
-                       select el;
-
-        // Loop through the elements
-        foreach (var el in elements)
+        try
         {
-            Console.WriteLine("Element: " + el.Name);
-            Console.WriteLine("Value: " + el.Value);
+            XDocument doc = XDocument.Load("settings.xml");
+
+            // Query elements using LINQ
+            var elements = from el in doc.Descendants("Credentials")
+                           select el;
+
+            // Loop through the elements
+            foreach (var el in elements)
+            {
+                Console.WriteLine("Element: " + el.Name);
+                Console.WriteLine("Value: " + el.Value);
+            }
         }
+        catch
+        {
+            Console.WriteLine("settings.xml file could not be opened.");
+        }
+
     }
 }
