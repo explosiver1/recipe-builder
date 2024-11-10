@@ -3,7 +3,7 @@ namespace RecipeBuilder.Models
     public class Cookbook
     {
         public string Title { get; set; }
-        public string Description {get; set;}
+        public string Description { get; set; }
         public List<Recipe> Recipes { get; set; }
         public List<string> RecipeNames { get; set; }
 
@@ -80,5 +80,17 @@ namespace RecipeBuilder.Models
                 Console.WriteLine($"Simulating a connection between user '{user.Username}' and cookbook '{Title}'.");
             }//end else
         }// end ConnectToUser
+
+        public void PrintAllStats()
+        {
+            Console.WriteLine("Cookbook Properties: \n" +
+            "Title: " + Title + "\n" +
+            "Description: " + Description + "\n" +
+            "RecipeNames: \n");
+            foreach (string r in RecipeNames)
+            {
+                Console.WriteLine("     Recipe: " + r);
+            }
+        }
     }// end Cookbook
 }// end namespace
