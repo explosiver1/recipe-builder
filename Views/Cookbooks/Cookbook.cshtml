@@ -61,7 +61,7 @@
 </div><br>
 
 <div class="row">
-    @if (Model.cookbook.Recipes !=null && Model.cookbook.Recipes.Any())
+    @if (Model.cookbook.RecipeNames !=null && Model.cookbook.RecipeNames.Any())
     {
         @foreach (var recipeName in Model.cookbook.RecipeNames)
         {
@@ -70,9 +70,6 @@
                     <div class="block">
                         <div class="col-md-6">
                         <h5 style="color: #4A743E;">@recipeName</h5>
-                        </div>
-                        <div class="col-md-6">
-                        <h5 style="color: #4A743E;">delete</h5>
                         </div>
                         <div class="button-container">
                             <a asp-controller="Recipe" asp-action=Look asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipeName class="btn btn-primary">View</a>

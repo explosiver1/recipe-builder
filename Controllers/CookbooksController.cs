@@ -62,6 +62,10 @@ public class CookbooksController : Controller
         try
         {
             cookbookModel = DBQueryModel.GetCookbook(name, at.username).Result;
+            foreach (var recipeName in cookbookModel.RecipeNames)
+            {
+                Console.WriteLine (recipeName);
+            }
         }
         catch (Exception e)
         {
@@ -72,6 +76,10 @@ public class CookbooksController : Controller
 
 
         CookbooksCookbookVM viewModel = new CookbooksCookbookVM { cookbook = cookbookModel };
+        foreach (var recipeName in viewModel.cookbook.RecipeNames)
+            {
+                Console.WriteLine (recipeName);
+            }
         return View(viewModel);
     }
 
