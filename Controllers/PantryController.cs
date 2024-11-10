@@ -27,19 +27,45 @@ namespace RecipeBuilder.Controllers
                 return RedirectToAction("Index", "Home");
             }
 
+            List<IngredientDetail> pantryItems = CtrlModel.GetPantryItems(at.username);//SeedData.GetPantryItems();
             PantryIndexVM viewModel = new PantryIndexVM
             {
-                items = CtrlModel.GetPantryItems(at.username)
+                ABCPantry = CtrlModel.GetABCListDict(pantryItems),
+                newIngredient = new IngredientDetail()
             };
 
             // Log items to confirm they are being passed to the view
             Console.WriteLine("Current pantry items:");
-            foreach (var item in viewModel.items)
+            foreach (var letterList in viewModel.ABCPantry)
             {
-                Console.WriteLine(item.Name);
+                Console.WriteLine(letterList.Key);
+                foreach (var item in letterList.Value)
+                {
+                    Console.WriteLine(item.Name);
+                }
             }
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult AddItemToPantry(PantryIndexVM pantryVM)
+        {
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            CtrlModel.AddItemToPantry(pantryVM.newIngredient, at.username);
+            return RedirectToAction("Index");
         }
 
         [HttpPost]
