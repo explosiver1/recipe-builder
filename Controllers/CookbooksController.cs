@@ -93,7 +93,7 @@ public class CookbooksController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        CookbooksAddVM cavm = new CookbooksAddVM{  msg = msg, newcookbook = new Models.Cookbook(), UserRecipesNames = CtrlModel.GetRecipeNameList(at.username) };
+        CookbooksAddVM cavm = new CookbooksAddVM { msg = msg, newcookbook = new Models.Cookbook(), UserRecipesNames = CtrlModel.GetRecipeNameList(at.username) };
         return View(cavm);
     }
 
@@ -103,20 +103,13 @@ public class CookbooksController : Controller
     {
         Console.WriteLine("Creating Cookbook: \n" +
             "Name: " + CookbookVM.newcookbook.Title);
-        //if (!ModelState.IsValid)
-        //{
-        //    Console.WriteLine("Model State Invalid");
-        //    return View(newCookbook); // Returns form with errors if validation fails
-        // }
-
         AuthToken at;
-        CookbooksAddVM cavm = new CookbooksAddVM();
         bool test;
         try
         {
             at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
             Console.WriteLine("User " + at.username + " Deserialized");
-            test = DBQueryModel.CreateCookbookNode(at.username, CookbookVM.newcookbook.Title, CookbookVM.newcookbook.Description).Result;
+            test = CtrlModel.CreateCookbook(at.username, CookbookVM.newcookbook);
         }
         catch (Exception e)
         {

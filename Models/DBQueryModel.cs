@@ -1047,54 +1047,20 @@ public class DBQueryModel
     {
         var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name = username + cbName;
-        string startLabel = "User";
-        string query = "MATCH (:" + startLabel + " {username:'" + username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})-[r]->(b)\n " +
-                                    "return cb, r, b\n";
+        string query = "MATCH (u:User)-[:OWNS]->(cb:Cookbook)\n " +
+            "WHERE cb.name = '" + name + "' AND u.username = '" + username + "'\n" +
+            "MATCH (cb)-[]->(r:Recipe)\n" +
+            "return r\n";
         try
         {
             var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
             IReadOnlyList<IRecord> irol = response.Result;
             Cookbook cb = new Cookbook();
-
-            //The recipe node is on each record, so we're getting it's info on the first pass only.
-            //The other passes are for getting data from relationships to the recipe.
-            bool firstPass = true;
             foreach (var record in irol)
             {
-                var cbNode = record["cb"].As<INode>();
                 var rNode = record["r"].As<INode>();
-                var bNode = record["b"].As<INode>();
-                if (firstPass)
-                {
-                    //Try-Catching all of them independently since many fields are optional.
-                    try
-                    {
-                        cb.Title = GetCleanString(username, cbNode["name"].As<string>());
-                    }
-                    catch
-                    {
-                        cb.Title = "Error";
-                    }
-                    firstPass = false;
-                }
-                if (rNode != null)
-                {
-                    switch (rNode["type"].As<string>())
-                    {
-                        case "CATALOGUES":
-                            Recipe r = new Recipe();
-                            try
-                            {
-                                r.Name = rNode["name"].As<string>();
-                            }
-                            catch
-                            {
-                                r.Name = "ERROR";
-                            }
-                            cb.AddRecipe(r);
-                            break;
-                    }
-                }
+
+                cb.RecipeNames.Add(GetCleanString(username, rNode["name"].As<string>()));
             }
             return cb;
         }
@@ -1749,13 +1715,73 @@ public class DBQueryModel
     //Connects recipe node to cookbook node
     public static async Task<bool> AddToCookbook(string username, string cookbookName, string recipeName)
     {
-        return true;
+        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        string cookbook = username + cookbookName;
+        string recipe = username + recipeName;
+        var query = @"
+            MATCH (cookbook:Cookbook)
+            WHERE cookbook.name = $cookbook
+            MATCH (recipe:Recipe)
+            WHERE recipe.name = $recipe
+            MERGE (cookbook)-[x:CATALOGUES]->(recipe)
+            RETURN COUNT(x) > 0
+        ";
+
+        var session = driver.AsyncSession();
+        try
+        {
+            var response = await session.RunAsync(query, new { cookbook, recipe });
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+            // Checks if there is a record && gets the first record which should be the bool response
+            return records.First()[0].As<bool>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
     }
 
     //Detaches recipe node from cookbook node
     public static async Task<bool> RemoveFromCookbook(string username, string cookbookName, string recipeName)
     {
-        return true;
+        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        string cookbook = username + cookbookName;
+        string recipe = username + recipeName;
+        var query = @"
+            MATCH (cookbook:Cookbook)
+            WHERE cookbook.name = $cookbook
+            MATCH (recipe:Recipe)
+            WHERE recipe.name = $recipe
+            MATCH (cookbook)-[x:CATALOGUES]->(recipe)
+            DETACH DELETE x
+            WITH x
+            RETURN COUNT(x) > 0
+        ";
+
+        var session = driver.AsyncSession();
+        try
+        {
+            var response = await session.RunAsync(query, new { cookbook, recipe });
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+            // Checks if there is a record && gets the first record which should be the bool response
+            return records.First()[0].As<bool>();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
     }
 
     //Detaches and deletes a meal node.
