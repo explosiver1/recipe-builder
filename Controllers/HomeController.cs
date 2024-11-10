@@ -38,6 +38,7 @@ public class HomeController : Controller
             AuthToken at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
             at.LogOut();
             HttpContext.Session.SetString("authToken", JsonConvert.SerializeObject(at));
+            Console.WriteLine("Logout complete. AuthToken set to expired");
         }
         catch (Exception e)
         {
