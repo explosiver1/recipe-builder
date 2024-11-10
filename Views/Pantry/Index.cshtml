@@ -123,6 +123,19 @@
             button.textContent = 'Edit';
             button.setAttribute('onclick', 'editRow(this)');
         }
+
+        function scrollToIngredient() {
+            const searchInput = document.getElementById('ingredientSearch').value.toLowerCase();
+            const items = document.querySelectorAll('.ingredients-list li a');
+
+            items.forEach(item => {
+                if (item.textContent.toLowerCase().includes(searchInput)) {
+                    const ingredientSection = item.closest('ul').previousElementSibling; // get following header (h2)
+                    ingredientSection.scrollIntoView({ behavior: 'smooth' });
+                    return; // exit loop
+                }
+            });
+        }
     </script>
 </head>
 
@@ -147,10 +160,10 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="text" name="IngredientsInput[${rowCount}].Name" /></td>
-                        <td><input type="text" name="IngredientsInput[${rowCount}].Quantity" /></td>
-                        <td><input type="text" name="IngredientsInput[${rowCount}].Unit" /></td>
-                        <td><input type="text" name="IngredientsInput[${rowCount}].Qualifier" /></td>
+                        <td><input type="text" name="newIngredient.Name" /></td>
+                        <td><input type="text" name="newIngredient.Quantity" /></td>
+                        <td><input type="text" name="newIngredient.Unit" /></td>
+                        <td><input type="text" name="newIngredient.Qualifier" /></td>
                         <td><button type="submit" class="btn btn-custom">Add Item</button></td>
                     </tr>
                     
@@ -183,7 +196,7 @@
         <div>
              @foreach (var ABCList in @Model.ABCPantry)
             {
-                <h2>@ABCList.Key</h2>
+                <h2 id="@ABCList.Key">@ABCList.Key</h2>
                 <table>
                     <thead>
                         <tr>
@@ -229,12 +242,3 @@
     </div>
 </body>
 </html>
-
-@* Use when implementing edit js *@
-@* <tr>
-                        <td><input type="text" name="IngredientsInput[${rowCount}].Name" value=@item.Name /></td>
-                        <td><input type="text" name="IngredientsInput[${rowCount}].Quantity" value=@item.Quantity /></td>
-                        <td><input type="text" name="IngredientsInput[${rowCount}].Unit" value=@item.Unit /></td>
-                        <td><input type="text" name="IngredientsInput[${rowCount}].Qualifier" value=@item.Qualifier /></td>
-                        <td><button type="submit" class="btn btn-custom">Update Item Item</button></td>
-                    </tr> *@
