@@ -60,11 +60,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                @for (int i = 0; i <= Model.UserRecipesNames.Count; i++)
+                                @for (int i = 0; i < Model.UserRecipesNames.Count; i++)
                                 {
                                     <tr>
                                         <td>
-                                            <select name="RecipeInput[@i]" value="@Model.newcookbook.RecipeNames">
+                                            <select name="newcookbook.RecipeNames[@i]" value="@Model.newcookbook.RecipeNames">
                                                 <option value="" disabled selected>Select a Recipe</option>
                                                 @foreach(string recipeName in Model.UserRecipesNames)
                                                 {
@@ -75,12 +75,12 @@
                                         <td>
                                             <button type="button" onclick="removeRecipeRow(this)">Remove</button>
                                         </td>
-                                    </tr> 
+                                    </tr>
                                 }
                                 </tbody>
                             </table>
                         </div>
-                    
+
                         <div>
                             <span class="plus-button" onclick="addRecipeRow()">+</span>
                         </div><br>
@@ -89,7 +89,7 @@
                 else
                 {
                     <p>No Recipes to Select</p>
-                }                                       
+                }
 
         @if (Model != null)
         {
@@ -112,6 +112,11 @@
         var newRow = document.createElement('tr');
 
         newRow.innerHTML = initialDropdown;
+
+        // Update the 'name' attribute in the new row's dropdown to reflect the current index
+        var selectElement = newRow.querySelector('select');
+        selectElement.setAttribute('name', `newcookbook.RecipeNames[${rowCount}]`);
+
         document.getElementById("recipeTable").getElementsByTagName('tbody')[0].appendChild(newRow);
     }
 </script>

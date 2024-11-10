@@ -619,4 +619,38 @@ public static class CtrlModel
     {
         detail.Name = detail.Ingredient.Name;
     }
+
+    public static bool CreateCookbook(string username, Cookbook cb)
+    {
+        try
+        {
+            if (DBQueryModel.CreateCookbookNode(username, cb.Title, cb.Description).Result)
+            {
+                try
+                {
+                    foreach (string rName in cb.RecipeNames)
+                    {
+                        if (!DBQueryModel.AddToCookbook(username, cb.Title, rName).Result)
+                        {
+                            Console.WriteLine("Adding " + rName + " to recipe failed.");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Cookbook created, but recipes couldn't be added. Exception: " + e);
+                }
+            }
+            else
+            {
+                return false;
+            }
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error at CtrlModel.CreateCookbook. Exception: " + e);
+            return false;
+        }
+    }
 }
