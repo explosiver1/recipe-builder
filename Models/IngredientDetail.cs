@@ -73,7 +73,7 @@ namespace RecipeBuilder.Models
         // Display ingredient detail information
         public void DisplayIngredientDetail()
         {
-            Console.WriteLine($"{Quantity} {Unit} of {Ingredient.Name}");
+            Console.WriteLine($"{Quantity} {Unit} of {Name}, {Qualifier}");
         }//end DisplayIngredientDetail
     }//end IngredientDetail
 }//end namespace RecipeBuilder.Models

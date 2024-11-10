@@ -401,6 +401,7 @@ public class DBQueryModel
         string query;
         if (parent.Contains("Pantry"))
         {
+            Console.WriteLine("Connect Ingredinet Node to Pantry");
             query = @"
                 MATCH (parent:Pantry{name:$parentName})
                 MATCH (ingredient:Ingredient{name:$ingredientName})
@@ -417,6 +418,7 @@ public class DBQueryModel
         }
         else if (parent.Contains("ShoppingList"))
         {
+            Console.WriteLine("Connect Ingredinet Node to ShoppingList");
             query = @"
                 MATCH (parent:ShoppingList{name:$parentName})
                 MATCH (ingredient:Ingredient{name:$ingredientName})
@@ -433,6 +435,7 @@ public class DBQueryModel
         }
         else
         {
+            Console.WriteLine("Connect Ingredinet Node to Recipe");
             query = @"
                 MATCH (parent:Recipe{name:$parentName})
                 MATCH (ingredient:Ingredient{name:$ingredientName})
@@ -462,7 +465,7 @@ public class DBQueryModel
             IReadOnlyList<IRecord> records = await response.ToListAsync();
 
             // Checks if there is a record && gets the first record which should be the bool response
-            bool nodesConnected = records.Any() && records.First()[0].As<bool>();
+            bool nodesConnected = records.First()[0].As<bool>(); //records.Any() && records.First()[0].As<bool>();
             Console.WriteLine("Returning Result: " + nodesConnected);
             return nodesConnected;
         }
@@ -1611,7 +1614,7 @@ public class DBQueryModel
         bool ingredientCreated = DBQueryModel.CreateIngredientNode(username, ingredient).Result;
 
         // pantry string should just be "Pantry"
-        bool ingredientConnected = DBQueryModel.ConnectIngredientNode(username, pantry, ingredient, unit, qualifier, quantity).Result;
+        bool ingredientConnected = DBQueryModel.ConnectIngredientNode(username, "Pantry", ingredient, unit, qualifier, quantity).Result;
 
         if (ingredientCreated && ingredientConnected)
         {
@@ -1667,7 +1670,7 @@ public class DBQueryModel
     {
         var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
-        MATCH (:User {name: $username})-[]->(:Pantry)-[:STORES]->(i:Ingredient)
+        MATCH (:User {username: $username})-[]->(:Pantry)-[:STORES]->(i:Ingredient)
         RETURN i
         ";
 
@@ -1683,7 +1686,7 @@ public class DBQueryModel
             // Process each record in the result
             await result.ForEachAsync(record =>
             {
-                IngredientDetail ingD = GetPantryIngredient(username, record["i"].As<INode>()["name"].As<string>()).Result;
+                IngredientDetail ingD = GetPantryIngredient(username, GetCleanString(username, record["i"].As<INode>()["name"].As<string>())).Result;
                 ingDList.Add(ingD);
             });
         }
@@ -1703,7 +1706,7 @@ public class DBQueryModel
     {
         var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
-        MATCH (:User {name: $username})-[]->(:Pantry)-[x:STORES]->(i:Ingredient)
+        MATCH (:User {username: $username})-[]->(:Pantry)-[x:STORES]->(i:Ingredient)
         WHERE i.name = $ingredient
         RETURN x
         ";
@@ -1724,10 +1727,10 @@ public class DBQueryModel
             // Process each record in the result
             await result.ForEachAsync(record =>
             {
-                var iNode = record["x"].As<INode>();
-                ingD.Quantity = iNode["quantity"].As<double>();
-                ingD.Unit = iNode["unit"].As<string>();
-                ingD.Qualifier = iNode["qualifier"].As<string>();
+                var iRel = record["x"].As<IRelationship>();
+                ingD.Quantity = iRel["quantity"].As<double>();
+                ingD.Unit = iRel["unit"].As<string>();
+                ingD.Qualifier = iRel["qualifier"].As<string>();
             });
         }
         catch (Exception e)

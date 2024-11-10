@@ -11,11 +11,11 @@
 
     <style>
         #pantryContainer {
-            background-color: #F4F3EC; 
+            background-color: #F4F3EC;
             padding: 20px;
             border-radius: 10px;
             max-width: 900px;
-            margin: auto; 
+            margin: auto;
         }
 
         .text-center h1 {
@@ -23,13 +23,13 @@
         }
 
         #pantryContainer ul {
-            list-style-type: disc; 
-            padding-left: 20px; 
-            color: #4A743E; 
+            list-style-type: disc;
+            padding-left: 20px;
+            color: #4A743E;
         }
 
         #pantryContainer ul li {
-            margin: 10px 0; 
+            margin: 10px 0;
         }
 
         #pantryContainer form {
@@ -38,7 +38,7 @@
 
         #pantryContainer a, #pantryContainer button {
             margin-left: 10px;
-            text-decoration: none; 
+            text-decoration: none;
             color: #96AE6D;
             border: none;
             background: none;
@@ -50,21 +50,21 @@
         }
 
                 .alphabet {
-            display: flex; 
+            display: flex;
             justify-content: center;
-            margin: 20px 0; 
+            margin: 20px 0;
         }
 
         .alphabet a {
-            margin: 0 10px; 
-            text-decoration: none; 
-            color: #4A743E; 
-            font-weight: bold; 
-            transition: color 0.3s; 
+            margin: 0 10px;
+            text-decoration: none;
+            color: #4A743E;
+            font-weight: bold;
+            transition: color 0.3s;
         }
 
         .alphabet a:hover {
-            color: #96AE6D; 
+            color: #96AE6D;
         }
     </style>
     <script>
@@ -166,7 +166,7 @@
                         <td><input type="text" name="newIngredient.Qualifier" /></td>
                         <td><button type="submit" class="btn btn-custom">Add Item</button></td>
                     </tr>
-                    
+
                 </tbody>
             </table>
         </form>
@@ -209,7 +209,6 @@
                     </thead>
                 @foreach (var item in ABCList.Value)
                 {
-                    
                     <tbody>
                         <tr>
                             <td class="editable">@item.Name</td>
@@ -217,9 +216,12 @@
                             <td class="editable">@item.Unit</td>
                             <td class="editable">@item.Qualifier</td>
                             <td><button onclick="editRow(this)" class="btn btn-custom">Edit</button></td>
+                            <form method="post" asp-controller="Pantry" asp-action="RemoveFromPantry">
+                            <input type="hidden" name="ingredientName" value="@item.Name"/>
                             <td><button type="submit" class="btn btn-custom">Delete</button></td>
+                            </form>
                         </tr>
-                    </tbody>   
+                    </tbody>
                 }
                 </table>
             }
