@@ -333,7 +333,7 @@ public static class CtrlModel
     }
 
     // Remove an ingredient from the pantry
-    public static void RemoveItemFromPantry(IngredientDetail ingredient, string username)
+    public static void RemoveItemFromPantry(string ingredientName, string username)
     {
         //if (ingredient == null || !pantryItems.Contains(ingredient))
         // {
@@ -342,7 +342,7 @@ public static class CtrlModel
         //}
         try
         {
-            if (!DBQueryModel.RemoveFromPantry(username, ingredient.Name).Result)
+            if (!DBQueryModel.RemoveFromPantry(username, ingredientName).Result)
             {
                 throw new Exception("RemoveFromPantry returned False");
             }
@@ -352,7 +352,7 @@ public static class CtrlModel
             Console.WriteLine("Pantry Item could not be removed. Exception: " + e);
         }
         //pantryItems.Remove(ingredient);
-        Console.WriteLine($"{ingredient.Name} removed from the pantry.");
+        Console.WriteLine($"{ingredientName} removed from the pantry.");
     }
 
     public static void EditItemInPantry(IngredientDetail itemToEdit, string userName)

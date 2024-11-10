@@ -51,6 +51,7 @@ namespace RecipeBuilder.Controllers
         [HttpPost]
         public IActionResult AddItemToPantry(PantryIndexVM pantryVM)
         {
+            pantryVM.newIngredient.DisplayIngredientDetail();
             AuthToken at;
             try
             {
@@ -110,7 +111,7 @@ namespace RecipeBuilder.Controllers
 
         // Remove an item from the pantry
         [HttpPost]
-        public IActionResult Remove(string itemName)
+        public IActionResult RemoveFromPantry(string ingredientName)
         {
             AuthToken at;
             try
@@ -125,13 +126,13 @@ namespace RecipeBuilder.Controllers
             {
                 return RedirectToAction("Index", "Home");
             }
-            var ingredient = CtrlModel.GetIngredientByNameFromShoppingList(itemName, at.username);
-            if (ingredient == null)
-            {
-                return NotFound();
-            }
+            //var ingredient = CtrlModel.GetIngredientByNameFromShoppingList(itemName, at.username);
+            //if (ingredient == null)
+            //{
+            //    return NotFound();
+            //}
 
-            CtrlModel.RemoveItemFromPantry(ingredient, at.username);
+            CtrlModel.RemoveItemFromPantry(ingredientName, at.username);
             return RedirectToAction("Index");
         }
     }
