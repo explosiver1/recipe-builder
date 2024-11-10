@@ -93,7 +93,7 @@ public class CookbooksController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        CookbooksAddVM cavm = new CookbooksAddVM{  msg = msg, newcookbook = new Models.Cookbook(), UserRecipesNames = new List<string>() };
+        CookbooksAddVM cavm = new CookbooksAddVM{  msg = msg, newcookbook = new Models.Cookbook(), UserRecipesNames = CtrlModel.GetRecipeNameList(at.username) };
         return View(cavm);
     }
 
