@@ -1043,7 +1043,7 @@ public class DBQueryModel
     }
 
     //TESTING
-    public static async Task<Cookbook> GetCookbook(string cbName, string username, string group = "")
+    public static async Task<List<string>> GetCookbookRecipes(string cbName, string username, string group = "")
     {
         var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name = username + cbName;
@@ -1055,13 +1055,42 @@ public class DBQueryModel
         {
             var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
             IReadOnlyList<IRecord> irol = response.Result;
-            Cookbook cb = new Cookbook();
+            List<string> recipes = new List<string>();
             foreach (var record in irol)
             {
                 var rNode = record["r"].As<INode>();
 
-                cb.RecipeNames.Add(GetCleanString(username, rNode["name"].As<string>()));
+                recipes.Add(GetCleanString(username, rNode["name"].As<string>()));
             }
+            return recipes;
+        }
+        catch
+        {
+            return new List<string>();
+        }
+        finally
+        {
+            await driver.DisposeAsync();
+        }
+    }
+
+    public static async Task<Cookbook> GetCookbook(string cbName, string username)
+    {
+        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        string name = username + cbName;
+        string query = "MATCH (u:User)-[:OWNS]->(cb:Cookbook)\n " +
+            "WHERE cb.name = '" + name + "' AND u.username = '" + username + "'\n" +
+            "return cb\n";
+        try
+        {
+            var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
+            IReadOnlyList<IRecord> irol = response.Result;
+            Cookbook cb = new Cookbook();
+            var cbNode = irol.First()["cb"].As<INode>();
+            cb.Title = GetCleanString(username, cbNode["name"].As<string>());
+            cb.Description = cbNode["description"].As<string>();
+            cb.RecipeNames = GetCookbookRecipes(cbName, username).Result;
+            cb.PrintAllStats();
             return cb;
         }
         catch
