@@ -93,13 +93,8 @@ public class CookbooksController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        if (msg != "")
-        {
-            CookbooksAddVM cavm = new CookbooksAddVM();
-            cavm.msg = msg;
-            return View(cavm);
-        }
-        return View();
+        CookbooksAddVM cavm = new CookbooksAddVM{  msg = msg, newcookbook = new Models.Cookbook(), UserRecipesNames = new List<string>() };
+        return View(cavm);
     }
 
     // Add method (POST): Handles form submission to create a new cookbook

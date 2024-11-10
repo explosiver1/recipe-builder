@@ -91,7 +91,7 @@
                 <div class="block">
                     <h4 style="color: #4A743E;">@cookbook.Title</h4>
                     <div class="button-container">
-                        <a asp-action="Cookbook" asp-route-id=@cookbook.Title class="btn btn-custom">View</a>
+                        <a asp-action="Cookbook" asp-route-name=@cookbook.Title class="btn btn-custom">View</a>
                     </div>
                     <form method="post" asp-controller="Cookbooks" asp-action="RemoveCookbook" >
                                 <input type="hidden" name="cookbookToRemove" value="@cookbook.Title"/>

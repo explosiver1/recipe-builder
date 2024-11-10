@@ -47,48 +47,49 @@
 <div class="form-group">
     <label for="AddedRecipes">Add Recipes:</label>
 </div>
-<div class="form-group">
-    <div id="recipe-container">
-        <table id="recipeTable">
-            <thead>
-                <tr>
-                    <th>Recipes</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
 
-                @for (int i = 0; i < Model.UserRecipesNames.Count; i++)
+                @if(Model.UserRecipesNames != null && Model.UserRecipesNames.Any())
                 {
-                    <tr>
-                        @if(Model.UserRecipesNames != null && Model.UserRecipesNames.Any())
-                        {
-                            <td>
-                                <select name="RecipeInput[@i]" value="@Model.newcookbook.RecipeNames">
-                                    <option value="" disabled selected>Select a Recipe</option>
-                                    @foreach(string recipeName in Model.UserRecipesNames)
-                                    {
-                                        <option value="@recipeName">@recipeName</option>
-                                    }
-                                </select>
-                            </td>
-                        }
-                        else
-                        {
-                            <p>Wrong Recipes?</p>
-                        }
-                        <td>
-                            <button type="button" onclick="removeRecipeRow(this)">Remove</button>
-                        </td>
-                    </tr>
+                    <div class="form-group">
+                        <div id="recipe-container">
+                            <table id="recipeTable">
+                                <thead>
+                                    <tr>
+                                        <th>Recipes</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @for (int i = 0; i <= Model.UserRecipesNames.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <select name="RecipeInput[@i]" value="@Model.newcookbook.RecipeNames">
+                                                <option value="" disabled selected>Select a Recipe</option>
+                                                @foreach(string recipeName in Model.UserRecipesNames)
+                                                {
+                                                    <option value="@recipeName">@recipeName</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        <td>
+                                            <button type="button" onclick="removeRecipeRow(this)">Remove</button>
+                                        </td>
+                                    </tr> 
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                    
+                        <div>
+                            <span class="plus-button" onclick="addRecipeRow()">+</span>
+                        </div><br>
+                    </div>
                 }
-            </tbody>
-        </table>
-    </div>
-    <div>
-        <span class="plus-button" onclick="addRecipeRow()">+</span>
-    </div><br>
-</div>
+                else
+                {
+                    <p>No Recipes to Select</p>
+                }                                       
 
         @if (Model != null)
         {
