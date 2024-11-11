@@ -1953,7 +1953,7 @@ public class DBQueryModel
 
         try
         {
-            var response = await session.RunAsync(query, new { mealName, recipeName });
+            var response = await session.RunAsync(query, new { mealName, recipeName, date, order });
             var record = await response.SingleAsync();
 
             bool connectionExists = record.Any() && record[0].As<bool>();
