@@ -29,7 +29,7 @@ public class DBQueryModel
     // CreateUser()
     public static async Task<bool> CreateUserNode(string username, string name, string email, string phone, string password)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         Console.WriteLine("Creating user...");
         var query = @"
             MERGE (u:User {username: $username})
@@ -73,7 +73,7 @@ public class DBQueryModel
     // TODO - Test results
     public static async Task<bool> CreateRecipeNode(string username, string recipe, string description = "", string rating = "", string difficulty = "", string servings = "", string servingsize = "", string cookTime = "", string prepTime = "")
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         Console.WriteLine("Entering CreateRecipeNode with parameters:\n" +
             "username: " + username + "\n" +
             "recipe: " + recipe + "\n" +
@@ -140,7 +140,7 @@ public class DBQueryModel
     // Used when adding a recipe to a cookbook or to a meal
     public static async Task<bool> ConnectRecipeNode(string username, string parent, string recipe)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string query;
 
         if (parent.Contains(""))
@@ -187,7 +187,7 @@ public class DBQueryModel
     // Unsure how to handle tool and tag since it needs both new and old names passed to be able to delete the previous node
     public static async Task<bool> EditRecipe(string username, string recipe, string tool = "", string order = "", string stepDescription = "", string recipeDescription = "", string rating = "", string difficulty = "", string servings = "", string servingSize = "", string cookTime = "", string prepTime = "")
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string query = @"
             MATCH (recipe:Recipe{name:$recipeName})
             OPTIONAL MATCH (step:Step{order:$order})
@@ -272,7 +272,7 @@ public class DBQueryModel
     // TODO - Add Group Parameter
     public static async Task<List<string>> GetRecipeNodeNames(string username)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
         MATCH (user:User {username: $username})-[:OWNS]->(recipe:Recipe)
         RETURN recipe.name AS recipeName
@@ -303,7 +303,7 @@ public class DBQueryModel
     // CreateIngredient()
     public static async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         Console.WriteLine("Entering CreateIngredientNode with parameters: " + username + ", " + ingredient);
         var query = @"
             MATCH (user:User {username: $username})
@@ -352,7 +352,7 @@ public class DBQueryModel
     //This was easier than making the other method do more because of the parameter injection on the query string.
     public static async Task<List<string>> GetRecipeNodeNamesByIngredient(string username, string ingredient)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         ingredient = username + ingredient;
         var query = @"
             MATCH (user:User {username: $username})-[:OWNS]->(recipe:Recipe)-[:MADE_WITH]->(i:Ingredient {name: $ingredient})
@@ -387,7 +387,7 @@ public class DBQueryModel
     // The parent is the name of the node you are adding ingredients too
     public static async Task<bool> ConnectIngredientNode(string username, string parent, string ingredient, string unit = "", string qualifier = "", double quantity = 0)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var parentName = username + parent;
         var ingredientName = username + ingredient;
 
@@ -485,7 +485,7 @@ public class DBQueryModel
     // Unsure if works with no ingredients
     public static async Task<List<string>> GetIngredientNodeNames(string username)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
         MATCH (user:User {username: $username})-[:OWNS]->(ingredient:Ingredient)
         RETURN ingredient.name AS ingredientName
@@ -515,7 +515,7 @@ public class DBQueryModel
 
     public static async Task<bool> CreatePantryNode(string username)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         Console.WriteLine("Creating pantry...");
         var query = @"
             MATCH (user:User {username: $username})
@@ -552,7 +552,7 @@ public class DBQueryModel
     // TODO - Test no description input
     public static async Task<bool> CreateCookbookNode(string username, string name, string description = "")
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         description = string.IsNullOrEmpty(description) ? "" : description;
 
         var query = @"
@@ -595,7 +595,7 @@ public class DBQueryModel
     // TODO - Test results
     public static async Task<bool> CreateToolNode(string username, string recipe, string tool)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (recipe:Recipe {name: $recipeName})
             MERGE (tool:Tool {name: $toolName})
@@ -652,7 +652,7 @@ public class DBQueryModel
     // TODO - Test results
     public static async Task<bool> CreateShoppingListNode(string username)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MERGE (shopList:ShoppingList {name: $shopListName})
             RETURN COUNT(shopList) > 0
@@ -689,7 +689,7 @@ public class DBQueryModel
     // TODO - Test results
     public static async Task<bool> CreateMealNode(string username, MealSet meal)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         if (meal.Description == null)
         {
             meal.Description = string.Empty;
@@ -733,7 +733,7 @@ public class DBQueryModel
     // TODO - return success/fail
     public static async Task<bool> ConnectMealNode(string username, string meal, string recipe)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
         MATCH (meal:Meal{name:$mealName})
         MATCH (recipe:Recipe{name:$recipeName})
@@ -773,7 +773,7 @@ public class DBQueryModel
     // Order is the step number
     public static async Task<bool> CreateStepNode(string username, string recipe, string order, string description = "")
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         description = string.IsNullOrEmpty(description) ? "" : description;
 
         var query = @"
@@ -819,7 +819,7 @@ public class DBQueryModel
     // TODO - Test Results
     public static async Task<bool> CreateTagNode(string tag, string recipe, string username)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
         MATCH (recipe:Recipe {name: $recipeName})
         MERGE (tag:Tag {name: $tag})
@@ -857,7 +857,7 @@ public class DBQueryModel
     //DONE
     public async static Task<bool> Authenticate(string username, string password)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         Console.WriteLine("Authenticating " + username + " with " + password);
         string query = "MATCH (u:User {username: '" + username + "', password: '" + password + "'}) \n"
                                 + "WITH COUNT(u) > 0 as exists \n"
@@ -893,7 +893,7 @@ public class DBQueryModel
     // Playing around with new GetRecipe
     public static async Task<Recipe> GetRecipe(string username, string recipe, string tool = "", string tag = "")
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (recipe:Recipe {name: $recipeName})
             OPTIONAL MATCH (tool:Tool {name: $toolName})
@@ -1004,7 +1004,7 @@ public class DBQueryModel
     //TESTING
     public static async Task<bool> DeleteRecipe(string recName, string username, string group = "")
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         Console.WriteLine("Entering DeleteRecipe with recName: " + recName);
         string name = username + recName;
         string query = "Match (:Recipe {name: '" + name + "'})-[]->(s:Step)\n" +
@@ -1045,7 +1045,7 @@ public class DBQueryModel
     //TESTING
     public static async Task<List<string>> GetCookbookRecipes(string cbName, string username, string group = "")
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name = username + cbName;
         string query = "MATCH (u:User)-[:OWNS]->(cb:Cookbook)\n " +
             "WHERE cb.name = '" + name + "' AND u.username = '" + username + "'\n" +
@@ -1076,7 +1076,7 @@ public class DBQueryModel
 
     public static async Task<Cookbook> GetCookbook(string cbName, string username)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name = username + cbName;
         string query = "MATCH (u:User)-[:OWNS]->(cb:Cookbook)\n " +
             "WHERE cb.name = '" + name + "' AND u.username = '" + username + "'\n" +
@@ -1105,7 +1105,7 @@ public class DBQueryModel
 
     public static async Task<List<Cookbook>> GetCookbooks(string username, string group = "")
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name = username;
         string startLabel = "User";
         try
@@ -1138,7 +1138,7 @@ public class DBQueryModel
     // bool respone doesn't tell much
     public static async Task<bool> EditCookBook(string username, string name, string description)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (cookbook:Cookbook {name: $cookbookName})
             SET cookbook.description = $description
@@ -1175,7 +1175,7 @@ public class DBQueryModel
     //IN PROGRESS
     public static async Task<bool> DeleteCookbook(string cbName, string username, string group = "")
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name = username + cbName;
         string startLabel = "User";
         string query = "MATCH (:" + startLabel + " {username:'" + username + "'})-[:OWNS]->(cb:Cookbook {name:'" + name + "'})\n " +
@@ -1204,7 +1204,7 @@ public class DBQueryModel
     //WIP
     public static async Task<Ingredient> GetIngredient(string username, string ingName, string group = "")
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name = username + ingName;
         string startLabel = "User";
         string query = "MATCH (u:" + startLabel + ")-[]->(t:Ingredient)\n" +
@@ -1239,7 +1239,7 @@ public class DBQueryModel
 
     public static async Task<IngredientDetail> GetIngredientDetail(string username, string ingName, string recipeName)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         Console.WriteLine("Entering GetIngredientDetail with " + username + ", " + ingName + ", " + recipeName);
         string rname = username + recipeName;
         string iname = username + ingName;
@@ -1283,7 +1283,7 @@ public class DBQueryModel
 
     public static async Task<List<Ingredient>> GetIngredientsByRecipe(string username, string recipeName)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         Console.WriteLine("Entering GetIngredientsByRecipe with username: " + username + ", recipeName: " + recipeName);
         string name = username + recipeName;
         string startLabel = "User";
@@ -1331,7 +1331,7 @@ public class DBQueryModel
     //TESTING
     private static async Task<List<Tag>> GetTagsByRecipe(string recName, string username, string group = "")
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name = username + recName;
         string startLabel = "User";
         string query = "MATCH (:" + startLabel + ")-[r]->(b:Recipe)-[]-(t:Tag)\n " +
@@ -1371,7 +1371,7 @@ public class DBQueryModel
     //TESTING
     private static async Task<List<string>> GetInstuctionsByRecipe(string recName, string username)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name = username + recName;
         string startLabel = "User";
         string query = "MATCH (:" + startLabel + ")-[r]->(b:Recipe)-[]-(t:Step)\n " +
@@ -1413,7 +1413,7 @@ public class DBQueryModel
     //TESTING
     private static async Task<bool> DetachTagFromRecipe(string username, string tagName, string recName)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name;
         string startLabel;
         startLabel = "User";
@@ -1446,7 +1446,7 @@ public class DBQueryModel
 
     private static async Task<bool> DeleteStepsFromRecipe(string username, string recipeName)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name;
         string startLabel;
         startLabel = "User";
@@ -1481,7 +1481,7 @@ public class DBQueryModel
     //The Inner Lists are the meal for that day.
     public static async Task<List<MealSet>> GetMealPlanByDay(string username, string date)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (:User {name: $username})-[]->(rec:Recipe)-[x:SCHEDULED_FOR]->(:MealPlan)
             WHERE x.date = $date
@@ -1528,7 +1528,7 @@ public class DBQueryModel
     //Returns list of all meals.
     public static async Task<List<MealSet>> GetMeals(string username)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (:User {name: $username})-[]->(rec:Recipe)-[x:MADE_WITH]->(m:Meal)
             RETURN m
@@ -1566,7 +1566,7 @@ public class DBQueryModel
     //Returns list of all meals.
     public static async Task<MealSet> GetMeal(string username, string mealName)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
         MATCH (:User {name: $username})-[]->(rec:Recipe)-[x:MADE_WITH]->(m:Meal)
         WHERE m.name = $mealName
@@ -1624,7 +1624,7 @@ public class DBQueryModel
     //Basically AddToPantry with a negative number.
     public static async Task<bool> RemoveFromPantry(string username, string ingredient)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (pantry:Pantry {name: $pantryName})
             MATCH (ingredient:Ingredient {name: $ingredientName})
@@ -1663,7 +1663,7 @@ public class DBQueryModel
     //Ignore items where quantity <= 0. I think anyways.
     public static async Task<List<IngredientDetail>> GetPantry(string username)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
         MATCH (:User {username: $username})-[]->(:Pantry)-[:STORES]->(i:Ingredient)
         RETURN i
@@ -1699,7 +1699,7 @@ public class DBQueryModel
 
     public static async Task<IngredientDetail> GetPantryIngredient(string username, string ingName)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
         MATCH (:User {username: $username})-[]->(:Pantry)-[x:STORES]->(i:Ingredient)
         WHERE i.name = $ingredient
@@ -1744,7 +1744,7 @@ public class DBQueryModel
     //Connects recipe node to cookbook node
     public static async Task<bool> AddToCookbook(string username, string cookbookName, string recipeName)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string cookbook = username + cookbookName;
         string recipe = username + recipeName;
         var query = @"
@@ -1779,7 +1779,7 @@ public class DBQueryModel
     //Detaches recipe node from cookbook node
     public static async Task<bool> RemoveFromCookbook(string username, string cookbookName, string recipeName)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string cookbook = username + cookbookName;
         string recipe = username + recipeName;
         var query = @"
@@ -1789,7 +1789,6 @@ public class DBQueryModel
             WHERE recipe.name = $recipe
             MATCH (cookbook)-[x:CATALOGUES]->(recipe)
             DETACH DELETE x
-            WITH x
             RETURN COUNT(x) > 0
         ";
 
@@ -1814,33 +1813,201 @@ public class DBQueryModel
     }
 
     //Detaches and deletes a meal node.
-    public static async Task<bool> DeleteMeal(string username, string mealName)
+    public static async Task<bool> DeleteMeal(string username, string meal)
     {
-        return true;
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var deleteQuery = @"
+            MATCH (meal:Meal {name: $mealName})
+            DETACH DELETE meal
+        ";
+        var checkQuery = @"
+            MATCH (meal:Meal {name: $mealName})
+            RETURN COUNT(meal) = 0
+        ";
+
+        var mealName = username + meal;
+        var session = driver.AsyncSession();
+
+        try
+        {
+            // First, delete the meal node
+            await session.RunAsync(deleteQuery, new { mealName });
+
+            // Must check sperately if deleted since meal object won't get updated after deletion
+            var response = await session.RunAsync(checkQuery, new { mealName });
+            var record = await response.SingleAsync();
+
+            bool mealDeleted = record.Any() && record[0].As<bool>();
+            return mealDeleted;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
     }
 
     //Connects a recipe node to a meal node
-    public static async Task<bool> AddToMeal(string username, string recipeName, string mealName)
+    public static async Task<bool> AddToMeal(string username, string recipe, string meal)
     {
-        return true;
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var query = @"
+            MATCH (meal:Meal{name:$mealName})
+            MATCH (recipe:Recipe{name:$recipeName})
+            MERGE (meal)-[x:MADE_WITH]->(recipe)
+            RETURN COUNT(x) > 0
+        ";
+
+        var mealName = username + meal;
+        var recipeName = username + recipe;
+
+
+        var session = driver.AsyncSession();
+
+        try
+        {
+            var response = await session.RunAsync(query, new { mealName, recipeName });
+            var record = await response.SingleAsync();
+
+            bool connectionExists = record.Any() && record[0].As<bool>();
+            return connectionExists;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
     }
 
     //Detaches a recipe node from a meal node
-    public static async Task<bool> RemoveFromMeal(string username, string recipeName, string mealName)
+    public static async Task<bool> RemoveFromMeal(string username, string recipe, string meal)
     {
-        return true;
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var deleteQuery = @"
+            MATCH (meal:Meal{name:$mealName})
+            MATCH (recipe:Recipe{name:$recipeName})
+            MATCH (meal)-[x:MADE_WITH]->(recipe)
+            DETACH DELETE (x)
+        ";
+        var checkQuery = @"
+            MATCH (meal:Meal{name:$mealName})
+            MATCH (recipe:Recipe{name:$recipeName})
+            MATCH (meal)-[x:MADE_WITH]->(recipe)
+            RETURN COUNT(x) = 0
+        ";
+
+        var mealName = username + meal;
+        var recipeName = username + recipe;
+
+        var session = driver.AsyncSession();
+
+        try
+        {
+            // First, delete the meal node
+            await session.RunAsync(deleteQuery, new { mealName });
+
+            // Must check sperately if deleted since meal object won't get updated after deletion
+            var response = await session.RunAsync(checkQuery, new { mealName, recipeName });
+            var record = await response.SingleAsync();
+
+            bool mealDisconnected = record.Any() && record[0].As<bool>();
+            return mealDisconnected;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
     }
 
     //Connects a recipe node to the meal plan node with a date parameter
-    public static async Task<bool> ScheduleRecipe(string username, string recipeName, string date)
+    // Simultaneously creates the meal if it didn't exist already
+    public static async Task<bool> ScheduleRecipe(string username, string recipe, string meal, string date, int order)
     {
-        return true;
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var query = @"
+            MATCH (recipe:Recipe{name:$recipeName})
+            MERGE (meal:Meal{name:$mealName})
+            MERGE (recipe)-[x:SCHEDULED_FOR]->(meal)
+            SET x.date = $date
+                x.order = $order
+            RETURN COUNT(x) > 0
+        ";
+        var mealName = username + meal;
+        var recipeName = username + recipe;
+
+
+        var session = driver.AsyncSession();
+
+        try
+        {
+            var response = await session.RunAsync(query, new { mealName, recipeName });
+            var record = await response.SingleAsync();
+
+            bool connectionExists = record.Any() && record[0].As<bool>();
+            return connectionExists;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
     }
 
     //Detaches a recipe node from the schedule
-    public static async Task<bool> UnScheduleRecipe(string username, string recipeName, string date)
+    public static async Task<bool> UnScheduleRecipe(string username, string recipe, string date, string order)
     {
-        return true;
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var deleteQuery = @"
+            MATCH (recipe:Recipe{name:$recipeName})
+            MATCH (recipe)-[x:SCHEDULED_FOR{date:$date, order:$order}]->()
+            DELETE (x)
+        ";
+        var checkQuery = @"
+            MATCH (recipe)-[x:SCHEDULED_FOR{date:$date, order:$order}]->()
+            RETURN COUNT(x) = 0
+        ";
+
+        var recipeName = username + recipe;
+        var session = driver.AsyncSession();
+
+        try
+        {
+            // First, delete the meal node
+            await session.RunAsync(deleteQuery, new { recipeName, date, order });
+
+            // Must check sperately if deleted since meal object won't get updated after deletion
+            var response = await session.RunAsync(checkQuery, new { recipeName });
+            var record = await response.SingleAsync();
+
+            bool recipeDisconnected = record.Any() && record[0].As<bool>();
+            return recipeDisconnected;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
     }
 
     //Connects an Inredient node to the shoppin list with ingredientDetail parameters.
@@ -1886,7 +2053,7 @@ public class DBQueryModel
 
     public static async Task<List<IngredientDetail>> GetShoppingList(string username)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
         MATCH (:User {name: $username})-[]->(:ShoppingList)-[:PLANS_TO_BUY]->(i:Ingredient)
         RETURN i
@@ -1922,7 +2089,7 @@ public class DBQueryModel
 
     public static async Task<IngredientDetail> GetShoppingListIngredient(string username, string ingName)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
         MATCH (:User {name: $username})-[]->(:ShoppingList)-[x:PLANS_TO_BUY]->(i:Ingredient)
         WHERE i.name = $ingredient
@@ -1969,7 +2136,7 @@ public class DBQueryModel
     //TESTING
     private static async Task<bool> ValidateGroupMembership(string group, AuthToken at)
     {
-        var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string query = "MATCH (u:User {name:'" + at.username + "'})-[r:MEMBER_OF]->(b:Group {name: " + group + "})\n " +
                                                 "return Count(u) > 0\n";
         try
