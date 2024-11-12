@@ -329,7 +329,14 @@ public static class SeedData
         return new MealSet();
     }
 
-
+// Minimums for preset data:
+        // Ten Recipes
+        // Chocolate Chip Cookies must be in a cookbook, a meal, and a meal plan
+        // Two Cookbooks
+        // Two Meals
+        // A week of meal plans
+        // Three shopping list entries
+        // Three Pantry entries
     public static bool SeedDatabase(string username)
     {
 
