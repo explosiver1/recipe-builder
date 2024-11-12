@@ -1812,32 +1812,42 @@ public class DBQueryModel
         }
     }
 
-    //Detaches and deletes a meal node.
+    //Detaches and deletes a meal node
     public static async Task<bool> DeleteMeal(string username, string meal)
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        
         var deleteQuery = @"
             MATCH (meal:Meal {name: $mealName})
+            WHERE NOT (:Recipe)-[:SCHEDULED_FOR]->(meal)
             DETACH DELETE meal
+            RETURN COUNT(meal) = 0 AS mealDeleted
         ";
-        var checkQuery = @"
-            MATCH (meal:Meal {name: $mealName})
-            RETURN COUNT(meal) = 0
+        
+        var deleteRelationshipOnly = @"
+            MATCH (meal:Meal {name: $mealName})-[r:MADE_WITH]->(:Recipe)
+            DELETE r
+            RETURN true AS mealDeleted
         ";
-
+        
         var mealName = username + meal;
         var session = driver.AsyncSession();
 
         try
         {
-            // First, delete the meal node
-            await session.RunAsync(deleteQuery, new { mealName });
+            var result = await session.RunAsync(deleteQuery, new { mealName });
+            var record = await result.SingleAsync();
+            
+            bool mealDeleted = record["mealDeleted"].As<bool>();
+            
+            if (!mealDeleted)
+            {
+                // Delete only the MADE_WITH relationship if the meal node still exists
+                var relationshipResult = await session.RunAsync(deleteRelationshipOnly, new { mealName });
+                var relationshipRecord = await relationshipResult.SingleAsync();
+                mealDeleted = relationshipRecord["mealDeleted"].As<bool>();
+            }
 
-            // Must check sperately if deleted since meal object won't get updated after deletion
-            var response = await session.RunAsync(checkQuery, new { mealName });
-            var record = await response.SingleAsync();
-
-            bool mealDeleted = record.Any() && record[0].As<bool>();
             return mealDeleted;
         }
         catch (Exception ex)
@@ -1850,6 +1860,8 @@ public class DBQueryModel
             await session.CloseAsync();
         }
     }
+
+
 
     //Connects a recipe node to a meal node
     public static async Task<bool> AddToMeal(string username, string recipe, string meal)
