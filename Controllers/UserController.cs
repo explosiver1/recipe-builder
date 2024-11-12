@@ -24,12 +24,12 @@ public class UserController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
-        
+
         UserIndexVM viewModel = new UserIndexVM();
         try
         {
-            viewModel.cookbooks = CtrlModel.GetCookbookList(at.username);
-            viewModel.recipes = CtrlModel.GetRecipeList(at.username);
+            viewModel.cookbooks = CtrlModel.GetCookbookNameList(at.username);
+            viewModel.recipes = CtrlModel.GetRecipeNameList(at.username);
         }
         catch (Exception e)
         {

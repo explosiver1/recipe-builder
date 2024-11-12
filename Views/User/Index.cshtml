@@ -9,7 +9,7 @@
         padding: 10px 20px;
         font-size: 16px;
         color: white;
-        background-color: #4A743E; 
+        background-color: #4A743E;
         text-align: center;
         text-decoration: none;
         border-radius: 5px;
@@ -48,8 +48,8 @@
         {
             <div class="col-md-4">
                 <div class="block">
-                    <h4 style="color: #4A743E;">@cookbook.Title</h4><br>
-                    <a asp-controller="Cookbooks" asp-action="Cookbook" asp-route-name=@cookbook.Title class="btn-custom">View Cookbook</a>
+                    <h4 style="color: #4A743E;">@cookbook</h4><br>
+                    <a asp-controller="Cookbooks" asp-action="Cookbook" asp-route-name=@cookbook class="btn-custom">View Cookbook</a>
                 </div>
             </div>
        }
@@ -67,8 +67,8 @@
         {
             <div class="col-md-4">
                 <div class="block">
-                <h4 style="color: #4A743E;">@recipe.Name</h4><br>
-                <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe.Name class="btn-custom">View Recipe</a>
+                <h4 style="color: #4A743E;">@recipe</h4><br>
+                <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe class="btn-custom">View Recipe</a>
                 </div>
             </div>
         }
