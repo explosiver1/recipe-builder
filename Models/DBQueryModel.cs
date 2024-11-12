@@ -1816,20 +1816,20 @@ public class DBQueryModel
     public static async Task<bool> DeleteMeal(string username, string meal)
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
-        
+
         var deleteQuery = @"
             MATCH (meal:Meal {name: $mealName})
             WHERE NOT (:Recipe)-[:SCHEDULED_FOR]->(meal)
             DETACH DELETE meal
             RETURN COUNT(meal) = 0 AS mealDeleted
         ";
-        
+
         var deleteRelationshipOnly = @"
             MATCH (meal:Meal {name: $mealName})-[r:MADE_WITH]->(:Recipe)
             DELETE r
             RETURN true AS mealDeleted
         ";
-        
+
         var mealName = username + meal;
         var session = driver.AsyncSession();
 
@@ -1837,9 +1837,9 @@ public class DBQueryModel
         {
             var result = await session.RunAsync(deleteQuery, new { mealName });
             var record = await result.SingleAsync();
-            
+
             bool mealDeleted = record["mealDeleted"].As<bool>();
-            
+
             if (!mealDeleted)
             {
                 // Delete only the MADE_WITH relationship if the meal node still exists
@@ -2029,7 +2029,7 @@ public class DBQueryModel
         bool tmp;
         try
         {
-            CreateIngredientNode(username, ingD.Name);
+            await CreateIngredientNode(username, ingD.Name);
         }
         catch
         {
@@ -2067,7 +2067,7 @@ public class DBQueryModel
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
-        MATCH (:User {name: $username})-[]->(:ShoppingList)-[:PLANS_TO_BUY]->(i:Ingredient)
+        MATCH (:User {username: $username})-[]->(:ShoppingList)-[:PLANS_TO_BUY]->(i:Ingredient)
         RETURN i
         ";
 
@@ -2103,7 +2103,7 @@ public class DBQueryModel
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
-        MATCH (:User {name: $username})-[]->(:ShoppingList)-[x:PLANS_TO_BUY]->(i:Ingredient)
+        MATCH (:User {username: $username})-[]->(:ShoppingList)-[x:PLANS_TO_BUY]->(i:Ingredient)
         WHERE i.name = $ingredient
         RETURN x
         ";
@@ -2200,6 +2200,36 @@ public class DBQueryModel
             return item.Substring(id.Length);
         }
         return item; // Return the original string if no match
+    }
+
+    public static async Task<bool> CheckUserExistence(string username)
+    {
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var query = @"
+        MATCH (u:User {username: $username})
+        RETURN Count(u) > 0;
+        ";
+        // Initialize the Neo4j session
+        var session = driver.AsyncSession();
+        try
+        {
+            // Run the query and pass in parameters
+            var response = await session.RunAsync(query, new { username });
+
+            // This should work because it's a single value return type.
+            var result = await response.SingleAsync();
+            return result.As<bool>();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error retrieving user. Exception: " + e);
+            return false;
+        }
+        finally
+        {
+            // Ensures the session is closed
+            await session.CloseAsync();
+        }
     }
 
 }
