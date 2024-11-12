@@ -6,6 +6,6 @@ namespace RecipeBuilder.ViewModels;
 
 public class UserIndexVM()
 {
-    public List<Cookbook> cookbooks {get; set;} = new List<Cookbook>();
-    public List<Recipe> recipes {get; set;} = new List<Recipe>();
+    public List<string> cookbooks { get; set; } = new List<string>();
+    public List<string> recipes { get; set; } = new List<string>();
 }

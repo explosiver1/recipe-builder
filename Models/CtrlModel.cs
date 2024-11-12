@@ -47,6 +47,11 @@ public static class CtrlModel
         return DBQueryModel.GetRecipeNodeNames(username).Result;
     }
 
+    public static List<string> GetCookbookNameList(string username)
+    {
+        return DBQueryModel.GetCookbookNameList(username).Result;
+    }
+
     /* Fetch recipe from DB by name & return it to controller */
     public static Recipe GetRecipe(string username, string recipeName)
     {
@@ -664,8 +669,8 @@ public static class CtrlModel
     public static async void ResetTesterAccount(string userName)
     {
         // Check if user exists - if yes, clear data
-        
-        if (DBQueryModel.CheckUserExistence(userName))
+
+        if (DBQueryModel.CheckUserExistence(userName).Result)
         {
             //Delete user data
             SeedData.UnSeedDatabase(userName);
@@ -676,8 +681,8 @@ public static class CtrlModel
             //Create User
             await DBQueryModel.CreateUserNode(username: userName, name: userName, email: "tester@test.com", phone: "1234567890", password: "abc123");
         }
-        
-        // Call function to populate user data with preset data 
+
+        // Call function to populate user data with preset data
         SeedData.SeedDatabase(userName);
         return;
     }

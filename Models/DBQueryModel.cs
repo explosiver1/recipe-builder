@@ -55,7 +55,22 @@ public class DBQueryModel
             // Checks if there is a record && gets the first record which should be the bool response
             bool userCreated = records.Any() && records.First()[0].As<bool>();
             Console.WriteLine("Returning Result: " + userCreated);
-            return userCreated;
+            if (userCreated)
+            {
+                bool pantryCreated = CreatePantryNode(username).Result;
+                if (pantryCreated)
+                {
+                    bool shoppingListCreated = CreatePantryNode(username).Result;
+                    if (shoppingListCreated)
+                    {
+                        return true;
+                    }
+                    Console.WriteLine("Failed at shopping list");
+                }
+                Console.WriteLine("Failed at pantry");
+            }
+            Console.WriteLine("Failed at user");
+            return false;
         }
         catch (Exception ex)
         {
@@ -1135,6 +1150,45 @@ public class DBQueryModel
         }
     }
 
+    public static async Task<List<string>> GetCookbookNameList(string username)
+    {
+
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var query = @"
+            MATCH (u:User {username: $username})-[]->(cookbook:Cookbook)
+            RETURN cookbook
+        ";
+
+
+        var session = driver.AsyncSession();
+        try
+        {
+            var response = await session.RunAsync(query, new { username });
+            Console.WriteLine($"Cookbooks retrieved");
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+            List<string> cbNames = new List<string>();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            foreach (IRecord r in records)
+            {
+                var cNode = r["cookbook"].As<INode>();
+                cbNames.Add(GetCleanString(username, cNode["name"].As<string>()));
+            }
+            return cbNames;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return new List<string>();
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
     // bool respone doesn't tell much
     public static async Task<bool> EditCookBook(string username, string name, string description)
     {
@@ -2050,6 +2104,7 @@ public class DBQueryModel
     //Detaches an ingredient from the shopping list.
     public static async Task<bool> RemoveFromShoppingList(string username, string ingName)
     {
+
         return true;
     }
 
