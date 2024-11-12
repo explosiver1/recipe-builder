@@ -1,3 +1,5 @@
+@model RecipeBuilder.ViewModels.MealsCreateVM
+
 @{
     ViewData["Title"] = "Create Meal";
 }
@@ -82,38 +84,97 @@
 
 </style>
 
+<h1 class="display-4" style="color: #4A743E;">Create Meal</h1>
+<hr class="rounded">
 <body>
-    <h1 class="display-4" style="color: #4A743E;">Create Meal</h1>
-    <hr class="rounded">
-
+    <form asp-controller="Meals" asp-action="Create" method="post" id="form">
     <!-- meal name -->
     <div>
         <label for="mealname">Name:</label>
-        <input type="text" id="mealname" name="mealname" placeholder="Enter meal name"><br><br>
+        <input type="text" class="form-control" id="mealName" asp-for="@Model.meal.Name" required /><br>
+        <span asp-validation-for="@Model.meal.Name" class="text-danger"></span>
     </div>
 
     <!-- meal description -->
     <div>
-        <label for="description">Description:</label>
-        <input type="text" id="description" name="description" placeholder="Enter meal description"><br><br>
+        <label for="mealDescription">Description:</label>
+        <input type="text" class="form-control" id="mealDescription" asp-for="@Model.meal.Description" required /><br>
+        <span asp-validation-for="@Model.meal.Description" class="text-danger"></span>
     </div>
 
     <!-- recipes added label -->
     <div>
         <label for="recipes" class="recipes-added-label">Recipes Added:</label>
     </div>
-
-    <!-- add recipes button & recipes list box -->
-    <div class="recipes-section">
-        <!-- add recipes button -->
-        <div>
-                <a asp-controller="Recipe" asp-action="Select">Add Recipe</a><br><br>
+    @if(Model.UserRecipesNames != null && Model.UserRecipesNames.Any())
+    {
+        <div class="form-group">
+            <div id="recipe-container">
+                <table id="recipeTable">
+                    <thead>
+                        <tr>
+                            <th>Recipes</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @for (int i = 0; i < Model.UserRecipesNames.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <select name="meal.RecipeNames[@i]" value="@Model.meal.Recipes">
+                                    <option value="" disabled selected>Select a Recipe</option>
+                                    @foreach(string recipeName in Model.UserRecipesNames)
+                                    {
+                                        <option value="@recipeName">@recipeName</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <button type="button" onclick="removeRecipeRow(this)">Remove</button>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <span class="plus-button" onclick="addRecipeRow()">+</span>
+            </div><br>
         </div>
+    }
+    else
+    {
+        <p>No Recipes to Select</p>
+    }
 
-        <div class="recipes-list">
-            <ul>
-                <!-- add recipes and connect model here -->
-            </ul>
-        </div>
-    </div>
+        @if (Model != null)
+        {
+            @if (Model.msg != "")
+            {
+            <div>
+            <p>@Model.msg</p>
+            </div>
+            }
+        }
+
+
+    <br><button type="submit" class="btn btn-custom">Save Meal</button><br>
+    <br>
+    </form>
 </body>
+<script>
+    function addRecipeRow(){
+        var rowCount = document.querySelectorAll('#recipeTable tbody tr').length;
+        var initialDropdown = document.querySelector('#recipeTable tbody tr').outerHTML;
+        var newRow = document.createElement('tr');
+
+        newRow.innerHTML = initialDropdown;
+
+        // Update the 'name' attribute in the new row's dropdown to reflect the current index
+        var selectElement = newRow.querySelector('select');
+        selectElement.setAttribute('name', `meal.RecipeNames[${rowCount}]`);
+
+        document.getElementById("recipeTable").getElementsByTagName('tbody')[0].appendChild(newRow);
+    }
+</script>

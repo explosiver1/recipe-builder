@@ -5,6 +5,7 @@ namespace RecipeBuilder.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public List<Recipe> Recipes { get; set; }
+        public List<string> RecipeNames { get; set; }
         public DateOnly Date { get; set; }
 
         // Blank constructor initializing to default values
