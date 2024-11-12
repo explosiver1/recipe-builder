@@ -660,4 +660,25 @@ public static class CtrlModel
             return false;
         }
     }
+
+    public static async void ResetTesterAccount(string userName)
+    {
+        // Check if user exists - if yes, clear data
+        
+        if (DBQueryModel.CheckUserExistence(userName))
+        {
+            //Delete user data
+            SeedData.UnSeedDatabase(userName);
+        }
+        // Otherwise Create User with given username & password of abc123, tester@test.com, 1234567890
+        else
+        {
+            //Create User
+            await DBQueryModel.CreateUserNode(username: userName, name: userName, email: "tester@test.com", phone: "1234567890", password: "abc123");
+        }
+        
+        // Call function to populate user data with preset data 
+        SeedData.SeedDatabase(userName);
+        return;
+    }
 }

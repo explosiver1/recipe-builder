@@ -1,36 +1,20 @@
 @model RecipeBuilder.ViewModels.TestViewModel
 @{
-    ViewData["Title"] = "Title";
+    ViewData["Title"] = "Tester Profile Setup & Reset";
 }
 
 <div class="text-center">
-    <h1>Heading</h1>
+    <h1>Tester Profile Setup & Reset</h1>
     <p>Let's get ready to cook!</p>
-
-    @* Testing Input Fields & Data Transfer - Can remove when ready to work on this page *@
-    @*Testing data from httpget*@
-    @* <p>First Name: @Model.fName</p>
-    <p>Last Name: @Model.lName</p> *@
-    @*Testing data to httppost*@
     <div class="container">
-        <h2>Create Thing</h2>
+        <h2>Type Tester followed by your name to setup or reset your tester profile</h2>
         <form asp-action="Index" method="post">
             <div class="form-group">
-                <label asp-for="fName" class="control-label">First Name:</label>
-                <input asp-for="fName" class="form-control" />
-                <span asp-validation-for="fName" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="lName" class="control-label">Last Name:</label>
-                <input asp-for="lName" class="form-control" />
-                <span asp-validation-for="lName" class="text-danger"></span>
+                <label asp-for="TestUserName" class="control-label">Username: </label>
+                <input asp-for="TestUserName" class="form-control" />
+                <span asp-validation-for="TestUserName" class="text-danger"></span>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
-@* 
-        <label for="fname">First Name:</label>
-        <input type="text" id="fname" name="fname">
-        <br><br>
-        <input type="submit" value="Submit"> *@
     </div>
 </div>
