@@ -98,7 +98,7 @@ public static class SeedData
             "Allow cookies to cool on the pan briefly before transferring to a wire cooling rack."
         ]
     };
-    
+
     // public static Recipe Name = new Recipe{
     //     Name="", Description="",
     //     Difficulty=0, Rating=0, PrepTime=0, CookTime=0,
@@ -122,19 +122,22 @@ public static class SeedData
     {
         Title = "Cookies",
         Description = "Cookie Recipes",
-        Recipes = [ChocolateChipCookies, SugarCookies]
+        Recipes = [ChocolateChipCookies, SugarCookies],
+        RecipeNames = [ChocolateChipCookies.Name, SugarCookies.Name]
     };
     public static Cookbook DessertsCookbook = new Cookbook
     {
         Title = "Desserts",
         Description = "Dessert Recipes",
-        Recipes = [ChocolateChipCookies, SugarCookies]
+        Recipes = [ChocolateChipCookies, SugarCookies],
+        RecipeNames = [ChocolateChipCookies.Name, SugarCookies.Name]
     };
     public static Cookbook ChocolateCookbook = new Cookbook
     {
         Title = "Chocolate Cookbook",
         Description = "Recipes with Chocolate",
-        Recipes = [ChocolateChipCookies]
+        Recipes = [ChocolateChipCookies],
+        RecipeNames = [ChocolateChipCookies.Name]
     };
     /* COOKBOOK LIST */
     public static List<Cookbook> myCookbooks = [CookiesCookbook, DessertsCookbook, ChocolateCookbook];
@@ -192,12 +195,12 @@ public static class SeedData
         return myIngredients;
     }
 
-        public static List<IngredientDetail> GetIngredientDetailList()
+    public static List<IngredientDetail> GetIngredientDetailList()
     {
         List<IngredientDetail> ingredientDetails = new List<IngredientDetail>();
         foreach (Ingredient ingredient in myIngredients)
         {
-            ingredientDetails.Add(new IngredientDetail{Name=ingredient.Name});
+            ingredientDetails.Add(new IngredientDetail { Name = ingredient.Name });
         }
         return ingredientDetails;
     }
@@ -211,7 +214,7 @@ public static class SeedData
             new IngredientDetail{Ingredient = Egg, Qualifier = "", Quantity = 1, Unit = "Egg"},
             new IngredientDetail{Ingredient = Vanilla, Qualifier = "", Quantity = 1, Unit = "tsp"}
         ];
-    
+
     public static List<IngredientDetail> shoppingListItems = [
             new IngredientDetail{Ingredient = Butter, Qualifier = "Salted, Softened", Quantity = 2, Unit = "Sticks"},
             new IngredientDetail{Ingredient = Sugar, Qualifier = "", Quantity = 0.75, Unit = "Cup"},
@@ -324,6 +327,123 @@ public static class SeedData
             }
         }
         return new MealSet();
+    }
+
+
+    public static bool SeedDatabase(string username)
+    {
+
+        try
+        {
+            foreach (Recipe r in GetRecipeList())
+            {
+                if (!CtrlModel.SetRecipe(username, r))
+                {
+                    Console.WriteLine("Failed at seeding recipes");
+                    return false;
+                }
+            }
+            foreach (Cookbook c in GetCookbookList())
+            {
+                if (!CtrlModel.CreateCookbook(username, c))
+                {
+                    Console.WriteLine("Failed at seeding cookbooks");
+                    return false;
+                }
+            }
+            foreach (IngredientDetail ingD in GetPantryItems())
+            {
+                if (!CtrlModel.AddItemToPantry(ingD, username))
+                {
+                    Console.WriteLine("Failed at seeding pantry");
+                    return false;
+                }
+            }
+
+            foreach (MealSet m in getMeals())
+            {
+                if (!DBQueryModel.CreateMealNode(username, m).Result)
+                {
+                    Console.WriteLine("Failed at seeding meals");
+                    return false;
+                }
+            }
+
+            //Insert block for scheduling recipes onto meal planner.
+
+            foreach (IngredientDetail ingD in GetShoppingListItems())
+            {
+                if (!DBQueryModel.AddToShoppingList(username, ingD).Result)
+                {
+                    Console.WriteLine("Failed at seeding shoppinglist");
+                    return false;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static bool UnSeedDatabase(string username)
+    {
+        try
+        {
+            foreach (Recipe r in CtrlModel.GetRecipeList(username))
+            {
+                if (!DBQueryModel.DeleteRecipe(r.Name, username).Result)
+                {
+                    Console.WriteLine("Couldn't delete recipes");
+                    return false;
+                }
+            }
+            foreach (Cookbook c in CtrlModel.GetCookbookList(username))
+            {
+                if (!DBQueryModel.DeleteCookbook(c.Title, username).Result)
+                {
+                    Console.WriteLine("Couldn't delete cookbooks");
+                    return false;
+                }
+            }
+            foreach (IngredientDetail ing in CtrlModel.GetPantryItems(username))
+            {
+                if (!CtrlModel.RemoveItemFromPantry(ing.Name, username))
+                {
+                    Console.WriteLine("Couldn't delete ingredients from pantry");
+                    return false;
+                }
+            }
+
+            foreach (MealSet m in CtrlModel.GetAllMeals(username))
+            {
+                if (!DBQueryModel.DeleteMeal(username, m.Name).Result)
+                {
+                    {
+                        Console.WriteLine("Failed at deleting meals");
+                        return false;
+                    }
+                }
+
+                //Insert block for unscheduling recipes onto meal planner.
+
+                foreach (IngredientDetail ingD in CtrlModel.GetShoppingListItems(username))
+                {
+                    if (!DBQueryModel.RemoveFromShoppingList(username, ingD.Name).Result)
+                    {
+                        Console.WriteLine("Failed at deleting shoppinglist");
+                        return false;
+                    }
+                }
+            }
+        }
+        catch
+        {
+            return false;
+        }
+        return true;
     }
 
 }
