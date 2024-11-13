@@ -62,38 +62,6 @@ public class MealsController : Controller
         MealsCreateVM cavm = new MealsCreateVM { msg = msg, meal = new Models.MealSet(), UserRecipesNames = CtrlModel.GetRecipeNameList(at.username) };
         return View(cavm);
     }
-    [HttpPost]
-    public IActionResult Create(MealsCreateVM MealsVM)
-    {
-        Console.WriteLine("Creating Meal: \n" +
-            "Name: " + MealsVM.meal.Name);
-        AuthToken at;
-        bool test;
-        try
-        {
-            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-            Console.WriteLine("User " + at.username + " Deserialized");
-            test = CtrlModel.CreateMeal(at.username, MealsVM.meal);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error: Exception " + e);
-            test = false;
-        }
-
-        if (!test)
-        {
-            Console.WriteLine("Meal Creation Failure. Sending Error MEssage to View.");
-            return Create("Error, meal could not be created.");
-        }
-        // Uncomment the following line if you want to add to seed data
-        // RecipeSeedData.cookbooks.Add(newCookbook);
-
-        // For now, you can integrate with a database or just return a success view
-        // The index will display the new cookbook in the list, so it's fine.
-        Console.WriteLine("Meal creation success. Redirecting to Meal Index");
-        return RedirectToAction("Index"); // Redirect back to index
-    }
 
     [HttpPost]
     public IActionResult Create(MealsCreateVM mealsVM)
@@ -117,7 +85,9 @@ public class MealsController : Controller
         {
             return RedirectToAction("Index", "Meals");
         }
-        else return View(new MealsCreateVM { msg = "Error, meal could not be created." };)
+        else{
+            return View(new MealsCreateVM { msg = "Error, meal could not be created." });
+        }
     }
 
     public IActionResult Look(string id)
@@ -151,13 +121,13 @@ public class MealsController : Controller
         {
             try
             {
-                Console.WriteLine("Cookbook Title:" + cookbookTitle);
+                Console.WriteLine("Meal Title:" + mealName);
                 Console.WriteLine("Recipe to Remove: " + recipeToRemove);
                 at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
                 test = CtrlModel.RemoveFromMeal(at.username, mealName, recipeToRemove); //DBQueryModel.CookbookRemoveRecipe(at.username, ccvm.cookbook.Title, ccvm.recipeToRemove);
                 if (!test)
                 {
-                    return RedirectToAction("Index", new MealsIndexVM { msg = "Error, recipe could not be removed." };);
+                    return RedirectToAction("Index", new MealsIndexVM { msg = "Error, recipe could not be removed." });
                 }
             }
             catch (Exception e)
@@ -181,7 +151,7 @@ public class MealsController : Controller
                 test = CtrlModel.RemoveMeal(at.username, mealToRemove);
                 if (!test)
                 {
-                    return RedirectToAction("Index", new MealsIndexVM { msg = "Error, meal could not be removed." };);
+                    return RedirectToAction("Index", new MealsIndexVM { msg = "Error, meal could not be removed." });
                 }
             }
             catch (Exception e)
@@ -191,7 +161,7 @@ public class MealsController : Controller
         }
         else
         {
-            Console.WriteLine("Error: cookbookToRemove is blank.");
+            Console.WriteLine("Error: mealToRemove is blank.");
         }
         return RedirectToAction("Index");
     }

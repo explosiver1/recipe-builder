@@ -416,39 +416,6 @@ public static class CtrlModel
     {
         return DBQueryModel.GetMeal(username, mealName).Result; //SeedData.getMeal(mealName);
     }
-    public static bool CreateMeal(string username, MealSet m)
-    {
-        try
-        {
-            if (DBQueryModel.CreateMealNode(username, m).Result)
-            {
-                try
-                {
-                    foreach (string rName in m.RecipeNames)
-                    {
-                        if (!DBQueryModel.AddToMeal(username, m.Name, rName).Result)
-                        {
-                            Console.WriteLine("Adding " + rName + " to recipe failed.");
-                        }
-                    }
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine("Meal created, but recipes couldn't be added. Exception: " + e);
-                }
-            }
-            else
-            {
-                return false;
-            }
-            return true;
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("Error at CtrlModel.CreateMeal Exception: " + e);
-            return false;
-        }
-    }
 
     // Placeholder method to simulate saving MealPlanner to Neo4j
     public static void SaveMealPlannerToNeo4j(MealPlanner mealPlanner, string username)
@@ -725,13 +692,13 @@ public static class CtrlModel
     {
         try
         {
-            if (!DBQueryModel.CreateMealNode(string username, m).Result)
+            if (!DBQueryModel.CreateMealNode(username, meal).Result)
             {
                 return false;
             }
-            foreach (string recipe in m.Recipes)
+            foreach (string recipe in meal.RecipeNames)
             {
-                if (!DBQueryModel.ConnectMealNode(username, m.Name, recipe).Result)
+                if (!DBQueryModel.ConnectMealNode(username, meal.Name, recipe).Result)
                 {
                     return false;
                 }
