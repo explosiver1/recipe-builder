@@ -594,6 +594,7 @@ public static class CtrlModel
         catch (Exception e)
         {
             Console.WriteLine("Recipe could not be removed from the cookbook. Exception: " + e);
+            return false;
         }
         return true;
     }
@@ -686,4 +687,80 @@ public static class CtrlModel
         SeedData.SeedDatabase(userName);
         return;
     }
+
+    public static bool CreateMeal(string username, MealSet meal)
+    {
+        try
+        {
+            if (!DBQueryModel.CreateMealNode(string username, m).Result)
+            {
+                return false;
+            }
+            foreach (string recipe in m.Recipes)
+            {
+                if (!DBQueryModel.ConnectMealNode(username, m.Name, recipe).Result)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        catch
+        {
+            Console.WriteLine("Failed to create meal");
+            return false;
+        }
+    }
+
+    public static bool RemoveFromMeal(string username, string mealName, string recipeName)
+    {
+        try
+        {
+            if (!DBQueryModel.RemoveFromMeal(username, recipeName, mealName).Result)
+            {
+                throw new Exception("DBQueryModel.RemoveFromMeal returned false");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Recipe could not be removed from the meal. Exception: " + e);
+            return false;
+        }
+        return true;
+    }
+
+    public static bool AddToMeal(string username, string mealName, string recipeName)
+    {
+        try
+        {
+            if (!DBQueryModel.RemoveFromMeal(username, recipeName, mealName).Result)
+            {
+                throw new Exception("DBQueryModel.AddToMeal returned false");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Recipe could not be added tp the meal. Exception: " + e);
+            return false;
+        }
+        return true;
+    }
+
+    public static bool RemoveMeal(string username, string mealName)
+    {
+        try
+        {
+            if (!DBQueryModel.DeleteMeal(username, mealName).Result)
+            {
+                throw new Exception("DBQueryModel.DeleteMeal returned false");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Meal could not be removed. Exception: " + e);
+            return false;
+        }
+        return true;
+    }
+
 }
