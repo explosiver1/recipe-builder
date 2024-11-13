@@ -441,6 +441,7 @@ public class DBQueryModel
                 SET x.unit = $unit,
                     x.qualifier = $qualifier,
                     x.quantity = $quantity
+                    x.checked = true
                 RETURN COUNT(x) > 0
             ";
 
@@ -1683,8 +1684,8 @@ public class DBQueryModel
             MATCH (pantry:Pantry {name: $pantryName})
             MATCH (ingredient:Ingredient {name: $ingredientName})
             MATCH (pantry)-[x:STORES]->(ingredient)
-            DETACH DELETE (x)
-            RETURN COUNT(x) = 0
+            DELETE (x)
+            RETURN true
         ";
         var pantryName = username + "Pantry";
         var ingredientName = username + ingredient;
@@ -1842,7 +1843,7 @@ public class DBQueryModel
             MATCH (recipe:Recipe)
             WHERE recipe.name = $recipe
             MATCH (cookbook)-[x:CATALOGUES]->(recipe)
-            DETACH DELETE x
+            DELETE x
             RETURN COUNT(x) > 0
         ";
 
@@ -1866,42 +1867,27 @@ public class DBQueryModel
         }
     }
 
-    //Detaches and deletes a meal node
     public static async Task<bool> DeleteMeal(string username, string meal)
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
-
         var deleteQuery = @"
             MATCH (meal:Meal {name: $mealName})
-            WHERE NOT (:Recipe)-[:SCHEDULED_FOR]->(meal)
             DETACH DELETE meal
-            RETURN COUNT(meal) = 0 AS mealDeleted
         ";
-
-        var deleteRelationshipOnly = @"
-            MATCH (meal:Meal {name: $mealName})-[r:MADE_WITH]->(:Recipe)
-            DELETE r
-            RETURN true AS mealDeleted
+        var checkQuery = @"
+            MATCH (meal:Meal {name: $mealName})
+            RETURN COUNT(meal) = 0
         ";
-
         var mealName = username + meal;
         var session = driver.AsyncSession();
-
         try
         {
-            var result = await session.RunAsync(deleteQuery, new { mealName });
-            var record = await result.SingleAsync();
-
-            bool mealDeleted = record["mealDeleted"].As<bool>();
-
-            if (!mealDeleted)
-            {
-                // Delete only the MADE_WITH relationship if the meal node still exists
-                var relationshipResult = await session.RunAsync(deleteRelationshipOnly, new { mealName });
-                var relationshipRecord = await relationshipResult.SingleAsync();
-                mealDeleted = relationshipRecord["mealDeleted"].As<bool>();
-            }
-
+            // First, delete the meal node
+            await session.RunAsync(deleteQuery, new { mealName });
+            // Must check sperately if deleted since meal object won't get updated after deletion
+            var response = await session.RunAsync(checkQuery, new { mealName });
+            var record = await response.SingleAsync();
+            bool mealDeleted = record.Any() && record[0].As<bool>();
             return mealDeleted;
         }
         catch (Exception ex)
@@ -1961,7 +1947,7 @@ public class DBQueryModel
             MATCH (meal:Meal{name:$mealName})
             MATCH (recipe:Recipe{name:$recipeName})
             MATCH (meal)-[x:MADE_WITH]->(recipe)
-            DETACH DELETE (x)
+            DELETE (x)
         ";
         var checkQuery = @"
             MATCH (meal:Meal{name:$mealName})
@@ -2000,18 +1986,18 @@ public class DBQueryModel
 
     //Connects a recipe node to the meal plan node with a date parameter
     // Simultaneously creates the meal if it didn't exist already
-    public static async Task<bool> ScheduleRecipe(string username, string recipe, string meal, string date, int order)
+    public static async Task<bool> ScheduleRecipe(string username, string recipe, string date, int order)
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (recipe:Recipe{name:$recipeName})
-            MERGE (meal:Meal{name:$mealName})
-            MERGE (recipe)-[x:SCHEDULED_FOR]->(meal)
+            MERGE (mealPlan:MealPlan{name:$mealName})
+            MERGE (recipe)-[x:SCHEDULED_FOR]->(mealPlan)
             SET x.date = $date
                 x.order = $order
             RETURN COUNT(x) > 0
         ";
-        var mealName = username + meal;
+        var mealName = username + "MealPlan";
         var recipeName = username + recipe;
 
 
@@ -2019,7 +2005,7 @@ public class DBQueryModel
 
         try
         {
-            var response = await session.RunAsync(query, new { mealName, recipeName, date, order });
+            var response = await session.RunAsync(query, new { recipeName, mealName, date, order });
             var record = await response.SingleAsync();
 
             bool connectionExists = record.Any() && record[0].As<bool>();
@@ -2102,20 +2088,110 @@ public class DBQueryModel
     }
 
     //Detaches an ingredient from the shopping list.
-    public static async Task<bool> RemoveFromShoppingList(string username, string ingName)
+    public static async Task<bool> RemoveFromShoppingList(string username, string ingredient)
     {
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var query = @"
+            MATCH (ingredient:Ingredient {name: $ingredientName})
+            MATCH (:ShoppingList)-[x:PLANS_TO_BUY]->(ingredient)
+            DELETE (x)
+            RETURN true
+        ";
+        var ingredientName = username + ingredient;
 
-        return true;
+        var session = driver.AsyncSession();
+        try
+        {
+            Console.WriteLine("Executing Query...");
+            var response = await session.RunAsync(query, new { ingredientName });
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool removedFromShopList = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + removedFromShopList);
+            return removedFromShopList;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            // Ensures the session is closed
+            await session.CloseAsync();
+        }
     }
 
-    public static async Task<bool> CheckShoppingListItem(string username, string itemName)
+    // Essentially a edit function for the checked propery on the shoplist to ing relationship
+    public static async Task<bool> CheckShoppingListItem(string username, string ingredient)
     {
-        return true;
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var query = @"
+            MATCH (ingredient:Ingredient {name: $ingredientName})
+            MATCH (:ShoppingList)-[x:PLANS_TO_BUY]->(ingredient)
+            SET x.checked = true
+            RETURN true
+            ";
+
+        var ingredientName = username + ingredient;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            var response = await session.RunAsync(query, new { ingredientName });
+
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool shopListChecked = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + shopListChecked);
+            return shopListChecked;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
     }
 
-    public static async Task<bool> UncheckShoppingListItem(string username, string itemName)
+    public static async Task<bool> UncheckShoppingListItem(string username, string ingredient)
     {
-        return true;
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var query = @"
+            MATCH (ingredient:Ingredient {name: $ingredientName})
+            MATCH (:ShoppingList)-[x:PLANS_TO_BUY]->(ingredient)
+            SET x.checked = true
+            RETURN false
+            ";
+
+        var ingredientName = username + ingredient;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            var response = await session.RunAsync(query, new { ingredientName });
+
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool shopListChecked = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + shopListChecked);
+            return !shopListChecked;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
     }
 
     public static async Task<List<IngredientDetail>> GetShoppingList(string username)
