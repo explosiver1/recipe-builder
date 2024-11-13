@@ -2165,7 +2165,7 @@ public class DBQueryModel
         var query = @"
             MATCH (ingredient:Ingredient {name: $ingredientName})
             MATCH (:ShoppingList)-[x:PLANS_TO_BUY]->(ingredient)
-            SET x.checked = true
+            SET x.checked = false
             RETURN false
             ";
 
