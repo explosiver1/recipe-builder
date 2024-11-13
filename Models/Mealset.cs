@@ -73,5 +73,16 @@ namespace RecipeBuilder.Models
                 Console.WriteLine($"Simulating a connection between user '{user.Username}' and meal set '{Name}'.");
             } // end else
         } // end ConnectToUser
+        public void PrintAllStats()
+        {
+            Console.WriteLine("Meal Properties: \n" +
+            "Name: " + Name + "\n" +
+            "Description: " + Description + "\n" +
+            "RecipeNames: \n");
+            foreach (string r in RecipeNames)
+            {
+                Console.WriteLine("     Recipe: " + r);
+            }
+        }
     } // end MealSet
 } // end namespace

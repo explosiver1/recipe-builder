@@ -42,7 +42,8 @@ public class MealsController : Controller
     //    mealVM.meals = CtrlModel.getMeals();
     //    return View(mealVM);
     //}
-    public IActionResult Create()
+    [HttpGet]
+    public IActionResult Create(string msg = "")
     {
         //If user isn't logged in, don't allow access to this page - redirect to main site page
         AuthToken at;
@@ -58,8 +59,8 @@ public class MealsController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
-
-        return View();
+        MealsCreateVM cavm = new MealsCreateVM { msg = msg, meal = new Models.MealSet(), UserRecipesNames = CtrlModel.GetRecipeNameList(at.username) };
+        return View(cavm);
     }
 
     [HttpPost]
@@ -84,7 +85,9 @@ public class MealsController : Controller
         {
             return RedirectToAction("Index", "Meals");
         }
-        else return View(new MealsCreateVM { msg = "Error, meal could not be created." };)
+        else{
+            return View(new MealsCreateVM { msg = "Error, meal could not be created." });
+        }
     }
 
     public IActionResult Look(string id)
@@ -118,13 +121,13 @@ public class MealsController : Controller
         {
             try
             {
-                Console.WriteLine("Cookbook Title:" + cookbookTitle);
+                Console.WriteLine("Meal Title:" + mealName);
                 Console.WriteLine("Recipe to Remove: " + recipeToRemove);
                 at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
                 test = CtrlModel.RemoveFromMeal(at.username, mealName, recipeToRemove); //DBQueryModel.CookbookRemoveRecipe(at.username, ccvm.cookbook.Title, ccvm.recipeToRemove);
                 if (!test)
                 {
-                    return RedirectToAction("Index", new MealsIndexVM { msg = "Error, recipe could not be removed." };);
+                    return RedirectToAction("Index", new MealsIndexVM { msg = "Error, recipe could not be removed." });
                 }
             }
             catch (Exception e)
@@ -148,7 +151,7 @@ public class MealsController : Controller
                 test = CtrlModel.RemoveMeal(at.username, mealToRemove);
                 if (!test)
                 {
-                    return RedirectToAction("Index", new MealsIndexVM { msg = "Error, meal could not be removed." };);
+                    return RedirectToAction("Index", new MealsIndexVM { msg = "Error, meal could not be removed." });
                 }
             }
             catch (Exception e)
@@ -158,7 +161,7 @@ public class MealsController : Controller
         }
         else
         {
-            Console.WriteLine("Error: cookbookToRemove is blank.");
+            Console.WriteLine("Error: mealToRemove is blank.");
         }
         return RedirectToAction("Index");
     }

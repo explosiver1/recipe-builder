@@ -692,13 +692,13 @@ public static class CtrlModel
     {
         try
         {
-            if (!DBQueryModel.CreateMealNode(string username, m).Result)
+            if (!DBQueryModel.CreateMealNode(username, meal).Result)
             {
                 return false;
             }
-            foreach (string recipe in m.Recipes)
+            foreach (string recipe in meal.RecipeNames)
             {
-                if (!DBQueryModel.ConnectMealNode(username, m.Name, recipe).Result)
+                if (!DBQueryModel.ConnectMealNode(username, meal.Name, recipe).Result)
                 {
                     return false;
                 }
