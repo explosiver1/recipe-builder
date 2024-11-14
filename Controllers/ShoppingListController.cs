@@ -77,13 +77,13 @@ public class ShoppingListController : Controller
             return View(ingredient);
         }
 
-        CtrlModel.AddItemToShoppingList(ingredient); // Method to add ingredient to shopping list
+        CtrlModel.AddItemToShoppingList(at.username, ingredient); // Method to add ingredient to shopping list
         return RedirectToAction("Index");
     }
 
     // Remove method: Removes an item from the shopping list
     [HttpPost]
-    public IActionResult Remove(IngredientDetail ingredient)
+    public IActionResult Remove(string ingredientName)
     {
         AuthToken at;
         try
@@ -98,14 +98,14 @@ public class ShoppingListController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
-        
-        var item = CtrlModel.GetIngredientDetailFromShoppingList(ingredient, at.username);
-        if (item == null)
-        {
-            return NotFound();
-        }
 
-        CtrlModel.RemoveItemFromShoppingList(item);
+        //var item = CtrlModel.GetIngredientDetailFromShoppingList(ingredient, at.username);
+        //if (item == null)
+        //{
+        //    return NotFound();
+        //}
+
+        bool tmp = CtrlModel.RemoveItemFromShoppingList(at.username, ingredientName);
         return RedirectToAction("Index");
     }
 
@@ -126,13 +126,39 @@ public class ShoppingListController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
-        var ingredient = CtrlModel.GetIngredientByNameFromShoppingList(ingredientName, at.username);
-        if (ingredient == null)
-        {
-            return NotFound();
-        }
+        //var ingredient = CtrlModel.GetIngredientByNameFromShoppingList(ingredientName, at.username);
+        //if (ingredient == null)
+        //{
+        //    return NotFound();
+        //}
 
-        CtrlModel.CheckItemOffShoppingList(ingredient); // Method to check off item
+        bool tmp = CtrlModel.CheckItemOffShoppingList(at.username, ingredientName); // Method to check off item
+        return RedirectToAction("Index");
+    }
+
+    [HttpPost]
+    public IActionResult UnCheckItemOff(string ingredientName)
+    {
+        AuthToken at;
+        try
+        {
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            if (!at.Validate())
+            {
+                throw new Exception("Authentication Expired. Please login again.");
+            }
+        }
+        catch (Exception e)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+        //var ingredient = CtrlModel.GetIngredientByNameFromShoppingList(ingredientName, at.username);
+        //if (ingredient == null)
+        //{
+        //    return NotFound();
+        //}
+
+        bool tmp = CtrlModel.UnCheckItemOffShoppingList(at.username, ingredientName); // Method to check off item
         return RedirectToAction("Index");
     }
 
@@ -159,7 +185,7 @@ public class ShoppingListController : Controller
         }
 
         CtrlModel.AddItemToPantry(ingredient, at.username);
-        CtrlModel.RemoveItemFromShoppingList(ingredient);
+        CtrlModel.RemoveItemFromShoppingList(at.username, ingredient.Name);
         return RedirectToAction("Index");
     }
 }
