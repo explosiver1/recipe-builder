@@ -27,21 +27,18 @@ public static class SeedData
     public static Ingredient Garlic = new Ingredient { Name = "Garlic" };
     public static Ingredient Worcestershire = new Ingredient { Name = "Worcestershire Sauce" };
     public static Ingredient Rosemary = new Ingredient { Name = "Rosemary" };
-    public static Ingredient WhiteRiceCooked = new Ingredient { Name = "WhiteRiceCooked" };
-    public static Ingredient PeasAndCarrots = new Ingredient { Name = "PeasAndCarrots" };
-    public static Ingredient MincedGinger = new Ingredient { Name = "MincedGinger" };
-    public static Ingredient SoySauce = new Ingredient { Name = "SoySauce" };
-    public static Ingredient BlackSoySauce = new Ingredient { Name = "BlackSoySauce" };
+    public static Ingredient WhiteRiceCooked = new Ingredient { Name = "White Rice Cooked" };
+    public static Ingredient PeasAndCarrots = new Ingredient { Name = "Peas And Carrots" };
+    public static Ingredient MincedGinger = new Ingredient { Name = "Minced Ginger" };
+    public static Ingredient SoySauce = new Ingredient { Name = "Soy Sauce" };
+    public static Ingredient BlackSoySauce = new Ingredient { Name = "Black Soy Sauce" };
     public static Ingredient Mirin = new Ingredient { Name = "Mirin" };
     public static Ingredient Potatoes = new Ingredient { Name = "Potatoes" };
     public static Ingredient Milk = new Ingredient { Name = "Milk" };
     public static Ingredient BlackPepper = new Ingredient { Name = "Black Pepper" };
     public static Ingredient Gravy = new Ingredient { Name = "Gravy" };
-    public static Ingredient BeefRoast = new Ingredient { Name = "BeefRoast" };
+    public static Ingredient BeefRoast = new Ingredient { Name = "Beef Roast" };
     public static Ingredient Onion = new Ingredient { Name = "Onion" };
-    // public static Ingredient Lentils = new Ingredient{Name="Lentils", Description="Brown or Green", Unit=""};
-    // public static Ingredient Name = new Ingredient{Name="", Description=""};
-    //public static Ingredient Name = new Ingredient{Name="", Description="", Unit=""};
 
     /* INGREDIENT LIST */
     public static List<Ingredient> myIngredients = new List<Ingredient> { Sugar, Egg, BrownSugar, PowderedSugar, Flour, Vanilla, BakingSoda, BakingPowder, Butter, Oil, 
@@ -409,30 +406,46 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
     public static List<Cookbook> myCookbooks = [CookiesCookbook, DessertsCookbook, ChocolateCookbook, Sides, Entrees];
     
     /* MEALS DATA */
-    public static List<MealSet> meals = [
-        new MealSet{
-        Name = "Cookies",
-        Description = "Cookie Monster's Favorite Meal.",
-        Recipes = [ChocolateChipCookies, SugarCookies]
-        },
-        new MealSet{
-        Name = "Chocolate Cookies",
-        Description = "Cookie Monster's Second Favorite Meal.",
-        Recipes = [ChocolateChipCookies]
-        }];
+    
     public static MealSet cookieMeal = new MealSet
     {
         Name = "Cookies",
         Description = "Cookie Monster's Favorite Meal.",
-        Recipes = [ChocolateChipCookies, SugarCookies]
+        Recipes = [ChocolateChipCookies, SugarCookies],
+        RecipeNames = [ChocolateChipCookies.Name, SugarCookies.Name]
     };
 
     public static MealSet cookieMeal2 = new MealSet
     {
         Name = "Chocolate Cookies",
         Description = "Cookie Monster's Second Favorite Meal.",
-        Recipes = [ChocolateChipCookies]
+        Recipes = [ChocolateChipCookies],
+        RecipeNames = [ChocolateChipCookies.Name]
     };
+
+    public static MealSet roastBeefMeal = new MealSet
+    {
+        Name = "Roast Beef & Gravy Dinner",
+        Description = "Major Comfort Food",
+        Recipes = [RoastBeefwGravy, MashedPotatoes, ButteredPeasAndCarrots],
+        RecipeNames = [RoastBeefwGravy.Name, MashedPotatoes.Name, ButteredPeasAndCarrots.Name]
+    };
+
+    public static List<MealSet> meals = [
+        new MealSet{
+        Name = "Cookies",
+        Description = "Cookie Monster's Favorite Meal.",
+        Recipes = [ChocolateChipCookies, SugarCookies],
+        RecipeNames = [ChocolateChipCookies.Name, SugarCookies.Name]
+        },
+        new MealSet{
+        Name = "Chocolate Cookies",
+        Description = "Cookie Monster's Second Favorite Meal.",
+        Recipes = [ChocolateChipCookies],
+        RecipeNames = [ChocolateChipCookies.Name]
+        },
+        roastBeefMeal
+        ];
     /* USER DATA */
     // public static ;
 
@@ -745,6 +758,8 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
     }
     public static void TestMealsData()
     {
+        Console.WriteLine();
+        Console.WriteLine();
         Console.WriteLine("Meals Data Test");
         var meals = SeedData.getMeals();
         foreach (var meal in meals)
@@ -752,6 +767,7 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
             Console.WriteLine(meal.Name);
             foreach (var recipe in meal.Recipes)
             {
+                Console.WriteLine();
                 Console.WriteLine(recipe.Name);
                 foreach (var ingredient in recipe.Ingredients)
                 {
@@ -760,6 +776,7 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
                     {
                         Console.WriteLine(" (" + ingredient.Qualifier + ")");
                     }
+                    else { Console.WriteLine(); }
 
                 }
             }
@@ -768,6 +785,8 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
 
     public static void TestPantryData()
     {
+        Console.WriteLine();
+        Console.WriteLine();
         Console.WriteLine("Pantry Data Test");
         foreach (var ingredient in SeedData.GetPantryItems())
         {
@@ -777,6 +796,8 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
 
     public static void TestShoppingListData()
     {
+        Console.WriteLine();
+        Console.WriteLine();
         Console.WriteLine("Shopping List Data Test");
         foreach (var ingredient in SeedData.GetShoppingListItems())
         {
@@ -786,6 +807,8 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
 
     public static void TestMealPlannerData()
     {
+        Console.WriteLine();
+        Console.WriteLine();
         Console.WriteLine("Meal Planner Data Test");
         foreach (var dayMP in SeedData.GetMealsThisWeek())
         {

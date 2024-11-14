@@ -11,7 +11,7 @@ public class TestViewsController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        //SeedData.TestDataAccess();
+        SeedData.TestDataAccess();
         return View();
     }
 
