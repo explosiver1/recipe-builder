@@ -726,7 +726,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new {username, mealName, description=meal.Description });
+            var response = await session.RunAsync(query, new { username, mealName, description = meal.Description });
 
             Console.WriteLine($"Meal node {mealName} created!");
 
@@ -1588,9 +1588,10 @@ public class DBQueryModel
     //Returns list of all meals.
     public static async Task<List<MealSet>> GetMeals(string username)
     {
+        Console.WriteLine("Entering GetMeals");
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
-            MATCH (:User {username: $username})-[]->(rec:Recipe)<-[x:MADE_WITH]-(m:Meal)
+            MATCH (:User {username: $username})-[:OWNS]->(m:Meal)
             RETURN m
         ";
 
@@ -1626,11 +1627,12 @@ public class DBQueryModel
     //Returns list of all meals.
     public static async Task<MealSet> GetMeal(string username, string mealName)
     {
+        Console.WriteLine("Entering GetMeal");
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name = username + mealName;
         var query = @"
-        MATCH (:User {username: $username})-[]->(rec:Recipe)<-[x:MADE_WITH]-(m:Meal)
-        WHERE m.name = $name
+        MATCH (:User {username: $username})-[:OWNS]->(m:Meal {name: $name})
+        MATCH (rec:Recipe)<-[:MADE_WITH]-(m)
         RETURN rec
         ";
 
@@ -1650,6 +1652,7 @@ public class DBQueryModel
             {
                 Recipe r = GetRecipe(username, record["rec"].As<INode>()["name"].As<string>()).Result;
                 meal.Recipes.Add(r);
+                Console.WriteLine("Retrieved recipe " + r.Name + " from meal + " + mealName);
             });
         }
         catch (Exception e)
