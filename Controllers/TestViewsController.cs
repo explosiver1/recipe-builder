@@ -11,19 +11,17 @@ public class TestViewsController : Controller
     [HttpGet]
     public IActionResult Index()
     {
+        //SeedData.TestDataAccess();
         return View();
     }
 
     [HttpPost]
     public IActionResult Index(TestViewModel model)
-    {
+    {      
         CtrlModel.ResetTesterAccount(model.TestUserName);
         return RedirectToAction("Index", "Home");
     }
-    // public IActionResult ReturnHome()
-    // {
-    //     return RedirectToAction("Index", "Home");
-    // }
+
     // public IActionResult Results(TestViewModel data)
     // {
     //     // data.fName ="Sam";
