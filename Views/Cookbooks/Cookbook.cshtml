@@ -50,7 +50,9 @@
     <hr class="rounded">
     <a asp-controller="Cookbooks" asp-action=Edit asp-route-cookbookName=@Model.cookbook.Title class="btn btn-primary">Edit Cookbook</a>
 </div>
-
+<div class="text-center">
+    <p class="flex-grow-1" style="margin: 0; color: #4A743E;">@Model.cookbook.Description</p>
+</div><br>
 <div class="text-center">
     @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for search*@
     <div class="form-group">
@@ -73,7 +75,7 @@
                         </div>
                         <div class="button-container">
                             <a asp-controller="Recipe" asp-action=Look asp-route-cookbookName=@Model.cookbook.Title asp-route-recipeName=@recipeName class="btn btn-primary">View</a>
-                        </div>
+                        </div><br>
                         <form method="post" asp-controller="Cookbooks" asp-action="RemoveRecipe">
                                 <input type="hidden" name="cookbookTitle" value="@recipeName"/>
                                 <input type="hidden" name="cookbookTitle" value="@Model.cookbook.Title"/>

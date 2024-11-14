@@ -16,7 +16,7 @@
         justify-content: center;
         align-items: center;
         transition: background-color 0.2s;
-        margin-left: 10px; 
+        margin-left: 10px;
     }
 
     .plus-button:hover {
@@ -80,17 +80,116 @@
         </div>
 
         <div class="form-group">
-            <label>Ingredients (one per line):</label>
-            <textarea asp-for="IngredientsInput" class="form-control"></textarea>
-            <span asp-validation-for="IngredientsInput" class="text-danger"></span>
+            <label>Cook Time:</label>
+            <textarea asp-for="recipe.CookTime" class="form-control"></textarea>
+            <p>mins</p>
+            <br>
         </div>
 
         <div class="form-group">
-            <label>Instructions (one per line):</label>
-            <textarea asp-for="InstructionsInput" class="form-control"></textarea>
-            <span asp-validation-for="InstructionsInput" class="text-danger"></span>
+            <label>Prep Time:</label>
+            <textarea asp-for="recipe.PrepTime" class="form-control"></textarea>
+            <p>mins</p>
+            <br>
+        </div>
+
+        <div class="form-group">
+
+            <table id="ingredientTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Unit</th>
+                        <th>Qualifier</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.IngredientsInput.Count; i++)
+                    {
+                        <tr>
+                            <td>
+                                <input type="text" name="IngredientsInput[@i].Name" value="@Model.IngredientsInput[i].Name" />
+                            </td>
+                            <td>
+                                <input type="text" name="IngredientsInput[@i].Quantity" value="@Model.IngredientsInput[i].Quantity" />
+                            </td>
+                            <td>
+                                <input type="text" name="IngredientsInput[@i].Unit" value="@Model.IngredientsInput[i].Unit" />
+                            </td>
+                            <td>
+                                <input type="text" name="IngredientsInput[@i].Qualifier" value="@Model.IngredientsInput[i].Qualifier" />
+                            </td>
+                            <td>
+                                <button type="button" onclick="removeIngredientRow(this)">Remove</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+            <div>
+                <span class="plus-button" onclick="addIngredientRow()">+</span>
+            </div><br>
+        </div>
+
+        <div class="form-group">
+            <div id="instructions-container">
+                <table id="instructionTable">
+                    <thead>
+                    <tr>
+                        <th>Instruction</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < @Model.InstructionsInput.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="text" name="InstructionsInput[@i]" value="@Model.InstructionsInput[i]" />
+                                </td>
+                                <td>
+                                    <button type="button" onclick="removeInstructionRow(this)">Remove</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            </div>
+            <div>
+                <span class="plus-button" onclick="addInstructionRow()">+</span>
+            </div><br>
         </div>
 
         <button type="submit" class="btn btn-primary">Save</button>
     </form>
 </div>
+<script>
+    function addIngredientRow(){
+        var rowCount = document.querySelectorAll('#ingredientTable tbody tr').length;
+        var newRow = document.createElement('tr');
+
+        newRow.innerHTML = `
+                <td><input type="text" name="IngredientsInput[${rowCount}].Name" /></td>
+                <td><input type="text" name="IngredientsInput[${rowCount}].Quantity" /></td>
+                <td><input type="text" name="IngredientsInput[${rowCount}].Unit" /></td>
+                <td><input type="text" name="IngredientsInput[${rowCount}].Qualifier" /></td>
+                <td><button type="button" onclick="removeIngredientRow(this)">Remove</button></td>
+            `;
+        document.getElementById("ingredientTable").getElementsByTagName('tbody')[0].appendChild(newRow);
+    }
+
+    function addInstructionRow(){
+        var rowCount = document.querySelectorAll('#instructionTable tbody tr').length;
+        var newRow = document.createElement('tr');
+
+        newRow.innerHTML = `
+            <td><input type="text" name="InstructionsInput[${rowCount}]" /></td>
+            <td><button type="button" onclick="removeInstructionRow(this)">Remove</button></td>
+        `;
+        document.getElementById("instructionTable").getElementsByTagName('tbody')[0].appendChild(newRow);
+    }
+</script>

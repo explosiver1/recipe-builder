@@ -91,6 +91,66 @@ public class MealsController : Controller
         }
     }
 
+    [HttpGet]
+    public IActionResult Edit(string mealName)
+    {
+        // Uncomment the following line if you want to use seed data
+        // var cookbook = RecipeSeedData.cookbooks.FirstOrDefault(c => c.Title == cookbookName);
+        //If user isn't logged in, don't allow access to this page - redirect to main site page
+        AuthToken at;
+        try
+        {
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            if (!at.Validate())
+            {
+                throw new Exception("Authentication Expired. Please login again.");
+            }
+        }
+        catch (Exception e)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        MealSet meal;
+
+        try
+        {
+            meal = DBQueryModel.GetMeal(at.username, mealName).Result;
+        }
+        catch (Exception e)
+        {
+            meal = new MealSet();
+            meal.Name = "Error, cookbook " + mealName + "could not be retrieved. Exception: " + e;
+        }
+
+        var viewModel = new MealsEditVM
+        {
+            mealName = meal.Name,
+            mealDescription = meal.Description,
+            recipeNew = new Recipe(),
+            mealRecipes = meal.RecipeNames,
+            UserRecipesNames = CtrlModel.GetRecipeNameList(at.username)
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    public IActionResult Edit(MealsEditVM viewModel)
+    {
+        MealSet meal = new MealSet { Name = viewModel.mealName };
+
+        if (meal == null)
+        {
+            return NotFound();
+        }
+
+        // Update the Meal title
+        meal.Name = viewModel.mealName;
+
+        return RedirectToAction("Index");
+    }
+
     public IActionResult Look(string id)
     {
         //If user isn't logged in, don't allow access to this page - redirect to main site page

@@ -74,15 +74,18 @@
                     </div>
                 </div>
                 <div class="button-container">
-                    <a asp-action="Look" asp-route-id="@meal.Name" class="btn btn-custom">@meal.Name</a>
-                </div>
-
-            </div><form method="post" asp-controller="Meals" asp-action="RemoveMeal" >
-                                <input type="hidden" name="mealToRemove" value="@meal.Name"/>
-                                <div class="button-container">
-                                    <button type="submit">Remove Meal</button>
-                                </div>
-                    </form>
+                    <a asp-action="Look" asp-route-id="@meal.Name" class="btn btn-custom">View @meal.Name</a>
+                </div><br>
+                <div class="button-container">
+                    <a asp-action="Edit" asp-route-id="@meal.Name" class="btn btn-custom">Edit @meal.Name</a>
+                </div><br>
+            </div>
+            <form method="post" asp-controller="Meals" asp-action="RemoveMeal" >
+                <input type="hidden" name="mealToRemove" value="@meal.Name"/>
+                <div class="button-container">
+                    <button type="submit">Remove Meal</button>
+                </div><br>
+            </form>
         }
         <p> Here we display the all the meals</p>
     }

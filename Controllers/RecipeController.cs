@@ -289,7 +289,7 @@ namespace RecipeBuilder.Controllers
 
         // Edit method (GET): Display the form to edit an existing recipe
         [HttpGet]
-        public IActionResult Edit(string cookbookName, string recipeName)
+        public IActionResult Edit(string recipeName)
         {
             AuthToken at;
             try
@@ -305,7 +305,7 @@ namespace RecipeBuilder.Controllers
                 return RedirectToAction("Index", "Home");
             }
             // Get the recipe data (replace with actual fetch logic)
-            var recipe = SeedData.GetRecipe(recipeName);
+            Recipe recipe = DBQueryModel.GetRecipe(at.username, recipeName).Result;
 
             if (recipe == null)
             {
@@ -316,10 +316,10 @@ namespace RecipeBuilder.Controllers
             {
                 recipe = recipe,
                 TagsInput = string.Join(", ", recipe.Tags),
-                IngredientsInput = string.Join("\n", recipe.Ingredients.Select(i => $"{i.Quantity} {i.Unit} {i.Ingredient.Name}")),
+                IngredientsInput = recipe.Ingredients,
                 ServingSizeInput = string.Empty, //recipe.servingSize != null ? string.Join(", ", recipe.servingSize.Select(kv => $"{kv.Key}, {kv.Value}")) : "",
                 EquipmentInput = string.Join(", ", recipe.Equipment),
-                InstructionsInput = string.Join("\n", recipe.Instructions)
+                InstructionsInput = recipe.Instructions
             };
 
             return View(viewModel);

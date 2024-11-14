@@ -176,7 +176,10 @@ public class CookbooksController : Controller
         var viewModel = new CookbooksEditVM
         {
             cookbookName = cb.Title,
-            recipe = new Recipe()
+            recipeNew = new Recipe(),
+            cookbookDescription = cb.Description,
+            cookbookRecipes = cb.RecipeNames,
+            UserRecipesNames = CtrlModel.GetRecipeNameList(at.username)
         };
 
         return View(viewModel);

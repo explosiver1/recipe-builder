@@ -7,33 +7,79 @@
 <div class="text-center">
     <h2 class="display-4">Edit Cookbook</h2>
 </div>
-@*<form asp-action="" method="post"> *need to know which controller is used*@
-<div class="form-group">
-    <label for="CookbookName">Cookbook Name: @Model.cookbookName</label>
-</div>
-
-<div class="form-group">
-    <label for="Description">Description:</label>
-    <textarea class="form-control" id="Description" name="Description" required></textarea>
-</div>
-
-@if (@Model.cookbookName != null)
-{
+<form asp-controller="Cookbooks" asp-action="Edit" method="post">
     <div class="form-group">
-        <label>Recipes Added:</label>
-        <div class="card mb-3">
-            <div class="card-body">
-                <h5 class="card-title">@Model.recipe.Name</h5>
-                <p>Work in progress</p>
-                <p class="card-text">@Model.recipe.Difficulty</p>
-                @*Need format to remove recipe*@
-            </div>
-        </div>
+        <label for="CookbookName">Cookbook Name: @Model.cookbookName</label>
     </div>
-}
-<div class="form-group">
-    <label for="AddedRecipes">Add Recipes:</label>
-    <a asp-controller="Recipe" asp-action="Select">Select Recipe</a>
-</div>
-<button type="submit" class="btn btn-success">Save Cookbook</button>
-@*</form>*@
+
+    <div class="form-group">
+        <label for="Description">Description:</label>
+        <textarea class="form-control" id="CookbookDescription" asp-for="@Model.cookbookDescription"></textarea><br>
+    </div>
+
+    <div>
+        <label for="AddedRecipes">Add Recipes:</label>
+    </div>
+    @foreach(var recipe in Model.cookbookRecipes)
+    {
+        <p>@recipe</p>
+    }
+    @if(Model.UserRecipesNames != null && Model.UserRecipesNames.Any())
+    {
+        <div class="form-group">
+            <div id="recipe-container">
+                <table id="recipeTable">
+                    <thead>
+                        <tr>
+                            <th>Recipes</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.UserRecipesNames.Count; i++)
+                        {
+                            <tr>
+                                <td>
+                                    <select name="cookbook.RecipeNames[@i]" value="@Model.recipeNew">
+                                        <option value="" disabled selected>Select a Recipe</option>
+                                        @foreach(string recipeName in Model.UserRecipesNames)
+                                        {
+                                            <option value="@recipeName">@recipeName</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <button type="button" onclick="removeRecipeRow(this)">Remove</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <div>
+                <span class="plus-button" onclick="addRecipeRow()">+</span>
+            </div><br>
+        </div>
+        }
+        else
+        {
+            <p>No Recipes to Select</p>
+        }
+    <button type="submit" class="btn btn-success">Save Cookbook</button>
+</form>
+<script>
+    function addRecipeRow(){
+        var rowCount = document.querySelectorAll('#recipeTable tbody tr').length;
+        var initialDropdown = document.querySelector('#recipeTable tbody tr').outerHTML;
+        var newRow = document.createElement('tr');
+
+        newRow.innerHTML = initialDropdown;
+
+        // Update the 'name' attribute in the new row's dropdown to reflect the current index
+        var selectElement = newRow.querySelector('select');
+        selectElement.setAttribute('name', `newcookbook.RecipeNames[${rowCount}]`);
+
+        document.getElementById("recipeTable").getElementsByTagName('tbody')[0].appendChild(newRow);
+    }
+</script>
