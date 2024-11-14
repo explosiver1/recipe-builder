@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace RecipeBuilder.Models
 {
     public class IngredientDetail
@@ -7,6 +9,8 @@ namespace RecipeBuilder.Models
         public string Qualifier { get; set; }
         public double Quantity { get; set; }
         public string Unit { get; set; }
+
+        [Required(ErrorMessage = "Ingredient name is required.")]
         public string Name { get; set; }
 
         // Blank constructor initializing default values

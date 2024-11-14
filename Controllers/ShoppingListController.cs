@@ -28,36 +28,36 @@ public class ShoppingListController : Controller
 
         ShoppingListIndexVM viewModel = new ShoppingListIndexVM
         {
-            items = CtrlModel.GetShoppingListItems(at.username) // Assume this returns a list of all shopping list items
+            ABCShoppingList = CtrlModel.GetABCListDict(CtrlModel.GetShoppingListItems(at.username))
         };
         return View(viewModel);
     }
 
-    // Add method (GET): Display form to add a new item to the shopping list
-    [HttpGet]
-    public IActionResult Add()
-    {
-        //If user isn't logged in, don't allow access to this page - redirect to main site page
-        AuthToken at;
-        try
-        {
-            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-            if (!at.Validate())
-            {
-                throw new Exception("Authentication Expired. Please login again.");
-            }
-        }
-        catch (Exception e)
-        {
-            return RedirectToAction("Index", "Home");
-        }
+    //// Add method (GET): Display form to add a new item to the shopping list
+    //[HttpGet]
+    //public IActionResult Add()
+    //{
+    //    //If user isn't logged in, don't allow access to this page - redirect to main site page
+    //    AuthToken at;
+    //    try
+    //    {
+    //        at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+    //        if (!at.Validate())
+    //        {
+    //            throw new Exception("Authentication Expired. Please login again.");
+    //        }
+    //    }
+    //    catch (Exception e)
+    //    {
+    //        return RedirectToAction("Index", "Home");
+    //    }
 
-        return View();
-    }
+    //    return View();
+    //}
 
     // Add method (POST): Handles form submission to add a new item to the shopping list
     [HttpPost]
-    public IActionResult Add(IngredientDetail ingredient)
+    public IActionResult AddItemToShoppingList(IngredientDetail item)
     {
         AuthToken at;
         try
@@ -74,10 +74,10 @@ public class ShoppingListController : Controller
         }
         if (!ModelState.IsValid)
         {
-            return View(ingredient);
+            return RedirectToAction("Index");
         }
 
-        CtrlModel.AddItemToShoppingList(at.username, ingredient); // Method to add ingredient to shopping list
+        CtrlModel.AddItemToShoppingList(at.username, item); // Method to add ingredient to shopping list
         return RedirectToAction("Index");
     }
 
