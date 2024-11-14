@@ -446,15 +446,25 @@ public static class CtrlModel
     {
         List<IngredientDetail> ABCList = myList.OrderBy(x => x.Name).ToList();
         Dictionary<string, List<IngredientDetail>> myDictionary = new Dictionary<string, List<IngredientDetail>>();
+        
         foreach (IngredientDetail item in ABCList)
         {
-            string firstLetter = item.Name[0].ToString().ToUpper();
-
-            if (!myDictionary.ContainsKey(firstLetter))
+            if (item.Name.Length > 0)
             {
-                myDictionary.Add(firstLetter, new List<IngredientDetail>());
+                char firstLetter = item.Name[0];
+                string firstLetterStr = firstLetter.ToString();
+
+                if (Char.IsLetter(firstLetter))
+                {
+                    firstLetterStr = firstLetterStr.ToUpper();
+                }
+
+                if (!myDictionary.ContainsKey(firstLetterStr))
+                {
+                    myDictionary.Add(firstLetterStr, new List<IngredientDetail>());
+                }
+                myDictionary[firstLetterStr].Add(item);
             }
-            myDictionary[firstLetter].Add(item);
         }
         return myDictionary;
     }

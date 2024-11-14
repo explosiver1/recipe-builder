@@ -66,6 +66,10 @@
         .alphabet a:hover {
             color: #96AE6D;
         }
+
+        .smallInput {
+            width: 80px;
+        }
     </style>
     <script>
         // remove an item from the pantry list (client-side only)
@@ -89,6 +93,7 @@
             });
         }
 
+        // Edit item - client side only (changes text to text boxes & edit button to save)
         function editRow(button)
         {
             // Get row of button
@@ -106,12 +111,13 @@
             button.setAttribute('onclick', 'saveRow(this)');
         }
 
+        // Client side only, Needs to be updated to save to server side - should have cancel button added
         function saveRow(button)
         {
              // Get row of button
             var row = button.closest('tr');
 
-            // Change each cell to a textbox
+            // Change each cell to text with updated values
             var cells = row.querySelectorAll('.editable');
             cells.forEach(function(cell)
             {
@@ -123,32 +129,20 @@
             button.textContent = 'Edit';
             button.setAttribute('onclick', 'editRow(this)');
         }
-
-        function scrollToIngredient() {
-            const searchInput = document.getElementById('ingredientSearch').value.toLowerCase();
-            const items = document.querySelectorAll('.ingredients-list li a');
-
-            items.forEach(item => {
-                if (item.textContent.toLowerCase().includes(searchInput)) {
-                    const ingredientSection = item.closest('ul').previousElementSibling; // get following header (h2)
-                    ingredientSection.scrollIntoView({ behavior: 'smooth' });
-                    return; // exit loop
-                }
-            });
-        }
     </script>
 </head>
 
 <body>
+    <!-- Page Heading -->
     <div class="text-center">
         <h1 class="display-4">Pantry</h1>
         <br>
     </div>
 
     <!-- Add to pantry 'form' -->
-    <div id="pantryContainer" >
+    <div id="pantryContainer" class="table-responsive">
         <form asp-action="AddItemToPantry" method="post">
-            <table>
+            <table class="table">
                 <thead>
                     <tr>
                         <th>Item Name</th>
@@ -160,9 +154,9 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="text" name="newIngredient.Name" /></td>
-                        <td><input type="text" name="newIngredient.Quantity" /></td>
-                        <td><input type="text" name="newIngredient.Unit" /></td>
+                        <td><input type="text" name="newIngredient.Name" required /></td>
+                        <td><input class="smallInput" type="text" name="newIngredient.Quantity" /></td>
+                        <td><input class="smallInput" type="text" name="newIngredient.Unit" /></td>
                         <td><input type="text" name="newIngredient.Qualifier" /></td>
                         <td><button type="submit" class="btn btn-custom">Add Item</button></td>
                     </tr>
@@ -172,11 +166,10 @@
         </form>
     </div>
 
-    <br>
+    <br />
 
     <!-- View current pantry items -->
     <div id="pantryContainer">
-        @* <br> *@
         <!-- Search Bar -->
         <div class="text-center">
             <div class="search-container">
@@ -193,11 +186,11 @@
         </div>
 
         <!-- Current Pantry Items -->
-        <div>
+        <div class="table-responsive">
              @foreach (var ABCList in @Model.ABCPantry)
             {
                 <h2 id="@ABCList.Key">@ABCList.Key</h2>
-                <table>
+                <table class="table">
                     <thead>
                         <tr>
                             <th>Item Name</th>
@@ -205,13 +198,14 @@
                             <th>Unit</th>
                             <th>Description</th>
                             <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                 @foreach (var item in ABCList.Value)
                 {
                     <tbody>
                         <tr>
-                            <td class="editable">@item.Name</td>
+                            <td class="editable"><a href="/Recipe/Index/@item.Name">@item.Name</a></td>
                             <td class="editable">@item.Quantity</td>
                             <td class="editable">@item.Unit</td>
                             <td class="editable">@item.Qualifier</td>
@@ -226,21 +220,6 @@
                 </table>
             }
         </div>
-
-                @* <li>
-                    @item.Name
-
-                    <!-- Form to add item to the shopping list -->
-                    <form asp-controller="Pantry" asp-action="AddItemToShoppingList" method="post">
-                        <input type="hidden" name="itemName" value="@item.Name" />
-                        <button type="submit">Add Item To Shopping List</button>
-                    </form>
-
-                    <!-- Client-side remove functionality -->
-                    <a href="#" onclick="removeItem(event)">Remove</a>
-                </li>
-            }
-        </ul> *@
     </div>
 </body>
 </html>
