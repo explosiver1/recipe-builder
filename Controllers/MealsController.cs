@@ -85,7 +85,8 @@ public class MealsController : Controller
         {
             return RedirectToAction("Index", "Meals");
         }
-        else{
+        else
+        {
             return View(new MealsCreateVM { msg = "Error, meal could not be created." });
         }
     }
@@ -151,6 +152,7 @@ public class MealsController : Controller
                 test = CtrlModel.RemoveMeal(at.username, mealToRemove);
                 if (!test)
                 {
+                    Console.WriteLine("CtrlModel.RemoveMeal returned false.");
                     return RedirectToAction("Index", new MealsIndexVM { msg = "Error, meal could not be removed." });
                 }
             }
