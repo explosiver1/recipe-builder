@@ -231,53 +231,109 @@ public static class CtrlModel
     }
 
     // Adds an ingredient to the shopping list
-    public static bool AddItemToShoppingList(IngredientDetail ingredient)
+    public static bool AddItemToShoppingList(string username, IngredientDetail ingredient)
     {
         if (ingredient == null) return false;
 
-        if (shoppingList.Items == null)
-        {
-            shoppingList.Items = new List<IngredientDetail>();
-        }
+        //if (shoppingList.Items == null)
+        //{
+        //    shoppingList.Items = new List<IngredientDetail>();
+        //}
 
-        if (!shoppingList.Items.Contains(ingredient))
+        //if (!shoppingList.Items.Contains(ingredient))
+        //{
+        //    shoppingList.Items.Add(ingredient);
+        //    Console.WriteLine($"{ingredient.Name} added to the shopping list.");
+        //    return true;
+        //}
+        //else
+        //{
+        //    Console.WriteLine($"{ingredient.Name} is already in the shopping list.");
+        //    return false;
+        //}
+
+        try
         {
-            shoppingList.Items.Add(ingredient);
-            Console.WriteLine($"{ingredient.Name} added to the shopping list.");
-            return true;
+            return DBQueryModel.AddToShoppingList(username, ingredient).Result;
         }
-        else
+        catch
         {
-            Console.WriteLine($"{ingredient.Name} is already in the shopping list.");
             return false;
         }
     }
 
     // Removes an ingredient from the shopping list
-    public static void RemoveItemFromShoppingList(IngredientDetail ingredient)
+    public static bool RemoveItemFromShoppingList(string username, string ingredient)
     {
-        if (ingredient == null || shoppingList.Items == null || !shoppingList.Items.Contains(ingredient))
-        {
-            Console.WriteLine("Ingredient not found in the shopping list.");
-            return;
-        }
+        //if (ingredient == null || shoppingList.Items == null || !shoppingList.Items.Contains(ingredient))
+        //{
+        //    Console.WriteLine("Ingredient not found in the shopping list.");
+        //    return;
+        //}
 
-        shoppingList.Items.Remove(ingredient);
-        Console.WriteLine($"{ingredient.Name} removed from the shopping list.");
+        //shoppingList.Items.Remove(ingredient);
+        //Console.WriteLine($"{ingredient.Name} removed from the shopping list.");
+
+        try
+        {
+            if (!DBQueryModel.RemoveFromShoppingList(username, ingredient).Result)
+            {
+                Console.WriteLine("Error, couldn't remove ingredient from shopping list.");
+                return false;
+            }
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     // Checks off an ingredient in the shopping list (can also remove it if desired)
     //
-    public static void CheckItemOffShoppingList(IngredientDetail ingredient)
+    public static bool CheckItemOffShoppingList(string username, string ingredient)
     {
-        if (ingredient == null || shoppingList.Items == null || !shoppingList.Items.Contains(ingredient))
+        //if (ingredient == null || shoppingList.Items == null || !shoppingList.Items.Contains(ingredient))
+        //{
+        //    Console.WriteLine("Ingredient not found in the shopping list.");
+        //    return;
+        //}
+
+        //shoppingList.Items.Remove(ingredient);
+        //Console.WriteLine($"{ingredient.Name} checked off the shopping list.");
+        try
         {
-            Console.WriteLine("Ingredient not found in the shopping list.");
-            return;
+            return DBQueryModel.CheckShoppingListItem(username, ingredient).Result;
+
+        }
+        catch
+        {
+            return false;
         }
 
-        shoppingList.Items.Remove(ingredient);
-        Console.WriteLine($"{ingredient.Name} checked off the shopping list.");
+    }
+
+
+    public static bool UnCheckItemOffShoppingList(string username, string ingredient)
+    {
+        //if (ingredient == null || shoppingList.Items == null || !shoppingList.Items.Contains(ingredient))
+        //{
+        //    Console.WriteLine("Ingredient not found in the shopping list.");
+        //    return;
+        //}
+
+        //shoppingList.Items.Remove(ingredient);
+        //Console.WriteLine($"{ingredient.Name} checked off the shopping list.");
+        try
+        {
+            return DBQueryModel.UncheckShoppingListItem(username, ingredient).Result;
+
+        }
+        catch
+        {
+            return false;
+        }
+
     }
 
     // Retrieves an ingredient by name from the shopping list, allowing a nullable return
@@ -407,9 +463,16 @@ public static class CtrlModel
     /* Returns list of all user's saved meals */
     public static List<MealSet> getMeals(string username)
     {
-        List<MealSet> mealSet = DBQueryModel.GetMeals(username).Result;
-        //SeedData.meals;
-        return mealSet;
+        try
+        {
+            List<MealSet> mealSet = DBQueryModel.GetMeals(username).Result;
+            return mealSet;
+        }
+        catch
+        {
+            Console.WriteLine("Error, MealSet List couldn't be retrieved.");
+            return new List<MealSet>();
+        }
     }
 
     public static MealSet getMeal(string mealName, string username)
@@ -569,7 +632,7 @@ public static class CtrlModel
         {
             ingredient = GetIngredientDetail(username, itemName, "", "ShoppingList");
             if (ingredient == null) return false;
-            RemoveItemFromShoppingList(ingredient);
+            RemoveItemFromShoppingList(username, ingredient.Name);
             AddItemToPantry(ingredient, username);
         }
         else
@@ -577,7 +640,7 @@ public static class CtrlModel
             ingredient = GetIngredientDetail(username, itemName, "", "Pantry");
             if (ingredient == null) return false;
             //RemoveItemFromPantry(ingredient);
-            AddItemToShoppingList(ingredient);
+            AddItemToShoppingList(username, ingredient);
         }
         return true;
     }

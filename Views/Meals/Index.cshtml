@@ -16,7 +16,7 @@
         padding: 10px 20px;
         font-size: 16px;
         color: white;
-        background-color: #4A743E; 
+        background-color: #4A743E;
         text-align: center;
         text-decoration: none;
         border-radius: 5px;
@@ -61,7 +61,7 @@
 
 <div class="row">
     @if (@Model.meals != null && @Model.meals.Any())
-    { 
+    {
         @foreach (MealSet meal in @Model.meals)
         {
             <div class="col-md-4">
@@ -76,12 +76,18 @@
                 <div class="button-container">
                     <a asp-action="Look" asp-route-id="@meal.Name" class="btn btn-custom">@meal.Name</a>
                 </div>
-            </div>
+
+            </div><form method="post" asp-controller="Meals" asp-action="RemoveMeal" >
+                                <input type="hidden" name="mealToRemove" value="@meal.Name"/>
+                                <div class="button-container">
+                                    <button type="submit">Remove Meal</button>
+                                </div>
+                    </form>
         }
         <p> Here we display the all the meals</p>
     }
     else
     {
         <p>No Meals Found.</p>
-    } 
+    }
 </div>

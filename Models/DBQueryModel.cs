@@ -722,7 +722,8 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new {username, mealName });
+            var response = await session.RunAsync(query, new { username, mealName });
+
             Console.WriteLine($"Meal node {mealName} created!");
 
             // Pulls all responses from query
@@ -1585,7 +1586,7 @@ public class DBQueryModel
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
-            MATCH (:User {name: $username})-[]->(rec:Recipe)-[x:MADE_WITH]->(m:Meal)
+            MATCH (:User {username: $username})-[]->(rec:Recipe)<-[x:MADE_WITH]-(m:Meal)
             RETURN m
         ";
 
@@ -1602,7 +1603,7 @@ public class DBQueryModel
             // Process each record in the result
             await result.ForEachAsync(record =>
             {
-                MealSet m = GetMeal(username, record["m"].As<INode>()["name"].As<string>()).Result;
+                MealSet m = GetMeal(username, GetCleanString(username, record["m"].As<INode>()["name"].As<string>())).Result;
                 mp.Add(m);
             });
         }
@@ -1622,9 +1623,10 @@ public class DBQueryModel
     public static async Task<MealSet> GetMeal(string username, string mealName)
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        string name = username + mealName;
         var query = @"
-        MATCH (:User {name: $username})-[]->(rec:Recipe)-[x:MADE_WITH]->(m:Meal)
-        WHERE m.name = $mealName
+        MATCH (:User {username: $username})-[]->(rec:Recipe)<-[x:MADE_WITH]-(m:Meal)
+        WHERE m.name = $name
         RETURN rec
         ";
 
@@ -1632,11 +1634,12 @@ public class DBQueryModel
         // Initialize the Neo4j session
         var session = driver.AsyncSession();
         MealSet meal = new MealSet();
+        meal.Name = mealName;
 
         try
         {
             // Run the query and pass in parameters
-            var result = await session.RunAsync(query, new { username, mealName });
+            var result = await session.RunAsync(query, new { username, name });
 
             // Process each record in the result
             await result.ForEachAsync(record =>
@@ -1647,6 +1650,7 @@ public class DBQueryModel
         }
         catch (Exception e)
         {
+            Console.WriteLine("Error in DBQueryModel.GetMeal. Exception: " + e);
             return new MealSet();
         }
         finally
@@ -1888,6 +1892,17 @@ public class DBQueryModel
             var response = await session.RunAsync(checkQuery, new { mealName });
             var record = await response.SingleAsync();
             bool mealDeleted = record.Any() && record[0].As<bool>();
+            //bool mealDeleted = record["mealDeleted"].As<bool>();
+
+            //What is this doing?
+            //if (!mealDeleted)
+            //{
+            //    // Delete only the MADE_WITH relationship if the meal node still exists
+            //    var relationshipResult = await session.RunAsync(deleteRelationshipOnly, new { mealName });
+            //    var relationshipRecord = await relationshipResult.SingleAsync();
+            //    mealDeleted = relationshipRecord["mealDeleted"].As<bool>();
+            //}
+
             return mealDeleted;
         }
         catch (Exception ex)
