@@ -536,7 +536,7 @@ public class DBQueryModel
         var query = @"
             MATCH (user:User {username: $username})
             MERGE (pantry:Pantry {name: $pantryName})
-            MERGE (user)-{x:OWNS}->(pantry)
+            MERGE (user)-[x:OWNS]->(pantry)
             RETURN COUNT(x) > 0
         ";
 
@@ -722,7 +722,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { mealName });
+            var response = await session.RunAsync(query, new {username, mealName });
             Console.WriteLine($"Meal node {mealName} created!");
 
             // Pulls all responses from query
