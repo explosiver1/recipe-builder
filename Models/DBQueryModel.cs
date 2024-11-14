@@ -400,7 +400,7 @@ public class DBQueryModel
     // MergeIngredient()
     // Used when adding ingredients to Recipe, Shopping List, or Pantry (must create the nodes first)
     // The parent is the name of the node you are adding ingredients too
-    public static async Task<bool> ConnectIngredientNode(string username, string parent, string ingredient, string unit = "", string qualifier = "", double quantity = 0)
+    public static async Task<bool> ConnectIngredientNode(string username, string parent, string ingredient, string unit = "", string qualifier = "", double quantity = 0, string description = "")
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var parentName = username + parent;
@@ -408,6 +408,7 @@ public class DBQueryModel
 
         unit = string.IsNullOrEmpty(unit) ? "" : unit;
         qualifier = string.IsNullOrEmpty(qualifier) ? "" : qualifier;
+        description = string.IsNullOrEmpty(description) ? "" : description;
 
         Console.WriteLine("unit: " + unit + "  qualifier: " + qualifier + "  quantity: " + quantity);
 
@@ -418,25 +419,27 @@ public class DBQueryModel
         {
             Console.WriteLine("Connect Ingredinet Node to Pantry");
             query = @"
-                MATCH (parent:Pantry{name:$parentName})
                 MATCH (ingredient:Ingredient{name:$ingredientName})
+                MERGE (parent:Pantry{name:$parentName})
                 MERGE (parent)-[x:STORES]->(ingredient)
                 SET x.unit = $unit,
                     x.qualifier = $qualifier,
                     x.quantity = $quantity
+                    x.description = $description
                 RETURN COUNT(x) > 0
             ";
 
             parameters["unit"] = unit;
             parameters["qualifier"] = qualifier;
             parameters["quantity"] = quantity;
+            parameters["description"] = description;
         }
         else if (parent.Contains("ShoppingList"))
         {
             Console.WriteLine("Connect Ingredinet Node to ShoppingList");
             query = @"
-                MATCH (parent:ShoppingList{name:$parentName})
                 MATCH (ingredient:Ingredient{name:$ingredientName})
+                MERGE (parent:ShoppingList{name:$parentName})
                 MERGE (parent)-[x:PLANS_TO_BUY]->(ingredient)
                 SET x.unit = $unit,
                     x.qualifier = $qualifier,
@@ -713,6 +716,7 @@ public class DBQueryModel
         var query = @"
             MATCH (u:User {username: $username})
             MERGE (meal:Meal { name: $mealName})
+            SET meal.description = $description
             MERGE (u)-[:OWNS]->(meal)
             RETURN COUNT(meal) > 0
         ";
@@ -722,7 +726,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { username, mealName });
+            var response = await session.RunAsync(query, new {username, mealName, description=meal.Description });
 
             Console.WriteLine($"Meal node {mealName} created!");
 
@@ -1665,20 +1669,33 @@ public class DBQueryModel
     //Make sure Units are consistent
     public static async Task<bool> AddToPantry(string username, string pantry, string ingredient, string unit = "", string qualifier = "", double quantity = 0)
     {
-        bool ingredientCreated = DBQueryModel.CreateIngredientNode(username, ingredient).Result;
-
-        // pantry string should just be "Pantry"
-        bool ingredientConnected = DBQueryModel.ConnectIngredientNode(username, "Pantry", ingredient, unit, qualifier, quantity).Result;
-
-        if (ingredientCreated && ingredientConnected)
+        try
         {
+            // Ensure ingredient node is created
+            bool ingredientCreated = await DBQueryModel.CreateIngredientNode(username, ingredient);
+
+            if (!ingredientCreated)
+            {
+                throw new Exception("Failed to create ingredient node.");
+            }
+
+            // Connect the ingredient node to the pantry, updating quantity if it exists
+            bool ingredientConnected = await DBQueryModel.ConnectIngredientNode(username, "Pantry", ingredient, unit, qualifier, quantity);
+
+            if (!ingredientConnected)
+            {
+                throw new Exception("Failed to connect ingredient node to pantry.");
+            }
+
             return true;
         }
-        else
+        catch (Exception ex)
         {
+            Console.WriteLine($"Item could not be added to pantry. Exception: {ex.Message}");
             return false;
         }
     }
+
 
     //Basically AddToPantry with a negative number.
     public static async Task<bool> RemoveFromPantry(string username, string ingredient)
