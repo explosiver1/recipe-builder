@@ -422,20 +422,21 @@ public static class CtrlModel
     {
         try
         {
+            int i = 0;
             // Placeholder logic for saving data to Neo4j
             //Console.WriteLine($"Simulating saving meal planner with date: {mealPlanner.DateString}");
             foreach (MealSet meal in mealPlanner.ScheduledMeals)
             {
-                int i = 0;
+                
                 foreach (Recipe recipe in meal.Recipes)
                 {
                     if (!DBQueryModel.ScheduleRecipe(username, recipe.Name, meal.Date.ToString(), i).Result)
                     {
-                        i++;
                         throw new Exception("Recipe could not be added. Return of false from DBQueryModel.ScheduleRecipe()");
                     }
 
                 }
+                i++;
                 //Console.WriteLine($"Simulating saving meal: {meal.Name}, Description: {meal.Description}");
             }
             Console.WriteLine("Meal Planner Saved");
