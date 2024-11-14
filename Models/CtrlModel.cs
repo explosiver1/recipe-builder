@@ -490,7 +490,6 @@ public static class CtrlModel
             //Console.WriteLine($"Simulating saving meal planner with date: {mealPlanner.DateString}");
             foreach (MealSet meal in mealPlanner.ScheduledMeals)
             {
-                i++;
                 foreach (Recipe recipe in meal.Recipes)
                 {
                     if (!DBQueryModel.ScheduleRecipe(username, recipe.Name, meal.Date.ToString(), i).Result)
@@ -498,6 +497,7 @@ public static class CtrlModel
                         throw new Exception("Recipe could not be added. Return of false from DBQueryModel.ScheduleRecipe()");
                     }
                 }
+                i++;
                 //Console.WriteLine($"Simulating saving meal: {meal.Name}, Description: {meal.Description}");
             }
             Console.WriteLine("Meal Planner Saved");

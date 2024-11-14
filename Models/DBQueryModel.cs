@@ -424,7 +424,7 @@ public class DBQueryModel
                 MERGE (parent)-[x:STORES]->(ingredient)
                 SET x.unit = $unit,
                     x.qualifier = $qualifier,
-                    x.quantity = $quantity
+                    x.quantity = $quantity,
                     x.description = $description
                 RETURN COUNT(x) > 0
             ";
@@ -443,7 +443,7 @@ public class DBQueryModel
                 MERGE (parent)-[x:PLANS_TO_BUY]->(ingredient)
                 SET x.unit = $unit,
                     x.qualifier = $qualifier,
-                    x.quantity = $quantity
+                    x.quantity = $quantity,
                     x.checked = true
                 RETURN COUNT(x) > 0
             ";
@@ -2025,7 +2025,7 @@ public class DBQueryModel
             MATCH (recipe:Recipe{name:$recipeName})
             MERGE (mealPlan:MealPlan{name:$mealName})
             MERGE (recipe)-[x:SCHEDULED_FOR]->(mealPlan)
-            SET x.date = $date
+            SET x.date = $date,
                 x.order = $order
             RETURN COUNT(x) > 0
         ";
