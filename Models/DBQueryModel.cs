@@ -1652,7 +1652,7 @@ public class DBQueryModel
             {
                 Recipe r = GetRecipe(username, record["rec"].As<INode>()["name"].As<string>()).Result;
                 meal.Recipes.Add(r);
-                Console.WriteLine("Retrieved recipe " + r.Name + " from meal + " + mealName);
+                Console.WriteLine("Retrieved recipe " + r.Name + " from meal " + mealName);
             });
         }
         catch (Exception e)
