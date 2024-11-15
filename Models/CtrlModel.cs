@@ -227,7 +227,8 @@ public static class CtrlModel
     // Retrieves all items in the shopping list
     public static List<IngredientDetail> GetShoppingListItems(string username)
     {
-        return DBQueryModel.GetShoppingList(username).Result; //shoppingList.Items ?? new List<IngredientDetail>();
+        List<IngredientDetail> shoppingList = DBQueryModel.GetShoppingList(username).Result;
+        return shoppingList; //shoppingList.Items ?? new List<IngredientDetail>();
     }
 
     // Adds an ingredient to the shopping list
@@ -421,23 +422,35 @@ public static class CtrlModel
 
     }
 
-    public static void EditItemInPantry(IngredientDetail itemToEdit, string userName)
+    public static async void EditItemInPantry(IngredientDetail itemToEdit, string userName)
     {
-
+        await DBQueryModel.RemoveFromPantry(userName, itemToEdit.Name);
+        await DBQueryModel.AddToPantry(userName, "", itemToEdit.Name, itemToEdit.Unit, itemToEdit.Qualifier, itemToEdit.Quantity);
+        return;
     }
     public static Dictionary<string, List<string>> GetABCListDict(List<string> myList)
     {
         myList.Sort();
         Dictionary<string, List<string>> myDictionary = new Dictionary<string, List<string>>();
+
         foreach (string item in myList)
         {
-            string firstLetter = item[0].ToString().ToUpper();
-
-            if (!myDictionary.ContainsKey(firstLetter))
+            if (item.Length > 0)
             {
-                myDictionary.Add(firstLetter, new List<string>());
+                char firstLetter = item[0];
+                string firstLetterStr = firstLetter.ToString();
+
+                if (Char.IsLetter(firstLetter))
+                {
+                    firstLetterStr = firstLetterStr.ToUpper();
+                }
+
+                if (!myDictionary.ContainsKey(firstLetterStr))
+                {
+                    myDictionary.Add(firstLetterStr, new List<string>());
+                }
+                myDictionary[firstLetterStr].Add(item);
             }
-            myDictionary[firstLetter].Add(item);
         }
         return myDictionary;
     }

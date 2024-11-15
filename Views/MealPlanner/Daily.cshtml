@@ -88,7 +88,7 @@
         <h2 style="color: #4A743E;" class="text-center">@Model.mealPlanner.Date.ToString("dddd M/d/yyyy")</h2>
         <hr class="rounded">
         <br>
-        <form asp-controller="MealPlanner" asp-action="Daily" method="post" id="form">
+       @*  <form asp-controller="MealPlanner" asp-action="Daily" method="post" id="form"> *@
             @if (Model.mealPlanner.ScheduledMeals.Count != 0)
             {
                 <!-- meal entries -->
@@ -96,6 +96,7 @@
                     @foreach (MealSet meal in Model.mealPlanner.ScheduledMeals)
                     {
                         <div class="meal-entry">
+                        <span class="meal-label">Meal @(@Model.mealPlanner.ScheduledMeals.IndexOf(meal) + 1):</span>
                             <p><strong>Meal @(@Model.mealPlanner.ScheduledMeals.IndexOf(meal) + 1):</strong></p>
                             
                             @foreach (Recipe recipe in meal.Recipes) {
@@ -209,7 +210,7 @@
             <div class="text-center">
                 <button class="add-meal-btn" onclick="addMeal()">Add Another Meal</button>
             </div>
-        </form>
+        @* </form> *@
         <!-- javascript for adding additional meal entries -->
         <script>
             function addMeal() {

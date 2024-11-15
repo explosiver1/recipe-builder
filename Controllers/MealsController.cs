@@ -125,10 +125,7 @@ public class MealsController : Controller
 
         var viewModel = new MealsEditVM
         {
-            mealName = meal.Name,
-            mealDescription = meal.Description,
-            recipeNew = new Recipe(),
-            mealRecipes = meal.RecipeNames,
+            mealData = new MealSet { Name = meal.Name,Description = meal.Description, RecipeNames = meal.RecipeNames },
             UserRecipesNames = CtrlModel.GetRecipeNameList(at.username)
         };
 
@@ -138,15 +135,15 @@ public class MealsController : Controller
     [HttpPost]
     public IActionResult Edit(MealsEditVM viewModel)
     {
-        MealSet meal = new MealSet { Name = viewModel.mealName };
+        MealSet meal = new MealSet { Name = viewModel.mealData.Name };
 
         if (meal == null)
         {
             return NotFound();
         }
 
-        // Update the Meal title
-        meal.Name = viewModel.mealName;
+        // Update meal
+        //CtrlModel.SaveMealEdits(viewModel.mealData);
 
         return RedirectToAction("Index");
     }
