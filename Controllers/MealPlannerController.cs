@@ -209,6 +209,28 @@ namespace RecipeBuilder.Controllers
 
             return mealPlans;
         }
+    
+        [HttpPost]
+        public IActionResult RemoveFromMealPlanner(string recipeName)
+        {
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return RedirectToAction("Index", "Home");
+            }
+            
+            //CtrlModel.RemoveFromMealPlanner(recipeName, at.username);
+            return RedirectToAction("Index");
+        }
     }
 }
 

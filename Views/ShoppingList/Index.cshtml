@@ -107,6 +107,11 @@
             border-radius: 5px;
             margin-right: 10px;
         }
+
+        .checked-row{
+            background-color: #d3d3d3;
+            text-decoration: line-through;
+        }
     </style>
 </head>
 
@@ -183,7 +188,7 @@
                     {
                         <tbody>
                             <tr>
-                                <td></td>
+                                <td><input class="item-left" type="checkbox" onchange="toggleCompletion(this)"></td>
                                 <td class="editable"><a href="/Recipe/Index/@item.Name">@item.Name</a></td>
                                 <td class="editable">@item.Quantity</td>
                                 <td class="editable">@item.Unit</td>
@@ -337,13 +342,12 @@
 
         // toggle completion status of items
         function toggleCompletion(checkbox) {
-            const listItem = checkbox.parentElement;  // the parent element containing the checkbox and the text
-            const textSpan = listItem.querySelector("span");  // get the span containing the item text
-
-            if (checkbox.checked) {
-                textSpan.classList.add("completed");  // add strikethrough if checkbox is selected
-            } else {
-                textSpan.classList.remove("completed");  // remove strikethrough if checkbox is unselected
+            const row = checkbox.closest('tr')
+            if(checkbox.checked){
+                row.classList.add('checked-row');
+            }
+            else{
+                row.classList.remove('checked-row')
             }
         }
 
