@@ -21,8 +21,9 @@ public class MealsController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
 
@@ -55,8 +56,9 @@ public class MealsController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
         MealsCreateVM cavm = new MealsCreateVM { msg = msg, meal = new Models.MealSet(), UserRecipesNames = CtrlModel.GetRecipeNameList(at.username) };
@@ -76,8 +78,9 @@ public class MealsController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
 
@@ -106,8 +109,9 @@ public class MealsController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
 
@@ -160,8 +164,9 @@ public class MealsController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
 

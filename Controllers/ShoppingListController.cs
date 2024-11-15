@@ -22,8 +22,9 @@ public class ShoppingListController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
         List<IngredientDetail> shoppingList = CtrlModel.GetShoppingListItems(at.username);
@@ -81,8 +82,9 @@ public class ShoppingListController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
         if (!ModelState.IsValid)
@@ -107,8 +109,9 @@ public class ShoppingListController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
 
@@ -135,8 +138,9 @@ public class ShoppingListController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
         //var ingredient = CtrlModel.GetIngredientByNameFromShoppingList(ingredientName, at.username);
@@ -161,8 +165,9 @@ public class ShoppingListController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
         //var ingredient = CtrlModel.GetIngredientByNameFromShoppingList(ingredientName, at.username);
@@ -187,8 +192,9 @@ public class ShoppingListController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
         var ingredient = CtrlModel.GetIngredientByNameFromShoppingList(itemName, at.username);
