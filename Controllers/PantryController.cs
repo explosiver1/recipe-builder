@@ -70,6 +70,27 @@ namespace RecipeBuilder.Controllers
         }
 
         [HttpPost]
+        public IActionResult EditPantryItem(string name, string unit, string quantity, string qualifier)
+        {
+            Console.WriteLine($"Entered EditPantryItem with {name}, {unit}, {quantity}, {qualifier}");
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception e)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            CtrlModel.EditItemInPantry(new IngredientDetail() { Name = name, Quantity = Convert.ToDouble(quantity), Qualifier = qualifier, Unit = unit }, at.username);
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
         public IActionResult AddItemToShoppingList(string itemName)
         {
             AuthToken at;
