@@ -98,36 +98,45 @@
         {
             // Get row of button
             var row = button.closest('tr');
-
-            // Change each cell to a textbox
             var cells = row.querySelectorAll('.editable');
-            cells.forEach(function(cell)
-            {
-                var currentText = cell.textContent;
-                cell.innerHTML = `<input type="text" value="${currentText}" />`;
-            });
+            //cells[0].innerHTML = `<input type="text" name="name" value="${cells[0].textContent}" readonly/>`;
+            //cells[1].innerHTML = `<input type="text" name="quantity" value="${cells[1].textContent}" />`;
+            //cells[2].innerHTML = `<input type="text" name="unit" value="${cells[2].textContent}" />`;
+            //cells[3].innerHTML = `<input type="text" name="qualifier" value="${cells[3].textContent}" />`;
+            //var subButton = row.querySelector('.edit-form').querySelector('button[type="submit"]');
+            //if (subButton) {
+            //subButton.removeAttribute('hidden');
+            //}
 
-            button.textContent = 'Save';
-            button.setAttribute('onclick', 'saveRow(this)');
+            //Setup values in dialog box.
+            var dialog = document.querySelector('dialog');
+            document.getElementById('editName').value = cells[0].textContent;
+            document.getElementById('editQuantity').value = cells[1].textContent;
+            document.getElementById('editUnit').value = cells[2].textContent;
+            document.getElementById('editQualifier').value = cells[3].textContent;
+
+            dialog.showModal();
+
+            //button.textContent = 'Cancel';
+            //button.setAttribute('onclick', 'cancelEdit(this)');
         }
 
-        // Client side only, Needs to be updated to save to server side - should have cancel button added
-        function saveRow(button)
+        function cancelEdit(span)
         {
-             // Get row of button
-            var row = button.closest('tr');
-
-            // Change each cell to text with updated values
-            var cells = row.querySelectorAll('.editable');
-            cells.forEach(function(cell)
-            {
-                var inputField = cell.querySelector('input');
-                if (inputField)
-                { cell.textContent = inputField.value; }
-            });
-
-            button.textContent = 'Edit';
-            button.setAttribute('onclick', 'editRow(this)');
+            //var row = button.closest('tr');
+            //var cells = row.querySelectorAll('input[type="text"]');
+            //cells[0].innerHTML = `<input type="text" name="name" value="${cells[0].textContent}" readonly/>`;
+            //cells[1].innerHTML = `<input type="text" name="quantity" value="${cells[1].textContent}" />`;
+            //cells[2].innerHTML = `<input type="text" name="unit" value="${cells[2].textContent}" />`;
+            //cells[3].innerHTML = `<input type="text" name="qualifier" value="${cells[3].textContent}" />`;
+            //var subbutton = row.querySelector('.edit-form').querySelector('button[type="submit"]');
+            //if(subbutton){
+            //subbutton.setAttribute('hidden', 'hidden');
+           //}
+           //button.textContent = 'Edit';
+           //button.setAttribute('onclick', 'editRow(this)');
+           var dialog = document.getElementById('editDialog');
+           dialog.close();
         }
     </script>
 </head>
@@ -205,14 +214,15 @@
                 {
                     <tbody>
                         <tr>
-                            <td class="editable"><a href="/Recipe/Index/@item.Name">@item.Name</a></td>
-                            <td class="editable">@item.Quantity</td>
-                            <td class="editable">@item.Unit</td>
-                            <td class="editable">@item.Qualifier</td>
+                                <td class="editable"><a href="/Recipe/Index/@item.Name">@item.Name</a></td>
+                                <td class="editable">@item.Quantity</td>
+                                <td class="editable">@item.Unit</td>
+                                <td class="editable">@item.Qualifier</td>
+                                <td><button type="submit" class="btn btn-custom" hidden="hidden">Submit</button></td>
                             <td><button onclick="editRow(this)" class="btn btn-custom">Edit</button></td>
                             <form method="post" asp-controller="Pantry" asp-action="RemoveFromPantry">
-                            <input type="hidden" name="ingredientName" value="@item.Name"/>
-                            <td><button type="submit" class="btn btn-custom">Delete</button></td>
+                                <input type="hidden" name="ingredientName" value="@item.Name"/>
+                                <td><button type="submit" class="btn btn-custom">Delete</button></td>
                             </form>
                         </tr>
                     </tbody>
@@ -221,5 +231,17 @@
             }
         </div>
     </div>
+
+    <dialog id="editDialog">
+        <p>Enter New Properties</p>
+        <form method="post" asp-controller="Pantry" asp-action="EditPantryItem">
+            <input id="editName" type="text" name="name" value="" readonly/>
+            <input id="editQuantity" type="text" name="quantity" value="" />
+            <input id="editUnit" type="text" name="unit" value="" />
+            <input id="editQualifier" type="text" name="qualifier" value="" />
+            <button type="submit">Submit</button>
+        </form>
+        <span onclick="cancelEdit()">Cancel</span>
+    </dialog>
 </body>
 </html>
