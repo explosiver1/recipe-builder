@@ -62,7 +62,7 @@
     }
 
     .action-links a:hover {
-        text-decoration: underline;
+        color: #96AE6D;
     }
 
     .add-meal-btn {
@@ -80,6 +80,11 @@
     .add-meal-btn:hover {
         background-color: #96AE6D;
     }
+
+    .table-container{
+        display: none;
+        margin-bottom: 20px;
+    }
 </style>
 
 <body>
@@ -88,27 +93,44 @@
         <h2 style="color: #4A743E;" class="text-center">@Model.mealPlanner.Date.ToString("dddd M/d/yyyy")</h2>
         <hr class="rounded">
         <br>
+        <div id="scheduled-meal-container">
        @*  <form asp-controller="MealPlanner" asp-action="Daily" method="post" id="form"> *@
-            @if (Model.mealPlanner.ScheduledMeals.Count != 0)
+            @if (@Model.mealPlanner.ScheduledMeals.Count() != 0)
             {
                 <!-- meal entries -->
                 <div id="meal-list">
                     @foreach (MealSet meal in Model.mealPlanner.ScheduledMeals)
                     {
-                        <div class="meal-entry">
-                        <span class="meal-label">Meal @(@Model.mealPlanner.ScheduledMeals.IndexOf(meal) + 1):</span>
-                            <p><strong>Meal @(@Model.mealPlanner.ScheduledMeals.IndexOf(meal) + 1):</strong></p>
-                            
-                            @foreach (Recipe recipe in meal.Recipes) {
-                                <p>@recipe.Name</p>
-                            }
-
+                        <div class="meal-entry" id="table-container">
+                            <p><strong>Meal: </strong></p>
+                            <div class="currentMeal">
+                                <table id="currentMealTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Recipes</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    @foreach (Recipe recipe in meal.Recipes) 
+                                    {
+                                        <tbody>
+                                            <tr>
+                                                <td class="editable"><a href="/Recipe/Index/@recipe.Name">@recipe.Name</a></td>
+                                                <form method="post" asp-controller="MealPlanner" asp-action="RemoveFromMealPlanner">
+                                                    <input type="hidden" name="recipeName" value="@recipe.Name" />
+                                                    <td><button type="submit" class="btn btn-custom">Delete</button></td>
+                                                </form>
+                                            </tr>
+                                        </tbody>
+                                    }
+                                </table>
+                            </div><br>
                             <!-- action links inside meal container -->
                             <div class="action-links">
                                 <!--Meal Selector Table-->
                                 <div>
                                     <label for="meals" class="meals-added-label">Meals Added:</label>
-                                </div>
+                                </div><br>
                                 @if(Model.UserMealsNames != null && Model.UserMealsNames.Any())
                                 {
                                     <div class="form-group">
@@ -211,10 +233,22 @@
                 <button class="add-meal-btn" onclick="addMeal()">Add Another Meal</button>
             </div>
         @* </form> *@
+        </div>
         <!-- javascript for adding additional meal entries -->
         <script>
+            let mealCount = 0;
             function addMeal() {
-                var mealList = document.getElementById('meal-list');
+                mealCount++;
+                const mealList = document.getElementById('meal-list');
+                const container = document.getElementById('table-container');
+                const newScheduledMeal = container.cloneNode(true);
+                newScheduledMeal.id = '';
+                newScheduledMeal.style.display = 'block';
+                const sectionHeader = newScheduledMeal.querySelector('p strong');
+                sectionHeader.textContent = 'Meal ${mealCount}:';
+                mealList.appendChild(newScheduledMeal);
+
+                @* var mealList = document.getElementById('meal-list');
                 var mealCount = mealList.getElementsByClassName('meal-entry').length + 1;
 
                 // create a new meal entry
@@ -229,7 +263,7 @@
                 `;
 
                 // add new meal entry to meal list
-                mealList.appendChild(newMeal);
+                mealList.appendChild(newMeal); *@
             }
 
             function addMealRow(){
