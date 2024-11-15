@@ -2233,9 +2233,14 @@ public class DBQueryModel
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
-        MATCH (:User {username: $username})-[]->(:ShoppingList)-[:PLANS_TO_BUY]->(i:Ingredient)
-        RETURN i
-        ";
+        MATCH (user:User {username: $username})
+        MATCH (user)-[]->(n:Ingredient)-[r]-(n2:ShoppingList)
+        RETURN n.name AS ingredient, 
+               r.unit AS unit, 
+               r.quantity AS quantity, 
+               r.qualifier AS qualifier, 
+               r.checked AS checked
+    ";
 
         // Initialize the Neo4j session
         var session = driver.AsyncSession();
@@ -2249,12 +2254,23 @@ public class DBQueryModel
             // Process each record in the result
             await result.ForEachAsync(record =>
             {
-                IngredientDetail ingD = GetPantryIngredient(username, record["i"].As<INode>()["name"].As<string>()).Result;
+                // Map the result to IngredientDetail properties
+                IngredientDetail ingD = new IngredientDetail
+                {
+                    Name = GetCleanString(username, record["ingredient"]?.As<string>() ?? string.Empty),
+                    Unit = record["unit"].As<string>(),
+                    Quantity = record["quantity"].As<double>(),
+                    Qualifier = record["qualifier"].As<string>(),
+                    isChecked = record["checked"].As<bool>()
+                };
+
+                // Add each ingredient detail to the list
                 ingDList.Add(ingD);
             });
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return new List<IngredientDetail>();
         }
         finally
@@ -2262,6 +2278,7 @@ public class DBQueryModel
             // Ensures the session is closed
             await session.CloseAsync();
         }
+
         return ingDList;
     }
 

@@ -306,7 +306,7 @@ namespace RecipeBuilder.Controllers
             }
             // Get the recipe data (replace with actual fetch logic)
             Recipe recipe = DBQueryModel.GetRecipe(at.username, recipeName).Result;
-
+            Console.WriteLine("REcipe Name: " + recipe.Name);
             if (recipe == null)
             {
                 return NotFound();
@@ -325,6 +325,13 @@ namespace RecipeBuilder.Controllers
             return View(viewModel);
         }
 
+        // Edit method (Post): Save Form Data
+        [HttpPost]
+        public IActionResult EditRecipe(RecipeEditVM RecipeVM)
+        {
+            string name = RecipeVM.recipe.Name;
+            return RedirectToAction("Look", "Recipe", new { recipeName = name });
+        }
         // Look method (GET): Displays a specific recipe in a specific cookbook
         [HttpGet]
         public IActionResult Look(string recipeName, string msg = "")

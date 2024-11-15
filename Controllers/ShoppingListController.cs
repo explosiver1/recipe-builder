@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
 using RecipeBuilder.ViewModels;
 using Newtonsoft.Json;
+using System.Net.NetworkInformation;
 
 namespace RecipeBuilder.Controllers;
 
@@ -25,10 +26,22 @@ public class ShoppingListController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
-
+        List<IngredientDetail> shoppingList = CtrlModel.GetShoppingListItems(at.username);
+        if (shoppingList.Count == 0)
+        { Console.WriteLine("Shopping List Empty"); }
+        else {
+            foreach (var ing in shoppingList)
+            { 
+                Console.WriteLine(ing.Name);
+                Console.WriteLine(ing.Quantity);
+                Console.WriteLine(ing.Unit);
+                Console.WriteLine(ing.Qualifier);
+            }
+        }
+        
         ShoppingListIndexVM viewModel = new ShoppingListIndexVM
         {
-            ABCShoppingList = CtrlModel.GetABCListDict(CtrlModel.GetShoppingListItems(at.username))
+            ABCShoppingList = CtrlModel.GetABCListDict(shoppingList)
         };
         return View(viewModel);
     }

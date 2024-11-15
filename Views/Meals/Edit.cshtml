@@ -9,18 +9,18 @@
 </div>
 <form asp-controller="Meals" asp-action="Edit" method="post">
     <div class="form-group">
-        <label for="MealName">Meal Name: @Model.mealName</label>
+        <label for="MealName">Meal Name: @Model.mealData.Name</label>
     </div>
 
     <div class="form-group">
         <label for="Description">Description:</label>
-        <textarea class="form-control" id="MealDescription" asp-for="@Model.mealDescription"></textarea><br>
+        <textarea class="form-control" id="MealDescription" asp-for="@Model.mealData.Description"></textarea><br>
     </div>
 
     <div>
         <label for="AddedRecipes">Added Recipes:</label>
     </div>
-    @foreach(var recipe in Model.mealRecipes)
+    @foreach (var recipe in Model.mealData.RecipeNames)
     {
         <p>@recipe</p>
     }
@@ -40,7 +40,7 @@
                         {
                             <tr>
                                 <td>
-                                    <select name="cookbook.RecipeNames[@i]" value="@Model.recipeNew">
+                                    <select name="cookbook.RecipeNames[@i]" value="@Model.RecipesToAdd[i]">
                                         <option value="" disabled selected>Select a Recipe</option>
                                         @foreach(string recipeName in Model.UserRecipesNames)
                                         {
@@ -81,5 +81,10 @@
         selectElement.setAttribute('name', `newcookbook.RecipeNames[${rowCount}]`);
 
         document.getElementById("recipeTable").getElementsByTagName('tbody')[0].appendChild(newRow);
+    }
+
+    function removeRecipeRow(button)
+    {
+
     }
 </script>

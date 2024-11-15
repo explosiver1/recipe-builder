@@ -12,6 +12,7 @@ namespace RecipeBuilder.Models
 
         [Required(ErrorMessage = "Ingredient name is required.")]
         public string Name { get; set; }
+        public bool isChecked { get; set; }
 
         // Blank constructor initializing default values
         public IngredientDetail()
