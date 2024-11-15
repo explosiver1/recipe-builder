@@ -22,8 +22,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
 
@@ -90,8 +91,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
             var viewModel = new RecipeAddVM
@@ -118,8 +120,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}"); 
                 return RedirectToAction("Index", "Home");
             }
 
@@ -159,8 +162,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
             Console.WriteLine("POST Add action hit"); // Logging to console
@@ -300,8 +304,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
             // Get the recipe data (replace with actual fetch logic)
@@ -345,8 +350,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
             if (msg != "")
@@ -401,8 +407,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
             return View(); // Can expand this later

@@ -691,8 +691,9 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
                 }
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return false;
         }
 

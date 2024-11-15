@@ -843,17 +843,18 @@ public class DBQueryModel
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
         MATCH (recipe:Recipe {name: $recipeName})
-        MERGE (tag:Tag {name: $tag})
+        MERGE (tag:Tag {name: $tagName})
         MERGE (recipe)-[x:TAGGED_WITH]->(tag)
         RETURN COUNT(x) > 0
         ";
 
         var recipeName = username + recipe;
+        var tagName = username + tag;
 
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { tag, recipeName });
+            var response = await session.RunAsync(query, new { recipeName, tagName });
             Console.WriteLine($"Tag {tag} created and connected to {recipeName}!");
 
             // Pulls all responses from query
@@ -932,8 +933,8 @@ public class DBQueryModel
         ";
 
         var recipeName = username + recipe;
-        var toolName = !string.IsNullOrEmpty(tool) ? username + tool : null;
-        var tagName = !string.IsNullOrEmpty(tag) ? username + tag : null;
+        var toolName = !string.IsNullOrEmpty(tool) ? username + tool : string.Empty;
+        var tagName = !string.IsNullOrEmpty(tag) ? username + tag : string.Empty;
 
         // Initialize the Neo4j session
         var session = driver.AsyncSession();
@@ -1573,8 +1574,9 @@ public class DBQueryModel
                 mp[record["x"].As<IRelationship>()["order"].As<int>()].Recipes.Add(r);
             });
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return new List<MealSet>();
         }
         finally
@@ -1612,8 +1614,9 @@ public class DBQueryModel
                 mp.Add(m);
             });
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return new List<MealSet>();
         }
         finally
@@ -1764,8 +1767,9 @@ public class DBQueryModel
                 ingDList.Add(ingD);
             });
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return new List<IngredientDetail>();
         }
         finally
@@ -2258,9 +2262,9 @@ public class DBQueryModel
                 IngredientDetail ingD = new IngredientDetail
                 {
                     Name = GetCleanString(username, record["ingredient"]?.As<string>() ?? string.Empty),
-                    Unit = record["unit"].As<string>(),
-                    Quantity = record["quantity"].As<double>(),
-                    Qualifier = record["qualifier"].As<string>(),
+                    Unit = record["unit"]?.As<string>() ?? string.Empty,
+                    Quantity = record["quantity"]?.As<double>() ?? 0.0,
+                    Qualifier = record["qualifier"]?.As<string>() ?? string.Empty,
                     isChecked = record["checked"].As<bool>()
                 };
 
@@ -2341,8 +2345,9 @@ public class DBQueryModel
             var record = irol.First<IRecord>();
             return record[0].As<bool>();
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return false;
         }
         finally

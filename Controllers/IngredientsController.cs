@@ -54,8 +54,9 @@ public class IngredientsController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
         

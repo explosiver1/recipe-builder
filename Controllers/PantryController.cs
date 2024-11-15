@@ -22,8 +22,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
 
@@ -61,8 +62,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
             CtrlModel.AddItemToPantry(pantryVM.newIngredient, at.username);
@@ -82,8 +84,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
             CtrlModel.EditItemInPantry(new IngredientDetail() { Name = name, Quantity = Convert.ToDouble(quantity), Qualifier = qualifier, Unit = unit }, at.username);
@@ -102,8 +105,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
             bool success = CtrlModel.MoveItemBetweenLists(at.username, itemName, toPantry: false);
@@ -122,8 +126,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
             bool success = CtrlModel.MoveItemBetweenLists(at.username, itemName, toPantry: true);
@@ -143,8 +148,9 @@ namespace RecipeBuilder.Controllers
                     throw new Exception("Authentication Expired. Please login again.");
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
             //var ingredient = CtrlModel.GetIngredientByNameFromShoppingList(itemName, at.username);

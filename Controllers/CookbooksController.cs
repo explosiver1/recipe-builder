@@ -22,8 +22,9 @@ public class CookbooksController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
         CookbooksIndexVM viewModel = new CookbooksIndexVM();
@@ -54,8 +55,9 @@ public class CookbooksController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
         Cookbook cookbookModel;
@@ -96,8 +98,9 @@ public class CookbooksController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
 
@@ -156,8 +159,9 @@ public class CookbooksController : Controller
                 throw new Exception("Authentication Expired. Please login again.");
             }
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
 

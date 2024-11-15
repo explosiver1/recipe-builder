@@ -348,8 +348,9 @@ public static class CtrlModel
         {
             return DBQueryModel.GetShoppingListIngredient(username, ingName).Result;
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             return new IngredientDetail();
         }
     }

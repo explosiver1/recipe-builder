@@ -40,8 +40,9 @@ public class HomeController : Controller
             HttpContext.Session.SetString("authToken", JsonConvert.SerializeObject(at));
             Console.WriteLine("Logout complete. AuthToken set to expired");
         }
-        catch (Exception e)
+        catch (Exception ex)
         {
+            Console.WriteLine($"An error occurred: {ex.Message}");
             Console.WriteLine("Error at logout. Were you logged in?");
         }
 
