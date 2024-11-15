@@ -47,8 +47,8 @@ public static class SeedData
 
     public static Recipe FriedRice = new Recipe
     {
-        Name = "FriedRice",
-        Description = "",
+        Name = "Fried Rice",
+        Description = "Better than Panda Express!",
         Difficulty = 2,
         Rating = 4,
         PrepTime = 5,
@@ -88,8 +88,8 @@ public static class SeedData
 
     public static Recipe GrilledSteak = new Recipe
     {
-        Name = "GrilledSteak",
-        Description = "",
+        Name = "Grilled Steak",
+        Description = "Easy, delicious steak!",
         Difficulty = 1,
         Rating = 5,
         PrepTime = 10,
@@ -102,7 +102,7 @@ public static class SeedData
             new IngredientDetail{Ingredient = Steak,Name = "Steak", Qualifier = "", Quantity = 2, Unit = "Steaks"},
             new IngredientDetail{Ingredient = Rosemary,Name = "Rosemary", Qualifier = "whole", Quantity = 1, Unit = "tsp"},
             new IngredientDetail{Ingredient = Garlic,Name = "Garlic", Qualifier = "minced", Quantity = 1, Unit = "Tbsp"},
-            new IngredientDetail{Ingredient = Worcestershire,Name = "Worcestershire Sauce", Qualifier = "", Quantity = 1/2, Unit = "cup"},
+            new IngredientDetail{Ingredient = Worcestershire,Name = "Worcestershire Sauce", Qualifier = "", Quantity = 0.5, Unit = "cup"},
     ],
         Instructions = [
             "Place steaks in a bowl or baking dish and add worcestershire, garlic, and rosemary.",
@@ -114,10 +114,10 @@ public static class SeedData
     public static Recipe SteamedBroccoli = new Recipe
     {
         Name = "Steamed Broccoli",
-        Description = "",
+        Description = "Editable Trees",
         Difficulty = 1,
         Rating = 3,
-        PrepTime = 0,
+        PrepTime = 1,
         CookTime = 10,
         servingSize = "serving",
         numServings = 1,
@@ -141,10 +141,10 @@ public static class SeedData
     public static Recipe ButteredPeasAndCarrots = new Recipe
     {
         Name = "Buttered Peas and Carrots",
-        Description = "",
+        Description = "Yummy Veggies",
         Difficulty = 1,
         Rating = 3,
-        PrepTime = 0,
+        PrepTime = 1,
         CookTime = 10,
         servingSize = "serving",
         numServings = 1,
@@ -166,15 +166,15 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
 
     public static Recipe RoastedSweetPotatoes = new Recipe
     {
-        Name = "RoastedSweetPotatoes",
-        Description = "",
-        Difficulty = 0,
-        Rating = 0,
-        PrepTime = 0,
-        CookTime = 0,
-        servingSize = "",
-        numServings = 12,
-        Tags = [""],
+        Name = "Roasted Sweet Potatoes",
+        Description = "Homemade sweetm potato fries.",
+        Difficulty = 2,
+        Rating = 4,
+        PrepTime = 5,
+        CookTime = 12,
+        servingSize = "servings",
+        numServings = 2,
+        Tags = ["side"],
         Equipment = ["Air Fryer"],
         Ingredients = [
     new IngredientDetail{Ingredient = SweetPotato, Name = "Sweet Potatoes", Qualifier = "Cut Uniformly", Quantity = 1, Unit = "potato"},
@@ -193,8 +193,8 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
     
     public static Recipe BakedSweetPotato = new Recipe
     {
-        Name = "BakedSweetPotato",
-        Description = "",
+        Name = "Baked Sweet Potato",
+        Description = "Who knew eatting veggies could be like candy?",
         Difficulty = 1,
         Rating = 2,
         PrepTime = 1,
@@ -219,7 +219,7 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
     public static Recipe RoastBeefwGravy = new Recipe
     {
         Name = "Roast Beef with Gravy",
-        Description = "",
+        Description = "Country cookin at its finest",
         Difficulty = 1,
         Rating = 4,
         PrepTime = 5,
@@ -248,8 +248,8 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
     public static Recipe MashedPotatoes = new Recipe
     {
         Name = "Mashed Potatoes",
-        Description = "",
-        Difficulty = 0,
+        Description = "The side that goes with everything",
+        Difficulty = 1,
         Rating = 5,
         PrepTime = 15,
         CookTime = 20,
@@ -281,8 +281,8 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
         Description = "Best chocolate chip cookies!",
         Difficulty = 1,
         Rating = 5,
-        PrepTime = 0,
-        CookTime = 0,
+        PrepTime = 10,
+        CookTime = 40,
         servingSize = "Cookies",
         numServings = 12,
         Tags = ["Desserts", "Cookies", "Chocolate"],
@@ -315,11 +315,11 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
     public static Recipe SugarCookies = new Recipe
     {
         Name = "Sugar Cookies",
-        Description = "",
-        Difficulty = 0,
-        Rating = 0,
-        PrepTime = 0,
-        CookTime = 0,
+        Description = "Just like grandma made em",
+        Difficulty = 3,
+        Rating = 4,
+        PrepTime = 10,
+        CookTime = 40,
         servingSize = "Cookies",
         numServings = 48,
         Tags = ["Desserts", "Cookies"],

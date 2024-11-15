@@ -93,7 +93,7 @@
             });
         }
 
-        // Edit item - client side only (changes text to text boxes & edit button to save)
+        // Edit item 
         function editRow(button)
         {
             // Get row of button
@@ -121,6 +121,7 @@
             //button.setAttribute('onclick', 'cancelEdit(this)');
         }
 
+        // Cancel edit
         function cancelEdit(span)
         {
             //var row = button.closest('tr');
@@ -208,6 +209,7 @@
                             <th>Description</th>
                             <th></th>
                             <th></th>
+                                <th></th>
                         </tr>
                     </thead>
                 @foreach (var item in ABCList.Value)
@@ -244,4 +246,3 @@
         <span onclick="cancelEdit()">Cancel</span>
     </dialog>
 </body>
-</html>

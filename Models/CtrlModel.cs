@@ -290,6 +290,20 @@ public static class CtrlModel
         }
     }
 
+    public static bool EditShoppingListItem(string username, IngredientDetail item)
+    {
+        try
+        {
+            RemoveItemFromShoppingList(username, item.Name);
+            return AddItemToShoppingList(username, item);
+            
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     // Checks off an ingredient in the shopping list (can also remove it if desired)
     //
     public static bool CheckItemOffShoppingList(string username, string ingredient)
@@ -423,11 +437,10 @@ public static class CtrlModel
 
     }
 
-    public static async void EditItemInPantry(IngredientDetail itemToEdit, string userName)
+    public static bool EditItemInPantry(IngredientDetail itemToEdit, string userName)
     {
-        await DBQueryModel.RemoveFromPantry(userName, itemToEdit.Name);
-        await DBQueryModel.AddToPantry(userName, "", itemToEdit.Name, itemToEdit.Unit, itemToEdit.Qualifier, itemToEdit.Quantity);
-        return;
+        RemoveItemFromPantry(userName, itemToEdit.Name);
+        return AddItemToPantry(itemToEdit, userName);
     }
     public static Dictionary<string, List<string>> GetABCListDict(List<string> myList)
     {

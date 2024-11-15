@@ -71,8 +71,9 @@ public class ShoppingListController : Controller
 
     // Add method (POST): Handles form submission to add a new item to the shopping list
     [HttpPost]
-    public IActionResult AddItemToShoppingList(IngredientDetail item)
+    public IActionResult AddItemToShoppingList(ShoppingListIndexVM SLVM)
     {
+        SLVM.newIngredient.DisplayIngredientDetail();
         AuthToken at;
         try
         {
@@ -87,18 +88,14 @@ public class ShoppingListController : Controller
             Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
-        if (!ModelState.IsValid)
-        {
-            return RedirectToAction("Index");
-        }
 
-        CtrlModel.AddItemToShoppingList(at.username, item); // Method to add ingredient to shopping list
-        return RedirectToAction("Index");
+        CtrlModel.AddItemToShoppingList(at.username, SLVM.newIngredient); // Method to add ingredient to shopping list
+        return RedirectToAction("Index", "ShoppingList");
     }
 
     // Remove method: Removes an item from the shopping list
     [HttpPost]
-    public IActionResult Remove(string ingredientName)
+    public IActionResult RemoveFromShoppingList(string ingredientName)
     {
         AuthToken at;
         try
@@ -125,6 +122,29 @@ public class ShoppingListController : Controller
         return RedirectToAction("Index");
     }
 
+    // Remove method: Removes an item from the shopping list
+    [HttpPost]
+    public IActionResult EditShoppingListItem(IngredientDetail item)
+    {
+        AuthToken at;
+        try
+        {
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            if (!at.Validate())
+            {
+                throw new Exception("Authentication Expired. Please login again.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return RedirectToAction("Index", "Home");
+        }
+
+        CtrlModel.EditShoppingListItem(at.username, item);
+        return RedirectToAction("Index", "ShoppingList");
+    }
+        
     // CheckItemOff method: Marks an item as checked off in the shopping list
     [HttpPost]
     public IActionResult CheckItemOff(string ingredientName)
