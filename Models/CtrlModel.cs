@@ -30,7 +30,7 @@ public static class CtrlModel
     {
         Cookbook? cookbookObj = DBQueryModel.GetCookbook(cookbookName, username).Result; //SeedData.GetCookbook(cookbookName);// Update to be DBQueryModel Function Call
         return cookbookObj;
-    }    
+    }
 
     public static List<Recipe> GetRecipeList(string username)//string userName)
 
@@ -297,7 +297,7 @@ public static class CtrlModel
         {
             RemoveItemFromShoppingList(username, item.Name);
             return AddItemToShoppingList(username, item);
-            
+
         }
         catch
         {
@@ -474,7 +474,7 @@ public static class CtrlModel
     {
         List<IngredientDetail> ABCList = myList.OrderBy(x => x.Name).ToList();
         Dictionary<string, List<IngredientDetail>> myDictionary = new Dictionary<string, List<IngredientDetail>>();
-        
+
         foreach (IngredientDetail item in ABCList)
         {
             if (item.Name.Length > 0)
@@ -575,16 +575,16 @@ public static class CtrlModel
     }
 
     /* Retrieve meals for a week */
-    public static MPWeek GetMealsForWeek(DateOnly selectedDate, string username) 
+    public static MPWeek GetMealsForWeek(DateOnly selectedDate, string username)
     {
         // Determine the dates of all the days in the same week as the given date
-        List < DateOnly > weekDates = DateHelper.GetDatesForWeek(selectedDate);
+        List<DateOnly> weekDates = DateHelper.GetDatesForWeek(selectedDate);
 
         // Create & populate a week of mealsets (MPWeek) for this date's week
         MPWeek weekMeals = new MPWeek();
         foreach (DateOnly day in weekDates)
         {
-            weekMeals.Days.Add( GetMealsForDate(day, username) );
+            weekMeals.Days.Add(GetMealsForDate(day, username));
         }
         return weekMeals;
     }
@@ -616,7 +616,6 @@ public static class CtrlModel
         for (DateOnly startOfWeek = startOfFirstWeekOfMonth; startOfWeek <= startOfLastWeekOfMonth; startOfWeek = startOfWeek.AddDays(7))
         {
             MPWeek currentWeek = GetMealsForWeek(startOfWeek, username);
-
             // Add week to month
             month.weeks.Add(currentWeek);
             Console.WriteLine("Added new week");
@@ -681,7 +680,7 @@ public static class CtrlModel
         {
             if (!DBQueryModel.RemoveFromCookbook(username, cookbookName, recipeName).Result)
             {
-                throw new Exception("DBQueryModel.AddToCookbook returned false");
+                throw new Exception("DBQueryModel.RemoveFromCookbook returned false");
             }
         }
         catch (Exception e)
@@ -710,6 +709,7 @@ public static class CtrlModel
 
     public static void EditCookbook(string username, string cookbookName, string description)
     {
+        Console.WriteLine($"Entering CtrlModel.EditCookbook with parameters: username: {username}, cookbookName: {cookbookName}, description: {description}");
         bool success = DBQueryModel.EditCookBook(username, cookbookName, description).Result;
     }
     public static IngredientDetail? GetIngredientDetailFromShoppingList(IngredientDetail ingredientDetail, string username)
@@ -748,7 +748,7 @@ public static class CtrlModel
                             }
                         }
                     }
-                    
+
                 }
                 catch (Exception e)
                 {
