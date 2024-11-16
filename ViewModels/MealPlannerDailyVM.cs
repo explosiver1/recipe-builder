@@ -12,7 +12,8 @@ namespace RecipeBuilder.ViewModels
         public List<string> UserMealsNames { get; set; } = new List<string>();
         // The following are to track data for a recipe that needs removed from a meal
         public int mealNum { get; set; }
-         
+        public string recipeToRemove { get; set; } = "";
+        public DateOnly date { get; set; }
         public string? msg { get; set; }
     }
 }

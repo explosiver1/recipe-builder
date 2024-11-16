@@ -199,7 +199,7 @@ public class MealPlannerController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        //CtrlModel.RemoveFromMealPlanner(data., at.username);
+        CtrlModel.RemoveFromMealPlanner(data.date, data.mealNum, data.recipeToRemove, at.username);
         return RedirectToAction("Index");
     }
 
