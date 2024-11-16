@@ -5,9 +5,9 @@
 }
 
 <style>
-    /* styling for title */
     h1 {
         color: #4A743E;
+        text-align: center;
     }
 
     /* button styling */
@@ -24,70 +24,89 @@
         transition: background-color 0.3s ease;
     }
 
-    .btn-custom:hover {
-        background-color: #96AE6D;
-    }
-
-    /* search button styling */
-    .btn-search {
-        background-color: #4A743E;
+    .btn-custom-remove {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
         color: white;
+        background-color: #c30010;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        transition: background-color 0.3s ease;
     }
 
-    .btn-search:hover {
+     .btn-custom:hover {
         background-color: #96AE6D;
+     }
+
+    .btn-custom-remove:hover {
+        background-color: #f94449;
     }
 
     /* align buttons side by side */
-    .input-group .btn {
-        margin-left: 10px;
+    .button-container {
+        display: inline-block;
+        margin: 0 10px;
+    }
+
+    .block {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        justify-content: center;
+        background-color: #F5F5F5;
+        border-radius: 5px;
+        width: 100%;
+        max-width: 300px;
+        padding: 10px;
+        text-align: center;
     }
 </style>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div style="width: 120px;"></div>
-    <h1 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">My Meals</h1>
-    <hr class="rounded">
-    <a asp-controller="Meals" asp-action="Create" class="btn btn-custom">Create New Meal</a>
+    <h1 class="text-center flex-grow-1 display-4" style="margin: 0;">My Meals</h1>
+    <div class="button-container">
+        <a asp-controller="Meals" asp-action="Create" class="btn btn-custom">Create New Meal</a>
+    </div>
 </div>
+
 <div class="text-center">
     @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for search *@
     <div class="form-group">
-        <input type="text" class="form-control" placeholder="Search Recipes..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
+        <input type="text" class="form-control" placeholder="Search Meals..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
     </div><br>
-    <button type="submit" class="btn btn-search ml-2">Search</button>
+    <button type="submit" class="btn btn-custom ml-2">Search</button>
     @*</form>*@
-</div><br>
+</div>
+<br>
 
 <div class="row">
     @if (@Model.meals != null && @Model.meals.Any())
     {
-        @foreach (MealSet meal in @Model.meals)
+        @foreach (var meal in Model.meals)
         {
             <div class="col-md-4">
-                <p>@meal.Name</p>
-                <div class="card mb-4"> Meals Card View
-                    <div class="card-body">
-                        <h5 class="card-title">@meal.Name</h5>
-                        <p class="card-text">Description</p>
-                        <a asp-action="Look" asp-route-id="@meal.Name">@meal.Name</a>
+                <div class="block">
+                    <h4 style="color: #4A743E;">@meal.Name</h4>
+                    <div class="button-container">
+                        <a asp-action="Look" asp-route-id="@meal.Name" class="btn btn-custom">View</a>
                     </div>
+                    <div class="button-container">
+                        <a asp-action="Edit" asp-route-id="@meal.Name" class="btn btn-custom">Edit</a>
+                    </div>
+                    <form method="post" asp-controller="Meals" asp-action="RemoveMeal">
+                        <input type="hidden" name="mealToRemove" value="@meal.Name" />
+                        <div class="button-container">
+                            <button type="submit" class="btn btn-custom-remove">Remove</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="button-container">
-                    <a asp-action="Look" asp-route-id="@meal.Name" class="btn btn-custom">View @meal.Name</a>
-                </div><br>
-                <div class="button-container">
-                    <a asp-action="Edit" asp-route-id="@meal.Name" class="btn btn-custom">Edit @meal.Name</a>
-                </div><br>
             </div>
-            <form method="post" asp-controller="Meals" asp-action="RemoveMeal" >
-                <input type="hidden" name="mealToRemove" value="@meal.Name"/>
-                <div class="button-container">
-                    <button type="submit">Remove Meal</button>
-                </div><br>
-            </form>
         }
-        <p> Here we display the all the meals</p>
     }
     else
     {

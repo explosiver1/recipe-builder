@@ -25,9 +25,9 @@
             transition: background-color 0.3s ease;
         }
 
-        button:hover {
-            background-color: #96AE6D;
-        }
+            button:hover {
+                background-color: #96AE6D;
+            }
 
         /* remove button styling */
         .remove-btn {
@@ -35,9 +35,9 @@
             margin-left: 10px;
         }
 
-        .remove-btn:hover {
-            background-color: #c82333;
-        }
+            .remove-btn:hover {
+                background-color: #c82333;
+            }
 
         /* background styling for the shopping list */
         #shoppingListContainer {
@@ -48,7 +48,7 @@
             margin: auto;
         }
 
-        
+
         .smallInput {
             width: 80px;
         }
@@ -59,13 +59,13 @@
             padding-left: 0;
         }
 
-        #shoppingListContainer ul li {
-            font-size: 18px;
-            margin: 5px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+            #shoppingListContainer ul li {
+                font-size: 18px;
+                margin: 5px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
 
         /* ensure checkbox and text stay on the left side */
         .item-left {
@@ -108,7 +108,7 @@
             margin-right: 10px;
         }
 
-        .checked-row{
+        .checked-row {
             background-color: #d3d3d3;
             text-decoration: line-through;
         }
@@ -142,10 +142,10 @@
             // Get row of button
             var row = button.closest('tr');
             var cells = row.querySelectorAll('.editable');
-            //cells[0].innerHTML = `<input type="text" name="name" value="${cells[0].textContent}" readonly/>`;
-            //cells[1].innerHTML = `<input type="text" name="quantity" value="${cells[1].textContent}" />`;
-            //cells[2].innerHTML = `<input type="text" name="unit" value="${cells[2].textContent}" />`;
-            //cells[3].innerHTML = `<input type="text" name="qualifier" value="${cells[3].textContent}" />`;
+            //cells[0].innerHTML = <input type="text" name="name" value="${cells[0].textContent}" readonly/>;
+            //cells[1].innerHTML = <input type="text" name="quantity" value="${cells[1].textContent}" />;
+            //cells[2].innerHTML = <input type="text" name="unit" value="${cells[2].textContent}" />;
+            //cells[3].innerHTML = <input type="text" name="qualifier" value="${cells[3].textContent}" />;
             //var subButton = row.querySelector('.edit-form').querySelector('button[type="submit"]');
             //if (subButton) {
             //subButton.removeAttribute('hidden');
@@ -168,10 +168,10 @@
         function cancelEdit(span) {
             //var row = button.closest('tr');
             //var cells = row.querySelectorAll('input[type="text"]');
-            //cells[0].innerHTML = `<input type="text" name="name" value="${cells[0].textContent}" readonly/>`;
-            //cells[1].innerHTML = `<input type="text" name="quantity" value="${cells[1].textContent}" />`;
-            //cells[2].innerHTML = `<input type="text" name="unit" value="${cells[2].textContent}" />`;
-            //cells[3].innerHTML = `<input type="text" name="qualifier" value="${cells[3].textContent}" />`;
+            //cells[0].innerHTML = <input type="text" name="name" value="${cells[0].textContent}" readonly/>;
+            //cells[1].innerHTML = <input type="text" name="quantity" value="${cells[1].textContent}" />;
+            //cells[2].innerHTML = <input type="text" name="unit" value="${cells[2].textContent}" />;
+            //cells[3].innerHTML = <input type="text" name="qualifier" value="${cells[3].textContent}" />;
             //var subbutton = row.querySelector('.edit-form').querySelector('button[type="submit"]');
             //if(subbutton){
             //subbutton.setAttribute('hidden', 'hidden');
@@ -191,7 +191,7 @@
         //     var cells = row.querySelectorAll('.editable');
         //     cells.forEach(function (cell) {
         //         var currentText = cell.textContent;
-        //         cell.innerHTML = `<input type="text" value="${currentText}" />`;
+        //         cell.innerHTML = <input type="text" value="${currentText}" />;
         //     });
 
         //     button.textContent = 'Save';
@@ -288,7 +288,7 @@
 
         // Function to add an item from the shopping list to the pantry
         function addToPantry(itemName) {
-            fetch(`/ShoppingList/AddItemToPantry?itemName=${itemName}`, {
+            fetch(/ShoppingList/AddItemToPantry ? itemName = ${ itemName }, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -297,7 +297,7 @@
             })
                 .then(response => {
                     if (response.ok) {
-                        alert(`${itemName} added to pantry!`);
+                        alert(${ itemName } added to pantry!);
                         location.reload(); // Optionally reload to see the changes
                     } else {
                         alert("Failed to add item to pantry.");
@@ -340,7 +340,7 @@
             </table>
         </form>
     </div>
-    
+
     <br />
 
     <!-- View current shopping list items -->
@@ -383,7 +383,7 @@
                         <tbody>
                             <tr>
                                 <td><input class="item-left" type="checkbox" onchange="toggleCompletion(this)"></td>
-                                <td class="editable"><a href="/Recipe/Index/@item.Name">@item.Name</a></td>
+                                <td class="editable"><a href="@Url.Action("Index", "Recipe", new { name = item.Name })">@item.Name</a></td>
                                 <td class="editable">@item.Quantity</td>
                                 <td class="editable">@item.Unit</td>
                                 <td class="editable">@item.Qualifier</td>
@@ -391,7 +391,7 @@
                                 <td><button onclick="editRow(this)" class="btn btn-custom">Edit</button></td>
                                 <form method="post" asp-controller="ShoppingList" asp-action="RemoveFromShoppingList">
                                     <input type="hidden" name="ingredientName" value="@item.Name" />
-                                    <td><button type="submit" class="btn btn-custom">Delete</button></td>
+                                <td><button type="submit" class="btn btn-custom">Delete</button></td>
                                 </form>
                             </tr>
                         </tbody>
@@ -400,22 +400,22 @@
             }
         </div>
         @* <ul id="shoppingList">
-            @if (@Model.items.Count != 0) {
-                foreach (var item in @Model.items) {
-                    <li>
-                        <div class="item-left">
-                            <input type="checkbox" onchange="toggleCompletion(this)">
-                            <span>@item.Name</span>
-                        </div>
-                        <div class="button-container">
-                            <button class="pantry-btn" onclick="addToPantry('@item.Name')">Add to Pantry</button>
-                            <button class="remove-btn" onclick="removeItem(this)">Remove</button>
-                        </div>
-                    </li>
-                }
-            } else {
-                <p>No items in the shopping list.</p>
-            }
+        @if (@Model.items.Count != 0) {
+        foreach (var item in @Model.items) {
+        <li>
+        <div class="item-left">
+        <input type="checkbox" onchange="toggleCompletion(this)">
+        <span>@item.Name</span>
+        </div>
+        <div class="button-container">
+        <button class="pantry-btn" onclick="addToPantry('@item.Name')">Add to Pantry</button>
+        <button class="remove-btn" onclick="removeItem(this)">Remove</button>
+        </div>
+        </li>
+        }
+        } else {
+        <p>No items in the shopping list.</p>
+        }
         </ul> *@
     </div>
 
