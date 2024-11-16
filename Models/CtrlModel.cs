@@ -530,7 +530,7 @@ public static class CtrlModel
             {
                 foreach (string recipeName in meal.recipeNames)
                 {
-                    if (!DBQueryModel.ScheduleRecipe(username, recipeName, meal.date.ToString(), i).Result)
+                    if (!DBQueryModel.ScheduleRecipe(username, recipeName, mealPlannerDay.Date.ToString(), i).Result)
                     {
                         throw new Exception("Recipe could not be added. Return of false from DBQueryModel.ScheduleRecipe()");
                     }

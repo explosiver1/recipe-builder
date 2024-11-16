@@ -2030,6 +2030,7 @@ public class DBQueryModel
     // Simultaneously creates the meal if it didn't exist already
     public static async Task<bool> ScheduleRecipe(string username, string recipe, string date, int order)
     {
+        Console.WriteLine("DBQuery ScheduleRecipe received date: " + date);
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (recipe:Recipe{name:$recipeName})

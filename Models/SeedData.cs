@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RecipeBuilder.Models;
 
@@ -679,6 +680,7 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
             //Insert block for scheduling recipes onto meal planner.
             foreach (MPDay day in GetMealsForWeek().Days)
             {
+                Console.WriteLine("SeedData Seed method is sending date: " + day.Date);
                 CtrlModel.SaveMealPlannerToNeo4j(day, username);
             }
 
