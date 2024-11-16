@@ -95,7 +95,7 @@
                             <div class="button-container">
                                 <a asp-controller="Recipe" asp-action="Look" asp-route-cookbookName="@Model.cookbook.Title" asp-route-recipeName="@recipeName" class="btn btn-primary">View</a>
                                 <form method="post" asp-controller="Cookbooks" asp-action="RemoveRecipe">
-                                    <input type="hidden" name="cookbookTitle" value="@recipeName" />
+                                    <input type="hidden" name="recipeToRemove" value="@recipeName" />
                                     <input type="hidden" name="cookbookTitle" value="@Model.cookbook.Title" />
                                     <button type="submit" class="btn-custom-remove">Remove Recipe</button>
                                 </form>
