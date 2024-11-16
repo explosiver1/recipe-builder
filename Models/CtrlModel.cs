@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RecipeBuilder.Models;
 
@@ -546,7 +547,11 @@ public static class CtrlModel
         }
 
     }
-
+    public static void RemoveFromMealPlanner(DateOnly date, int mealNum, string recipeToRemove, string username)
+    {
+        Console.WriteLine("Attempting to remove recipe from meal planner\nDate: " + date + "\nMeal Number: " + mealNum + "\nRecipe: " + recipeToRemove);
+        var result = DBQueryModel.UnScheduleRecipe(username, recipeToRemove,date.ToString(),mealNum.ToString());
+    }
 
     // Placeholder method to simulate getting all meals
     public static List<MealSet> GetAllMeals(string username)
