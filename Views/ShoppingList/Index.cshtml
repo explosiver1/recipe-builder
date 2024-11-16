@@ -10,36 +10,6 @@
     <title>Shopping List</title>
 
     <style>
-        /* button styling */
-        button {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            color: white;
-            background-color: #4A743E;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-            button:hover {
-                background-color: #96AE6D;
-            }
-
-        /* remove button styling */
-        .remove-btn {
-            background-color: #dc3545;
-            margin-left: 10px;
-        }
-
-            .remove-btn:hover {
-                background-color: #c82333;
-            }
-
-        /* background styling for the shopping list */
         #shoppingListContainer {
             background-color: #F4F3EC;
             padding: 20px;
@@ -47,7 +17,6 @@
             max-width: 900px;
             margin: auto;
         }
-
 
         .smallInput {
             width: 80px;
@@ -57,15 +26,53 @@
         #shoppingListContainer ul {
             list-style-type: none;
             padding-left: 0;
+            color: #4A743E;
+
         }
 
-            #shoppingListContainer ul li {
+        #shoppingListContainer ul li {
                 font-size: 18px;
                 margin: 5px 0;
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-            }
+        }
+
+        #shoppingListContainer form {
+            display: inline; /* Keep the form inline with the text */
+        }
+
+        #shoppingListContainer a, #shoppingListContainer button {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #96AE6D;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        #shoppingListContainer a:hover, #shoppingListContainer button:hover {
+            text-decoration: underline;
+        }
+
+        .alphabet {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .alphabet a {
+            margin: 0 10px;
+            text-decoration: none;
+            color: #4A743E;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .alphabet a:hover {
+            color: #96AE6D;
+        } 
+
 
         /* ensure checkbox and text stay on the left side */
         .item-left {
@@ -77,11 +84,11 @@
             margin-right: 10px;
         }
 
-        /* button container for Add to Pantry and Remove buttons */
+        @* /* button container for Add to Pantry and Remove buttons */
         .button-container {
             display: flex;
             justify-content: flex-end;
-        }
+        } *@
 
         /* strikethrough effect only on text, not buttons */
         .completed {
@@ -277,14 +284,16 @@
 
         // toggle completion status of items
         function toggleCompletion(checkbox) {
-            const row = checkbox.closest('tr')
+            const li = checkbox.closest('li');  // get the closest li element
+            const itemText = li.querySelector('span');  // find the span inside li
+
             if (checkbox.checked) {
-                row.classList.add('checked-row');
-            }
-            else {
-                row.classList.remove('checked-row')
+                itemText.classList.add('completed'); // Add the 'completed' class for strikethrough
+            } else {
+                itemText.classList.remove('completed'); // Remove the 'completed' class
             }
         }
+
 
         // Function to add an item from the shopping list to the pantry
         function addToPantry(itemName) {
@@ -309,13 +318,13 @@
 </head>
 
 <body>
-    <!-- Page Heading -->
+    <!-- page heading -->
     <div class="text-center">
         <h1 class="display-4" style="color: #4A743E;">Shopping List</h1>
         <br>
     </div>
 
-    <!-- Add to shopping list 'form' -->
+    <!-- add to shopping list 'form' -->
     <div id="shoppingListContainer" class="table-responsive">
         <form asp-action="AddItemToShoppingList" method="post">
             <table class="table">
@@ -343,16 +352,16 @@
 
     <br />
 
-    <!-- View current shopping list items -->
+    <!-- view current shopping list items -->
     <div id="shoppingListContainer">
-        <!-- Search Bar -->
+        <!-- search Bar -->
         <div class="text-center">
             <div class="search-container">
                 <input type="text" id="ingredientSearch" placeholder="Search" oninput="scrollToIngredient()">
             </div>
         </div>
 
-        <!-- ABC Nav Bar -->
+        <!-- ABC nav bar -->
         <div class="alphabet">
             @foreach (var letter in @Model.ABCShoppingList.Keys)
             {
@@ -360,7 +369,7 @@
             }
         </div>
 
-        <!-- Current shopping list items -->
+        <!-- current shopping list items -->
         <div class="table-responsive">
             @foreach (var ABCList in @Model.ABCShoppingList)
             {
@@ -383,7 +392,11 @@
                         <tbody>
                             <tr>
                                 <td><input class="item-left" type="checkbox" onchange="toggleCompletion(this)"></td>
-                                <td class="editable"><a href="@Url.Action("Index", "Recipe", new { name = item.Name })">@item.Name</a></td>
+                                <td class="editable">
+                                    <a href="@Url.Action("Index", "Recipe", new { name = item.Name })">
+                                        <span>@item.Name</span> 
+                                    </a>
+                                </td>
                                 <td class="editable">@item.Quantity</td>
                                 <td class="editable">@item.Unit</td>
                                 <td class="editable">@item.Qualifier</td>
@@ -391,14 +404,16 @@
                                 <td><button onclick="editRow(this)" class="btn btn-custom">Edit</button></td>
                                 <form method="post" asp-controller="ShoppingList" asp-action="RemoveFromShoppingList">
                                     <input type="hidden" name="ingredientName" value="@item.Name" />
-                                <td><button type="submit" class="btn btn-custom">Delete</button></td>
+                                    <td><button type="submit" class="btn btn-custom">Delete</button></td>
                                 </form>
                             </tr>
                         </tbody>
                     }
+
                 </table>
             }
         </div>
+
         @* <ul id="shoppingList">
         @if (@Model.items.Count != 0) {
         foreach (var item in @Model.items) {
@@ -418,6 +433,7 @@
         }
         </ul> *@
     </div>
+
 
     <dialog id="editDialog">
         <p>Enter New Properties</p>

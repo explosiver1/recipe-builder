@@ -37,30 +37,35 @@
         transition: background-color 0.3s ease;
     }
 
-     .btn-custom:hover {
+    .btn-custom:hover {
         background-color: #96AE6D;
-     }
+    }
 
     .btn-custom-remove:hover {
         background-color: #f94449;
     }
 
-    /* align buttons side by side */
+    /* Align buttons side by side */
     .button-container {
-        display: inline-block;
-        margin: 0 10px;
+        display: flex; /* Align buttons horizontally */
+        gap: 10px; /* Space between buttons */
+        justify-content: center; /* Center buttons horizontally */
+        margin-top: 10px; /* Space between buttons and meal name */
     }
 
+    .button-container a, .button-container button {
+        width: auto; /* Buttons take up space based on content */
+    }
+
+    /* Meal block styling */
     .block {
         display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
+        flex-direction: column; /* Stack elements vertically */
+        gap: 10px; /* Space between meal name and buttons */
         margin-top: 20px;
         justify-content: center;
         background-color: #F5F5F5;
         border-radius: 5px;
-        width: 100%;
-        max-width: 300px;
         padding: 10px;
         text-align: center;
     }
@@ -75,12 +80,10 @@
 </div>
 
 <div class="text-center">
-    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for search *@
     <div class="form-group">
         <input type="text" class="form-control" placeholder="Search Meals..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
     </div><br>
     <button type="submit" class="btn btn-custom ml-2">Search</button>
-    @*</form>*@
 </div>
 <br>
 
@@ -94,8 +97,6 @@
                     <h4 style="color: #4A743E;">@meal.Name</h4>
                     <div class="button-container">
                         <a asp-action="Look" asp-route-id="@meal.Name" class="btn btn-custom">View</a>
-                    </div>
-                    <div class="button-container">
                         <a asp-action="Edit" asp-route-id="@meal.Name" class="btn btn-custom">Edit</a>
                     </div>
                     <form method="post" asp-controller="Meals" asp-action="RemoveMeal">
