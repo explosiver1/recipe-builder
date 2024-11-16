@@ -101,8 +101,10 @@
                 <div id="meal-list">
                     @foreach (MPMeal meal in Model.mealPlansForDay.Meals)
                     {
+                        int mealIndex = Model.mealPlansForDay.Meals.IndexOf(meal); 
+                        
                         <div class="meal-entry" id="table-container">
-                            <p><strong>Meal: </strong></p>
+                            <p><strong>Meal: @(@mealIndex + 1)</strong></p>
                             <div class="currentMeal">
                                 <table id="currentMealTable">
                                     <thead>
@@ -117,7 +119,9 @@
                                             <tr>
                                                 <td class="editable"><a href="/Recipe/Look?recipeName=@recipeName">@recipeName</a></td>
                                                 <form method="post" asp-controller="MealPlanner" asp-action="RemoveFromMealPlanner">
-                                                    <input type="hidden" name="recipeName" value="@recipeName" />
+                                                    <input type="hidden" name="recipeToRemove" value="@recipeName" />
+                                                    <input type="hidden" name="date" value="@Model.mealPlansForDay.Date" />
+                                                    <input type="hidden" name="mealNum" value="@mealIndex" />
                                                     <td><button type="submit" class="btn btn-custom">Delete</button></td>
                                                 </form>
                                             </tr>

@@ -5,6 +5,7 @@ using RecipeBuilder.ViewModels;
 using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RecipeBuilder.Controllers;
 
@@ -129,6 +130,8 @@ public class MealPlannerController : Controller
 
         MealPlannerDailyVM viewModel = new MealPlannerDailyVM();
         viewModel.mealPlansForDay = CtrlModel.GetMealsForDate(date, at.username);
+        viewModel.UserMealsNames = CtrlModel.GetUserMealNames(at.username);
+        viewModel.UserRecipesNames = CtrlModel.GetRecipeNameList(at.username);
 
         return View(viewModel);
     }
@@ -199,8 +202,10 @@ public class MealPlannerController : Controller
             return RedirectToAction("Index", "Home");
         }
 
+        Console.WriteLine("Received this data from view to remove recipe from meal planner\nDate: " + data.date + "\nMeal Number: " + data.mealNum + "\nRecipe: " + data.recipeToRemove);
+
         CtrlModel.RemoveFromMealPlanner(data.date, data.mealNum, data.recipeToRemove, at.username);
-        return RedirectToAction("Index");
+        return RedirectToAction("Daily", new { date = data.date});
     }
 
         
