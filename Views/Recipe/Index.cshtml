@@ -28,6 +28,23 @@
         background-color: #96AE6D;
     }
 
+    .btn-custom-remove {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #c30010;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-custom-remove:hover {
+        background-color: #f94449;
+    }
+
     /* create button styling */
     .btn-create {
         background-color: #4A743E;
@@ -113,7 +130,7 @@
                     <form method="post" asp-controller="Recipe" asp-action="RemoveRecipe" >
                                 <input type="hidden" name="recipeToRemove" value="@recipe.Name"/>
                                 <div class="button-container">
-                                    <button type="submit">Remove Recipe</button>
+                                    <button type="submit" class="btn btn-custom-remove">Remove Recipe</button>
                                 </div>
                     </form>
                 </div>

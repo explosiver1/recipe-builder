@@ -24,8 +24,25 @@
         transition: background-color 0.3s ease;
     }
 
+    .btn-custom-remove {
+        display: inline-block;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #c30010;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 5px;
+        border: none;
+        transition: background-color 0.3s ease;
+    }
+
     .btn-custom:hover {
         background-color: #96AE6D;
+    }
+
+    .btn-custom-remove:hover {
+        background-color: #f94449;
     }
 
     /* search button styling */
@@ -96,7 +113,7 @@
                     <form method="post" asp-controller="Cookbooks" asp-action="RemoveCookbook" >
                                 <input type="hidden" name="cookbookToRemove" value="@cookbook.Title"/>
                                 <div class="button-container">
-                                    <button type="submit">Remove Cookbook</button>
+                                    <button type="submit" class="btn btn-custom-remove">Remove Cookbook</button>
                                 </div>
                     </form>
                 </div>
