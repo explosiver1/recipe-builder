@@ -1579,7 +1579,7 @@ public class DBQueryModel
 
                 while (mp.Count <= order)
                 {
-                    mp.Add(new MPMeal());
+                    mp.Add( new MPMeal() );
                 }
                 mp[order].recipeNames.Add(r);
             });

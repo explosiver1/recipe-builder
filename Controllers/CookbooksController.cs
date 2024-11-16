@@ -45,6 +45,7 @@ public class CookbooksController : Controller
     [HttpGet]
     public IActionResult Cookbook(string name, string msg = "")
     {
+        Console.WriteLine("Cookbook name: " + name);
         //If user isn't logged in, don't allow access to this page - redirect to main site page
         AuthToken at;
         try
@@ -217,18 +218,20 @@ public class CookbooksController : Controller
             Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
-
+        Console.WriteLine("Cookbook name coming from VM: " + viewModel.cookbookName);
         CtrlModel.EditCookbook(at.username, viewModel.cookbookName, viewModel.cookbookDescription);
 
-        if (viewModel.recipesToAdd.Any()) 
+        if (viewModel.recipesToAdd.Any())
         {
+            Console.WriteLine("Found recipes to add");
             foreach (string recipeName in viewModel.recipesToAdd)
             {
                 CtrlModel.AddToCookbook(at.username, viewModel.cookbookName, recipeName);
             }
         }
+        else { Console.WriteLine("No recipes were added"); }
 
-        return RedirectToAction("Cookbook", "Cookbooks", viewModel.cookbookName);
+        return RedirectToAction("Cookbook", "Cookbooks", new { name=viewModel.cookbookName });
     }
 
 
