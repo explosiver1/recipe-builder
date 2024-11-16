@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using RecipeBuilder.Models;
 using RecipeBuilder.ViewModels;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 
 namespace RecipeBuilder.Controllers;
@@ -71,13 +72,46 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Create(CreateAccountModel cam)
     {
+        if (DBQueryModel.CheckUserExistence(cam.username).Result)
+        {
+            return Create("Error, that username is already taken.");
+        }
         Console.WriteLine("Creating Account with parameters: \n" +
          "username: " + cam.username + "\n" +
          "password: " + cam.password + "\n" +
          "email: " + cam.email + "\n" +
          "phoneNumber: " + cam.phoneNumber + "\n" +
          "name: " + cam.name);
-        //TODO - Sanitize UI
+
+        string userRegex = @"\w*@\w*\.\w{2,4}"; //@"^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$";
+
+        //UI Sanitization
+        if (cam.username.Any(ch => !char.IsLetterOrDigit(ch)))
+        {
+            return Create("Error, username uses invalid characters.");
+        }
+        else if (cam.username.Length < 3)
+        {
+            return Create("Error, username must be at least 3 characters.");
+        }
+        else if (cam.password.Any(ch => !char.IsLetterOrDigit(ch)))
+        {
+            return Create("Error, password uses invalid characters.");
+        }
+        else if (cam.password.Length < 8)
+        {
+            return Create("Error, password must be at least 8 characters");
+        }
+        else if (!Regex.Match(cam.email, userRegex).Success)
+        {
+            return Create("Error, email is invalid pattern");
+        }
+        else if (!Regex.Match(cam.phoneNumber, @"\d{10,11}").Success)
+        {
+            return Create("Error, phone number is invalid pattern. Must be 10 numbers with optional 1 digit region code.");
+        }
+
+
         Dictionary<string, string> userData = new Dictionary<string, string>();
         userData["username"] = cam.username;
         userData["password"] = cam.password;
