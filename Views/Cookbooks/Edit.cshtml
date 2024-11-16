@@ -10,6 +10,7 @@
 <form asp-controller="Cookbooks" asp-action="Edit" method="post">
     <div class="form-group">
         <label for="CookbookName">Cookbook Name: @Model.cookbookName</label>
+        <input type="text" name="cookbookName" value=@Model.cookbookName readonly hidden/>
     </div>
 
     <div class="form-group">

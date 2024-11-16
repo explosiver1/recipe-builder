@@ -90,16 +90,16 @@
 <body>
     <div class="container">
         <h1 class="display-4">Daily Meal Planner</h1>
-        <h2 style="color: #4A743E;" class="text-center">@Model.mealPlanner.Date.ToString("dddd M/d/yyyy")</h2>
+        <h2 style="color: #4A743E;" class="text-center">@Model.mealPlansForDay.Date.ToString("dddd M/d/yyyy")</h2>
         <hr class="rounded">
         <br>
         <div id="scheduled-meal-container">
        @*  <form asp-controller="MealPlanner" asp-action="Daily" method="post" id="form"> *@
-            @if (@Model.mealPlanner.ScheduledMeals.Count() != 0)
+            @if (@Model.mealPlansForDay.Meals.Count() != 0)
             {
                 <!-- meal entries -->
                 <div id="meal-list">
-                    @foreach (MealSet meal in Model.mealPlanner.ScheduledMeals)
+                    @foreach (MPMeal meal in Model.mealPlansForDay.Meals)
                     {
                         <div class="meal-entry" id="table-container">
                             <p><strong>Meal: </strong></p>
@@ -111,13 +111,13 @@
                                             <th></th>
                                         </tr>
                                     </thead>
-                                    @foreach (Recipe recipe in meal.Recipes) 
+                                    @foreach (string recipeName in meal.recipeNames)
                                     {
                                         <tbody>
                                             <tr>
-                                                <td class="editable"><a href="/Recipe/Index/@recipe.Name">@recipe.Name</a></td>
+                                                <td class="editable"><a href="/Recipe/Look?recipeName=@recipeName">@recipeName</a></td>
                                                 <form method="post" asp-controller="MealPlanner" asp-action="RemoveFromMealPlanner">
-                                                    <input type="hidden" name="recipeName" value="@recipe.Name" />
+                                                    <input type="hidden" name="recipeName" value="@recipeName" />
                                                     <td><button type="submit" class="btn btn-custom">Delete</button></td>
                                                 </form>
                                             </tr>
@@ -147,7 +147,7 @@
                                                 {
                                                     <tr>
                                                         <td>
-                                                            <select name="meal.MealNames[@i]" value="@Model.mealPlanner.ScheduledMeals">
+                                                            <select name="meal.MealNames[@i]" value="@Model.mealPlansForDay.Meals">
                                                                 <option value="" disabled selected>Select a Meal</option>
                                                                 @foreach(string mealName in Model.UserMealsNames)
                                                                 {
@@ -192,7 +192,7 @@
                                                 {
                                                     <tr>
                                                         <td>
-                                                            <select name="meal.RecipeNames[@i]" value="@Model.mealPlanner.ScheduledMeals">
+                                                                <select name="meal.RecipeNames[@i]" value="@Model.mealPlansForDay.Meals">
                                                                 <option value="" disabled selected>Select a Recipe</option>
                                                                 @foreach(string recipeName in Model.UserRecipesNames)
                                                                 {

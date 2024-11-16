@@ -615,31 +615,7 @@ public static class CtrlModel
         // Loop through each week of the month, starting with first day of week (Sun)
         for (DateOnly startOfWeek = startOfFirstWeekOfMonth; startOfWeek <= startOfLastWeekOfMonth; startOfWeek = startOfWeek.AddDays(7))
         {
-            MPWeek currentWeek = GetMealsForWeek(selectedDate, username);
-            
-            //Console.WriteLine("Created new Week");
-            //// Loop through days of week, populating day data
-            //for (int i = 0; i < 7; i++)
-            //{
-            //    Console.WriteLine("Creating new day for {0}", day);
-            //    // Get data for day
-            //    MPDay currentDay = new MPDay
-            //    {
-            //        Date = day,
-            //        Meals = CtrlModel.getMealsForDate(day, username).Select(meal => new MPMeal
-            //        {
-            //            mealDescription = meal.Description,
-            //            recipes = meal.Recipes
-            //        }).ToList()
-            //    };
-            //    Console.WriteLine("Data for new day obtained");
-            //    // Add day to week
-                //currentWeek.Days.Add(currentDay);
-                //Console.WriteLine("Day added to current week");
-                //// Increment day to next date
-                //day = day.AddDays(1);
-                //Console.WriteLine("Ready for next day: {0}", day);
-            //}
+            MPWeek currentWeek = GetMealsForWeek(startOfWeek, username);
 
             // Add week to month
             month.weeks.Add(currentWeek);
