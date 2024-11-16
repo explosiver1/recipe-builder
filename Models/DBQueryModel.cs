@@ -1574,7 +1574,14 @@ public class DBQueryModel
                 //{
                 //    Name = "",
                 //};
-                mp[record["x"].As<IRelationship>()["order"].As<int>()].recipeNames.Add(r);
+                int order = record["x"].As<IRelationship>()["order"].As<int>();
+
+                if (mp[order] == null)
+                {
+                    mp[order] = new MPMeal();
+                }
+
+                mp[order].recipeNames.Add(r);
             });
         }
         catch (Exception ex)
@@ -2030,7 +2037,8 @@ public class DBQueryModel
     // Simultaneously creates the meal if it didn't exist already
     public static async Task<bool> ScheduleRecipe(string username, string recipe, string date, int order)
     {
-        Console.WriteLine("DBQuery ScheduleRecipe received date: " + date);
+        Console.WriteLine($"Entering DBQueryModel.ScheduleRecipe with parameters: username: {username}, recipe {recipe}, date {date}, order {order}");
+
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (recipe:Recipe{name:$recipeName})
