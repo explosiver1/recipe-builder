@@ -214,10 +214,14 @@ namespace RecipeBuilder.Controllers
             try
             {
                 // Parse Tags
-                recipeVM.recipe.Tags = recipeVM.TagsInput.Split(',')
+                if (recipeVM.recipe.Tags.Any())
+                {
+                    recipeVM.recipe.Tags = recipeVM.TagsInput.Split(',')
                                             .Select(tag => tag.Trim())
                                             .Where(tag => !string.IsNullOrEmpty(tag))
                                             .ToList();
+                }
+                
 
                 // Parse Ingredients
                 recipeVM.recipe.Ingredients = recipeVM.IngredientsInput; /* .Split('\n')
@@ -245,10 +249,14 @@ namespace RecipeBuilder.Controllers
                 recipeVM.recipe.servingSize = recipeVM.ServingSizeInput;
 
                 // Parse Equipment
-                recipeVM.recipe.Equipment = recipeVM.EquipmentInput.Split(',')
+                if (recipeVM.recipe.Equipment.Any())
+                {
+                    recipeVM.recipe.Equipment = recipeVM.EquipmentInput.Split(',')
                                             .Select(tool => tool.Trim())
                                             .Where(tool => !string.IsNullOrEmpty(tool))
                                             .ToList();
+                }
+                
 
                 // Parse Instructions
                 recipeVM.recipe.Instructions = recipeVM.InstructionsInput; /*.Split('\n')

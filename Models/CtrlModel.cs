@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace RecipeBuilder.Models;
 
@@ -518,18 +519,18 @@ public static class CtrlModel
     }
 
     // Placeholder method to simulate saving MealPlanner to Neo4j
-    public static void SaveMealPlannerToNeo4j(MealPlanner mealPlanner, string username)
+    public static void SaveMealPlannerToNeo4j(MPDay mealPlannerDay, string username)
     {
         try
         {
             int i = 0;
             // Placeholder logic for saving data to Neo4j
             //Console.WriteLine($"Simulating saving meal planner with date: {mealPlanner.DateString}");
-            foreach (MealSet meal in mealPlanner.ScheduledMeals)
+            foreach (MPMeal meal in mealPlannerDay.Meals)
             {
-                foreach (Recipe recipe in meal.Recipes)
+                foreach (string recipeName in meal.recipeNames)
                 {
-                    if (!DBQueryModel.ScheduleRecipe(username, recipe.Name, meal.Date.ToString(), i).Result)
+                    if (!DBQueryModel.ScheduleRecipe(username, recipeName, meal.date.ToString(), i).Result)
                     {
                         throw new Exception("Recipe could not be added. Return of false from DBQueryModel.ScheduleRecipe()");
                     }
@@ -563,20 +564,35 @@ public static class CtrlModel
         //};
     }
 
-
-    // Placeholder method to simulate retrieving meals for a specific date
-    public static List<MealSet> getMealsForDate(DateOnly date, string username)
+    /* MEAL PLANNER METHODS */
+    /* Retrieve meals for a given date */
+    public static MPDay GetMealsForDate(DateOnly selectedDate, string username)
     {
-        //Console.WriteLine($"Simulating retrieval of meals for date: {date}");
-
-        // Simulate unique data for different dates for testing
-        return DBQueryModel.GetMealPlanByDay(username, date.ToString()).Result;
+        MPDay mpDay = new MPDay { Date = selectedDate, Meals = DBQueryModel.GetMealPlanByDay(username, selectedDate.ToString()).Result };
+        //Console.WriteLine("Meal Plan, Date: " + selectedDate.ToString() + " Meal 1, Recipe 1: " + mpDay.Meals[0].recipeNames[0]);
+        // Returns the list of MealSets for a single day
+        return mpDay;
     }
 
-    // Get MealPlanner Monthly Data
-    public static MPMonth getMealsForMonth(DateOnly date, string username)
+    /* Retrieve meals for a week */
+    public static MPWeek GetMealsForWeek(DateOnly selectedDate, string username) 
     {
-        Console.WriteLine("Starting CtrlModel.getMealsForMonth method for {0}", date);
+        // Determine the dates of all the days in the same week as the given date
+        List < DateOnly > weekDates = DateHelper.GetDatesForWeek(selectedDate);
+
+        // Create & populate a week of mealsets (MPWeek) for this date's week
+        MPWeek weekMeals = new MPWeek();
+        foreach (DateOnly day in weekDates)
+        {
+            weekMeals.Days.Add( GetMealsForDate(day, username) );
+        }
+        return weekMeals;
+    }
+
+    /* Retrieve meals for a month */
+    public static MPMonth GetMealsForMonth(DateOnly selectedDate, string username)
+    {
+        Console.WriteLine("Starting CtrlModel.getMealsForMonth method for {0}", selectedDate);
         // Get the date range for the current month
         var (startOfMonth, endOfMonth) = DateHelper.GetDateRangeForCurrentMonth();
         Console.WriteLine("Got Date Range for Month. Start: {0} End: {1}", startOfMonth, endOfMonth);
@@ -592,37 +608,39 @@ public static class CtrlModel
         // Variable to track current day working with
         DateOnly day = startOfFirstWeekOfMonth;
 
-        // Variable for Month data
+        // Variable for Month data being collected to return
         MPMonth month = new MPMonth();
         Console.WriteLine("Ready to begin loops to populate month data");
 
-        // Loop through each week, new week
+        // Loop through each week of the month, starting with first day of week (Sun)
         for (DateOnly startOfWeek = startOfFirstWeekOfMonth; startOfWeek <= startOfLastWeekOfMonth; startOfWeek = startOfWeek.AddDays(7))
         {
-            MPWeek currentWeek = new MPWeek();
-            Console.WriteLine("Created new Week");
-            // Loop through days of week, populating day data
-            for (int i = 0; i < 7; i++)
-            {
-                Console.WriteLine("Creating new day for {0}", day);
-                // Get data for day
-                MPDay currentDay = new MPDay
-                {
-                    Date = day,
-                    Meals = CtrlModel.getMealsForDate(day, username).Select(meal => new MPMeal
-                    {
-                        mealDescription = meal.Description,
-                        recipes = meal.Recipes
-                    }).ToList()
-                };
-                Console.WriteLine("Data for new day obtained");
-                // Add day to week
-                currentWeek.Days.Add(currentDay);
-                Console.WriteLine("Day added to current week");
-                // Increment day to next date
-                day = day.AddDays(1);
-                Console.WriteLine("Ready for next day: {0}", day);
-            }
+            MPWeek currentWeek = GetMealsForWeek(selectedDate, username);
+            
+            //Console.WriteLine("Created new Week");
+            //// Loop through days of week, populating day data
+            //for (int i = 0; i < 7; i++)
+            //{
+            //    Console.WriteLine("Creating new day for {0}", day);
+            //    // Get data for day
+            //    MPDay currentDay = new MPDay
+            //    {
+            //        Date = day,
+            //        Meals = CtrlModel.getMealsForDate(day, username).Select(meal => new MPMeal
+            //        {
+            //            mealDescription = meal.Description,
+            //            recipes = meal.Recipes
+            //        }).ToList()
+            //    };
+            //    Console.WriteLine("Data for new day obtained");
+            //    // Add day to week
+                //currentWeek.Days.Add(currentDay);
+                //Console.WriteLine("Day added to current week");
+                //// Increment day to next date
+                //day = day.AddDays(1);
+                //Console.WriteLine("Ready for next day: {0}", day);
+            //}
+
             // Add week to month
             month.weeks.Add(currentWeek);
             Console.WriteLine("Added new week");
@@ -740,13 +758,17 @@ public static class CtrlModel
             {
                 try
                 {
-                    foreach (string rName in cb.RecipeNames)
+                    if (cb.RecipeNames.Any())
                     {
-                        if (!DBQueryModel.AddToCookbook(username, cb.Title, rName).Result)
+                        foreach (string rName in cb.RecipeNames)
                         {
-                            Console.WriteLine("Adding " + rName + " to recipe failed.");
+                            if (!DBQueryModel.AddToCookbook(username, cb.Title, rName).Result)
+                            {
+                                Console.WriteLine("Adding " + rName + " to recipe failed.");
+                            }
                         }
                     }
+                    
                 }
                 catch (Exception e)
                 {

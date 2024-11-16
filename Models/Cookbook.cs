@@ -1,7 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace RecipeBuilder.Models
 {
     public class Cookbook
     {
+        [Required(ErrorMessage = "Cookbook name is required.")]
+        [RegularExpression("[a-zA-Z0-9_-]")]
         public string Title { get; set; }
         public string Description { get; set; }
         public List<Recipe> Recipes { get; set; }

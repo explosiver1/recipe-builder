@@ -83,15 +83,15 @@
         
         <h2 class="schedule-title">Today: @Model.ScheduledMealsToday.Date.DayOfWeek @Model.ScheduledMealsToday.Date</h2>
         <div class="schedule">
-            @foreach (var meal in @Model.ScheduledMealsToday.ScheduledMeals)
+            @foreach (var meal in @Model.ScheduledMealsToday.Meals)
             {
                 <div class="day">
-                    <a asp-controller="MealPlanner" asp-action="Meal" asp-route-id="@meal.Name">
-                        Meal @(@Model.ScheduledMealsToday.ScheduledMeals.IndexOf(meal) + 1) Recipes
+                    <a asp-controller="MealPlanner" asp-action="Look" asp-route-id=@meal>
+                        Meal @(@Model.ScheduledMealsToday.Meals.IndexOf(meal) + 1) Recipes
                     </a>
-                    @foreach (var recipe in meal.Recipes)
+                    @foreach (var recipe in meal.recipeNames)
                     {
-                        <p>@recipe.Name</p>
+                        <p>@recipe</p>
                     }
                 </div>
             }
@@ -110,9 +110,9 @@
                     @foreach (var meal in day.Meals)
                     {
                         <p>Meal @(@day.Meals.IndexOf(meal) + 1) Recipes</p>
-                        @foreach (var recipe in meal.recipes)
+                        @foreach (var recipe in meal.recipeNames)
                         {
-                            <p>@recipe.Name</p>
+                            <p>@recipe</p>
                         }
                     }
                 </div>

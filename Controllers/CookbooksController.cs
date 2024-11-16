@@ -64,10 +64,14 @@ public class CookbooksController : Controller
         try
         {
             cookbookModel = DBQueryModel.GetCookbook(name, at.username).Result;
-            foreach (var recipeName in cookbookModel.RecipeNames)
+            if (cookbookModel.RecipeNames.Any())
             {
-                Console.WriteLine (recipeName);
+                foreach (var recipeName in cookbookModel.RecipeNames)
+                {
+                    Console.WriteLine(recipeName);
+                }
             }
+            
         }
         catch (Exception e)
         {
@@ -78,10 +82,14 @@ public class CookbooksController : Controller
 
 
         CookbooksCookbookVM viewModel = new CookbooksCookbookVM { cookbook = cookbookModel };
-        foreach (var recipeName in viewModel.cookbook.RecipeNames)
-            {
-                Console.WriteLine (recipeName);
-            }
+        //if (viewModel.cookbook.RecipeNames.Any())
+        //{
+        //    foreach (var recipeName in viewModel.cookbook.RecipeNames)
+        //    {
+        //        Console.WriteLine(recipeName);
+        //    }
+        //}
+        
         return View(viewModel);
     }
 
@@ -183,7 +191,8 @@ public class CookbooksController : Controller
             recipeNew = new Recipe(),
             cookbookDescription = cb.Description,
             cookbookRecipes = cb.RecipeNames,
-            UserRecipesNames = CtrlModel.GetRecipeNameList(at.username)
+            UserRecipesNames = CtrlModel.GetRecipeNameList(at.username),
+            recipesToAdd = new List<string>()
         };
 
         return View(viewModel);
@@ -193,26 +202,33 @@ public class CookbooksController : Controller
     [HttpPost]
     public IActionResult Edit(CookbooksEditVM viewModel)
     {
-        // if (!ModelState.IsValid)
-        // {
-        //    return View(viewModel); // Return form with errors
-        //}
-
-        // Uncomment the following line if you want to use seed data
-        // var cookbook = RecipeSeedData.cookbooks.FirstOrDefault(c => c.Title == viewModel.CookbookName);
-
-        // For now, simulate updating a cookbook (e.g., with a service or database)
-        Cookbook cookbook = new Cookbook { Title = viewModel.cookbookName };
-
-        if (cookbook == null)
+        //If user isn't logged in, don't allow access to this page - redirect to main site page
+        AuthToken at;
+        try
         {
-            return NotFound();
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            if (!at.Validate())
+            {
+                throw new Exception("Authentication Expired. Please login again.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return RedirectToAction("Index", "Home");
         }
 
-        // Update the cookbook title
-        cookbook.Title = viewModel.cookbookName;
+        DBQueryModel.EditCookBook(at.username, viewModel.cookbookName, viewModel.cookbookDescription);
 
-        return RedirectToAction("Index");
+        if (viewModel.recipesToAdd.Any()) 
+        {
+            foreach (string recipeName in viewModel.recipesToAdd)
+            {
+                CtrlModel.AddToCookbook(at.username, viewModel.cookbookName, recipeName);
+            }
+        }
+
+        return RedirectToAction("Cookbook", "Cookbooks", viewModel.cookbookName);
     }
 
 
