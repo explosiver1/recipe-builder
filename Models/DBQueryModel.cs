@@ -1202,8 +1202,9 @@ public class DBQueryModel
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (cookbook:Cookbook {name: $cookbookName})
+            WHERE cookbook.description <> $description
             SET cookbook.description = $description
-            RETURN COUNT()
+            RETURN COUNT(cookbook) > 0
         ";
 
         var cookbookName = username + name;
