@@ -64,13 +64,13 @@ public class CookbooksController : Controller
         try
         {
             cookbookModel = DBQueryModel.GetCookbook(name, at.username).Result;
-            if (cookbookModel.RecipeNames.Any())
-            {
-                foreach (var recipeName in cookbookModel.RecipeNames)
-                {
-                    Console.WriteLine(recipeName);
-                }
-            }
+            //if (cookbookModel.RecipeNames != null && cookbookModel.RecipeNames.Any())
+            //{
+            //    foreach (var recipeName in cookbookModel.RecipeNames)
+            //    {
+            //        Console.WriteLine(recipeName);
+            //    }
+            //}
             
         }
         catch (Exception e)
@@ -218,7 +218,7 @@ public class CookbooksController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        DBQueryModel.EditCookBook(at.username, viewModel.cookbookName, viewModel.cookbookDescription);
+        CtrlModel.EditCookbook(at.username, viewModel.cookbookName, viewModel.cookbookDescription);
 
         if (viewModel.recipesToAdd.Any()) 
         {

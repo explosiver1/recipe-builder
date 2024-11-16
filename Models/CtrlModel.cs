@@ -11,6 +11,12 @@ public static class CtrlModel
     private static ShoppingList shoppingList = new ShoppingList();
     private static List<IngredientDetail> pantryItems = new List<IngredientDetail>();
 
+    static CtrlModel()
+    {
+        //pantryItems.AddRange(SeedData.myIngredients.Take(2)); // Example: add first two items for testing
+        shoppingList.Items = new List<IngredientDetail>(); //{ SeedData.ChocolateChips };
+    }
+
     /* GET METHODS */
 
     public static List<Cookbook> GetCookbookList(string username)//string userName)
@@ -24,13 +30,7 @@ public static class CtrlModel
     {
         Cookbook? cookbookObj = DBQueryModel.GetCookbook(cookbookName, username).Result; //SeedData.GetCookbook(cookbookName);// Update to be DBQueryModel Function Call
         return cookbookObj;
-    }
-
-    static CtrlModel()
-    {
-        //pantryItems.AddRange(SeedData.myIngredients.Take(2)); // Example: add first two items for testing
-        shoppingList.Items = new List<IngredientDetail>(); //{ SeedData.ChocolateChips };
-    }
+    }    
 
     public static List<Recipe> GetRecipeList(string username)//string userName)
 
@@ -732,6 +732,10 @@ public static class CtrlModel
         return true;
     }
 
+    public static void EditCookbook(string username, string cookbookName, string description)
+    {
+        bool success = DBQueryModel.EditCookBook(username, cookbookName, description).Result;
+    }
     public static IngredientDetail? GetIngredientDetailFromShoppingList(IngredientDetail ingredientDetail, string username)
     {
         // Assuming you already have a method to retrieve the shopping list for the user
