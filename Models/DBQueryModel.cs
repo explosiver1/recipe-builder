@@ -2242,10 +2242,10 @@ public class DBQueryModel
         var query = @"
         MATCH (user:User {username: $username})
         MATCH (user)-[]->(n:Ingredient)-[r]-(n2:ShoppingList)
-        RETURN n.name AS ingredient, 
-               r.unit AS unit, 
-               r.quantity AS quantity, 
-               r.qualifier AS qualifier, 
+        RETURN n.name AS ingredient,
+               r.unit AS unit,
+               r.quantity AS quantity,
+               r.qualifier AS qualifier,
                r.checked AS checked
     ";
 
@@ -2398,7 +2398,7 @@ public class DBQueryModel
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
         MATCH (u:User {username: $username})
-        RETURN Count(u) > 0;
+        RETURN Count(u) > 0 As answer;
         ";
         // Initialize the Neo4j session
         var session = driver.AsyncSession();
@@ -2409,7 +2409,7 @@ public class DBQueryModel
 
             // This should work because it's a single value return type.
             var result = await response.SingleAsync();
-            return result.As<bool>();
+            return result["answer"].As<bool>();
         }
         catch (Exception e)
         {
