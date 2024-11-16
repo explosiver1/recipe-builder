@@ -1196,7 +1196,6 @@ public class DBQueryModel
         }
     }
 
-    // bool respone doesn't tell much
     public static async Task<bool> EditCookBook(string username, string name, string description)
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
