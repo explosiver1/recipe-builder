@@ -35,8 +35,17 @@ public class AccountController : Controller
     {
         string username = lm.Username;
         string password = lm.Password;
-        Console.WriteLine("Logging in with " + username + ", " + password);
-        //TODO - Sanitize UI
+        //Console.WriteLine("Logging in with " + username + ", " + password);
+        //Sanitize UI
+        if (username.Any(ch => !char.IsLetterOrDigit(ch)))
+        {
+            return Login("Error, username uses invalid characters.");
+        }
+        else if (password.Any(ch => !char.IsLetterOrDigit(ch)))
+        {
+            return Login("Error, password uses invalid characters.");
+        }
+
         bool isAuthTokenValid = await DBQueryModel.Authenticate(username, password);
         if (isAuthTokenValid)
         {

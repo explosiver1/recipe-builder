@@ -880,7 +880,7 @@ public class DBQueryModel
     public async static Task<bool> Authenticate(string username, string password)
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
-        Console.WriteLine("Authenticating " + username + " with " + password);
+        //Console.WriteLine("Authenticating " + username + " with " + password);
         string query = "MATCH (u:User {username: '" + username + "', password: '" + password + "'}) \n"
                                 + "WITH COUNT(u) > 0 as exists \n"
                                 + "RETURN exists";
@@ -1198,6 +1198,7 @@ public class DBQueryModel
 
     public static async Task<bool> EditCookBook(string username, string name, string description)
     {
+        Console.WriteLine($"Entering DBQueryModel.EditCookbook with parameters: username: {username}, name: {name}, description: {description}");
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (cookbook:Cookbook {name: $cookbookName})
@@ -1576,11 +1577,10 @@ public class DBQueryModel
                 //};
                 int order = record["x"].As<IRelationship>()["order"].As<int>();
 
-                if (mp[order] == null)
+                while (mp.Count <= order)
                 {
-                    mp[order] = new MPMeal();
+                    mp.Add(new MPMeal());
                 }
-
                 mp[order].recipeNames.Add(r);
             });
         }
