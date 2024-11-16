@@ -62,6 +62,11 @@ public class MealPlannerController : Controller
 
         return View(viewModel);
     }
+    /* public IActionResult createScheduledMeal()
+    {
+        MealPlanner.ScheduleMeal(new MealSet());
+        return View();
+    } */
 }
 
     //// GET: /MealPlanner/Month/ given date
@@ -262,5 +267,3 @@ public class MealPlannerController : Controller
     //     }
     //     return View(viewModel);
     // }
-
-

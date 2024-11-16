@@ -95,7 +95,7 @@
         <br>
         <div id="scheduled-meal-container">
        @*  <form asp-controller="MealPlanner" asp-action="Daily" method="post" id="form"> *@
-            @if (@Model.mealPlanner.ScheduledMeals.Count() != 0)
+            @if (@Model.mealPlanner.ScheduledMealsToday.Count() != 0)
             {
                 <!-- meal entries -->
                 <div id="meal-list">
@@ -246,6 +246,7 @@
                 newScheduledMeal.style.display = 'block';
                 const sectionHeader = newScheduledMeal.querySelector('p strong');
                 sectionHeader.textContent = 'Meal ${mealCount}:';
+                
                 mealList.appendChild(newScheduledMeal);
 
                 @* var mealList = document.getElementById('meal-list');
