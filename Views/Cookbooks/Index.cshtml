@@ -11,12 +11,11 @@
     }
 
     /* button styling */
-    .btn-custom {
-        display: inline-block;
+    .btn-custom, .btn-custom-remove, .btn-search {
+        display: inline-block; /* Ensures button width is based on content */
         padding: 10px 20px;
         font-size: 16px;
         color: white;
-        background-color: #4A743E;
         text-align: center;
         text-decoration: none;
         border-radius: 5px;
@@ -24,17 +23,17 @@
         transition: background-color 0.3s ease;
     }
 
+    .btn-custom {
+        background-color: #4A743E;
+    }
+
     .btn-custom-remove {
-        display: inline-block;
-        padding: 10px 20px;
-        font-size: 16px;
-        color: white;
         background-color: #c30010;
-        text-align: center;
-        text-decoration: none;
-        border-radius: 5px;
-        border: none;
-        transition: background-color 0.3s ease;
+    }
+
+    .btn-search {
+        background-color: #4A743E;
+        color: white;
     }
 
     .btn-custom:hover {
@@ -45,12 +44,6 @@
         background-color: #f94449;
     }
 
-    /* search button styling */
-    .btn-search {
-        background-color: #4A743E;
-        color: white;
-    }
-
     .btn-search:hover {
         background-color: #96AE6D;
     }
@@ -59,6 +52,8 @@
     .input-group .btn {
         margin-left: 10px;
     }
+
+    /* block styling for cookbook elements */
     .block {
         display: flex;
         flex-wrap: wrap;
@@ -72,18 +67,28 @@
         padding: 10px;
         text-align: center;
     }
+
+    /* button-container for buttons to appear side by side */
+    .button-container {
+        display: flex; /* Aligns the buttons in a row */
+        gap: 10px; /* Adds space between buttons */
+        justify-content: center; /* Centers the buttons */
+        margin-top: 10px;
+    }
+
+    .button-container a, .button-container button {
+        width: auto; /* Ensures buttons only take up space based on their content */
+    }
 </style>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex">
-        @*<form asp-action="" method="get" class="form-inline"> * need to know which model to pull from for Tag search *@
         <div class="input-group input-group-sm">
             <input type="text" class="form-control" placeholder="Search by Tags..." name="TagSearch" value="@ViewData["CurrentTagFilter"]" style="max-width: 150px;" />
             <div class="input-group-append">
                 <button class="btn btn-search" type="submit">Search</button>
             </div>
         </div>
-        @*</form>*@
     </div>
     <h1 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">Cookbooks</h1>
     <hr class="rounded">
@@ -91,12 +96,10 @@
 </div>
 
 <div class="text-center">
-    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for search *@
     <div class="form-group">
         <input type="text" class="form-control" placeholder="Search Recipes..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
     </div><br>
     <button type="submit" class="btn btn-search ml-2">Search</button>
-    @*</form>*@
 </div><br>
 
 <div class="row">
@@ -107,15 +110,14 @@
             <div class="col-md-4">
                 <div class="block">
                     <h4 style="color: #4A743E;">@cookbook.Title</h4>
+                    <!-- Buttons aligned side by side -->
                     <div class="button-container">
-                        <a asp-action="Cookbook" asp-route-name=@cookbook.Title class="btn btn-custom">View</a>
+                        <a asp-action="Cookbook" asp-route-name="@cookbook.Title" class="btn btn-custom">View</a>
+                        <form method="post" asp-controller="Cookbooks" asp-action="RemoveCookbook">
+                            <input type="hidden" name="cookbookToRemove" value="@cookbook.Title"/>
+                            <button type="submit" class="btn-custom-remove">Remove Cookbook</button>
+                        </form>
                     </div>
-                    <form method="post" asp-controller="Cookbooks" asp-action="RemoveCookbook" >
-                                <input type="hidden" name="cookbookToRemove" value="@cookbook.Title"/>
-                                <div class="button-container">
-                                    <button type="submit" class="btn btn-custom-remove">Remove Cookbook</button>
-                                </div>
-                    </form>
                 </div>
             </div>
         }

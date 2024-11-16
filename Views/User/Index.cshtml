@@ -3,9 +3,10 @@
 @{
     ViewData["Title"] = "User Home";
 }
+
 <style>
     .btn-custom {
-        display: inline-block;
+        display: inline-block;  /* Allows button width to be based on content */
         padding: 10px 20px;
         font-size: 16px;
         color: white;
@@ -20,26 +21,31 @@
     .btn-custom:hover {
         background-color: #96AE6D;
     }
+
     .block {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
         gap: 10px;
         margin-top: 20px;
         justify-content: center;
         background-color: #F5F5F5;
         border-radius: 5px;
-        width: 100%;
         max-width: 300px;
         padding: 10px;
         text-align: center;
     }
+
+    /* Ensures the container doesn't stretch the button */
+    .btn-container {
+        display: inline-block; /* This prevents the button from stretching */
+        text-align: center;    /* Centers the content inside the block */
+    }
 </style>
 
 <div class="text-center">
-    @*<form asp-action="" method="get" class="form-inline mb-3"> * need to know which model to pull from for general search*@
     <h1 class="display-4" style="color: #4A743E;">Home</h1>
-    @*</form>*@
 </div>
+
 <div class="row">
     <h2 class="display-4" style="color: #4A743E;">Cookbooks:</h2>
     @if (Model.cookbooks.Count != 0)
@@ -48,20 +54,23 @@
         {
             <div class="col-md-4">
                 <div class="block">
-                    <h4 style="color: #4A743E;">@cookbook</h4><br>
-                    <a asp-controller="Cookbooks" asp-action="Cookbook" asp-route-name=@cookbook class="btn-custom">View Cookbook</a>
+                    <h4 style="color: #4A743E;">@cookbook</h4>
+                    <div class="btn-container">
+                        <a asp-controller="Cookbooks" asp-action="Cookbook" asp-route-name=@cookbook class="btn-custom">View Cookbook</a>
+                    </div>
                 </div>
             </div>
-       }
+        }
     }
     else
     {
         <p>No Cookbooks Found.</p>
     }
-
 </div>
+
 <br />
 <br />
+
 <div class="row">
     <h2 class="display-4" style="color: #4A743E;">Recipes:</h2>
     @if (Model.recipes.Count != 0)
@@ -70,8 +79,10 @@
         {
             <div class="col-md-4">
                 <div class="block">
-                <h4 style="color: #4A743E;">@recipe</h4><br>
-                <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe class="btn-custom">View Recipe</a>
+                    <h4 style="color: #4A743E;">@recipe</h4>
+                    <div class="btn-container">
+                        <a asp-controller="Recipe" asp-action="Look" asp-route-recipeName=@recipe class="btn-custom">View Recipe</a>
+                    </div>
                 </div>
             </div>
         }
