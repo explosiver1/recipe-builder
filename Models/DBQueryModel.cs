@@ -1579,7 +1579,7 @@ public class DBQueryModel
 
                 while (mp.Count <= order)
                 {
-                    mp.Add( new MPMeal() );
+                    mp.Add(new MPMeal());
                 }
                 mp[order].recipeNames.Add(r);
             });
@@ -2043,7 +2043,7 @@ public class DBQueryModel
         var query = @"
             MATCH (recipe:Recipe{name:$recipeName})
             MERGE (mealPlan:MealPlan{name:$mealName})
-            MERGE (recipe)-[x:SCHEDULED_FOR]->(mealPlan)
+            CREATE (recipe)-[x:SCHEDULED_FOR]->(mealPlan)
             SET x.date = $date,
                 x.order = $order
             RETURN COUNT(x) > 0
