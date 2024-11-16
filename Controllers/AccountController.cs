@@ -41,7 +41,7 @@ public class AccountController : Controller
         {
             return Login("Error, username uses invalid characters.");
         }
-        else if (password.Any(ch => !char.IsLetterOrDigit(ch))
+        else if (password.Any(ch => !char.IsLetterOrDigit(ch)))
         {
             return Login("Error, password uses invalid characters.");
         }
