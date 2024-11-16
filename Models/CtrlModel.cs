@@ -550,7 +550,7 @@ public static class CtrlModel
     public static void RemoveFromMealPlanner(DateOnly date, int mealNum, string recipeToRemove, string username)
     {
         Console.WriteLine("Attempting to remove recipe from meal planner\nDate: " + date + "\nMeal Number: " + mealNum + "\nRecipe: " + recipeToRemove);
-        var result = DBQueryModel.UnScheduleRecipe(username, recipeToRemove,date.ToString(),mealNum.ToString());
+        var result = DBQueryModel.UnScheduleRecipe(username, recipeToRemove, date.ToString(), mealNum.ToString());
     }
 
     // Placeholder method to simulate getting all meals
@@ -867,6 +867,45 @@ public static class CtrlModel
             return false;
         }
         return true;
+    }
+
+    public static bool EditRecipe(string username, Recipe r)
+    {
+        try
+        {
+            //Get call on existing recipe
+            Recipe oldRecipe = DBQueryModel.GetRecipe(username, r.Name).Result;
+            //Call to set new paramters on Recipe node.
+            if (!DBQueryModel.EditRecipe(username, r.Name, "", "", "", r.Description, r.Rating.ToString(), r.Difficulty.ToString(), r.numServings.ToString(), r.servingSize, r.CookTime.ToString(), r.PrepTime.ToString()).Result)
+                //foreach (Tag t in r.Tags) {
+                // if (!oldRecipe.Tags.Contains(t)) {
+                //   Add new recipe
+                // }
+                //}
+                // foreach (Tag t in oldRecipe.Tags) {
+                //  if (!r.Tags.Contains(t)) {
+                //   Delete old recipe
+                //  }
+                // }
+                // Repeat for Tools
+                // Repeat for Instructions
+                // Repeat for Ingredients
+                // foreach (Ingredent i in r) {
+                //  foreach (Ingredient oi in oldRecipe) {
+                //  if (oi.Name == i.Name && oi.Qantity == i.Quantity && oi.Qualifier == i.Qualifier && ou.Unit == i.Unit) {
+                //
+                // } else {
+                //      Merge new ingredient relationship properties.
+                // }
+                // }
+                // }
+                return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error, recipe could not be updated. Exception: " + e);
+            return false;
+        }
     }
 
 }
