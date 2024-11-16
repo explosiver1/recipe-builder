@@ -315,6 +315,36 @@ public class DBQueryModel
         return recipeNames;
     }
 
+    public static async Task<List<string>> GetMealNodeNames(string username)
+    {
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var query = @"
+        MATCH (user:User {username: $username})-[:OWNS]->(m:Meal)
+        RETURN m.name AS mealName
+        ";
+
+        var session = driver.AsyncSession();
+        var mealNames = new List<string>();
+
+        try
+        {
+            var result = await session.RunAsync(query, new { username });
+
+            await result.ForEachAsync(record =>
+            {
+                mealNames.Add(GetCleanString(username, record["mealName"].As<string>()));
+            });
+
+            Console.WriteLine($"Found {mealNames.Count} meals for user {username}!");
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+
+        return mealNames;
+    }
+
     // CreateIngredient()
     public static async Task<bool> CreateIngredientNode(string username, string ingredient)
     {
