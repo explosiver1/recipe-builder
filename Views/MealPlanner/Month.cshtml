@@ -110,7 +110,7 @@
                         @foreach (var meal in day.Meals)
                         {
                             <p>
-                                @string.Join(", ", meal.recipes.Select(recipe => recipe.Name))
+                                @string.Join(", ", meal.recipeNames.Select(recipe => recipe))
                             </p>
                         }
                     </div>

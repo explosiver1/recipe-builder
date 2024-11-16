@@ -27,8 +27,9 @@ namespace RecipeBuilder.Models
             return currentDate.AddDays(-(int)currentDate.DayOfWeek);
         }
 
-        public static List<DateOnly> GetDatesForWeek(DateOnly startOfWeek)
+        public static List<DateOnly> GetDatesForWeek(DateOnly currentDate)
         {
+            DateOnly startOfWeek = GetStartOfWeek(currentDate);
             var datesInWeek = new List<DateOnly>();
             for (int i = 0; i < 7; i++)
             {

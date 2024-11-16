@@ -1540,8 +1540,10 @@ public class DBQueryModel
 
     //FILL IN
     //The Inner Lists are the meal for that day.
-    public static async Task<List<MealSet>> GetMealPlanByDay(string username, string date)
+    public static async Task<List<MPMeal>> GetMealPlanByDay(string username, string date)
     {
+        Console.WriteLine("Received data string: " + date);
+
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (:User {name: $username})-[]->(rec:Recipe)-[x:SCHEDULED_FOR]->(:MealPlan)
@@ -1552,7 +1554,7 @@ public class DBQueryModel
 
         // Initialize the Neo4j session
         var session = driver.AsyncSession();
-        List<MealSet> mp = new List<MealSet>();
+        List<MPMeal> mp = new List<MPMeal>();
 
         try
         {
@@ -1562,22 +1564,23 @@ public class DBQueryModel
             // Process each record in the result
             await result.ForEachAsync(record =>
             {
-                Recipe r = new Recipe()
-                {
-                    Name = GetCleanString(username, record["rec"].As<INode>()["name"].As<string>())
-                };
+                string r = GetCleanString(username, record["rec"].As<INode>()["name"].As<string>());//new Recipe()
+                //{
+                //Name = GetCleanString(username, record["rec"].As<INode>()["name"].As<string>())
+                //};
+                Console.WriteLine("Recipe Name: " + r);
                 // Initialize and populate a new Recipe object
-                MealSet ms = new MealSet
-                {
-                    Name = "",
-                };
-                mp[record["x"].As<IRelationship>()["order"].As<int>()].Recipes.Add(r);
+                //MealSet ms = new MealSet
+                //{
+                //    Name = "",
+                //};
+                mp[record["x"].As<IRelationship>()["order"].As<int>()].recipeNames.Add(r);
             });
         }
         catch (Exception ex)
         {
             Console.WriteLine($"An error occurred: {ex.Message}");
-            return new List<MealSet>();
+            return new List<MPMeal>();
         }
         finally
         {

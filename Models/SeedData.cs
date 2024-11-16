@@ -608,23 +608,23 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
         return new MealSet();
     }
    
-    public static MealPlanner SunMP = new MealPlanner { ScheduledMeals = [new MealSet { Recipes = [RoastBeefwGravy, MashedPotatoes] }, cookieMeal2] };
-    public static MealPlanner MonMP = new MealPlanner { ScheduledMeals = [new MealSet { Recipes = [GrilledSteak, SteamedBroccoli, BakedSweetPotato] }, cookieMeal2] };
-    public static MealPlanner TueMP = new MealPlanner { ScheduledMeals = [new MealSet { Recipes = [FriedRice] }, cookieMeal2] };
-    public static MealPlanner WedMP = new MealPlanner { ScheduledMeals = [new MealSet { Recipes = [RoastBeefwGravy, MashedPotatoes] }] };
-    public static MealPlanner ThuMP = new MealPlanner { ScheduledMeals = [new MealSet { Recipes = [GrilledSteak, ButteredPeasAndCarrots, BakedSweetPotato] }, cookieMeal2] };
-    public static MealPlanner FriMP = new MealPlanner { ScheduledMeals = [new MealSet { Recipes = [RoastBeefwGravy, MashedPotatoes, ButteredPeasAndCarrots] }, cookieMeal] };
-    public static MealPlanner SatMP = new MealPlanner { ScheduledMeals = [new MealSet { Recipes = [GrilledSteak, ButteredPeasAndCarrots, MashedPotatoes] }, cookieMeal, new MealSet { Recipes = [GrilledSteak, RoastedSweetPotatoes] }] };
-    public static List<MealPlanner> GetMealsThisWeek()
+    public static MPDay SunMP = new MPDay { Date = new DateOnly(2024, 11, 17), Meals = [new MPMeal { recipeNames = [RoastBeefwGravy.Name, MashedPotatoes.Name] }, new MPMeal { recipeNames = cookieMeal2.RecipeNames }] };
+    public static MPDay MonMP = new MPDay { Date = new DateOnly(2024, 11, 18), Meals = [new MPMeal { recipeNames = [GrilledSteak.Name, SteamedBroccoli.Name, BakedSweetPotato.Name] }, new MPMeal { recipeNames = cookieMeal2.RecipeNames }] };
+    public static MPDay TueMP = new MPDay { Date = new DateOnly(2024, 11, 19), Meals = [new MPMeal { recipeNames = [FriedRice.Name] }, new MPMeal { recipeNames = cookieMeal2.RecipeNames }] };
+    public static MPDay WedMP = new MPDay { Date = new DateOnly(2024, 11, 20), Meals = [new MPMeal { recipeNames = [RoastBeefwGravy.Name, MashedPotatoes.Name] }] };
+    public static MPDay ThuMP = new MPDay { Date = new DateOnly(2024, 11, 21), Meals = [new MPMeal { recipeNames = [GrilledSteak.Name, ButteredPeasAndCarrots.Name, BakedSweetPotato.Name] }, new MPMeal { recipeNames = cookieMeal2.RecipeNames }] };
+    public static MPDay FriMP = new MPDay { Date = new DateOnly(2024, 11, 15), Meals = [new MPMeal { recipeNames = [RoastBeefwGravy.Name, MashedPotatoes.Name, ButteredPeasAndCarrots.Name] }, new MPMeal { recipeNames = cookieMeal.RecipeNames }] };
+    public static MPDay SatMP = new MPDay { Date = new DateOnly(2024, 11, 16), Meals = [new MPMeal { recipeNames = [GrilledSteak.Name, ButteredPeasAndCarrots.Name, MashedPotatoes.Name] }, new MPMeal { recipeNames = [GrilledSteak.Name, RoastedSweetPotatoes.Name] }] };
+    public static MPWeek GetMealsForWeek()
     {
-        (DateOnly WeekStart, DateOnly WeekEnd) = DateHelper.GetDateRangeForCurrentWeek();
-        DateOnly date = WeekStart;
-        List<MealPlanner> weekMealPlans = [SunMP,MonMP,TueMP,WedMP,ThuMP,FriMP,SatMP];
-        foreach (var dayMP in weekMealPlans)
-        {
-            dayMP.Date = date;
-            date = date.AddDays(1);
-        }
+        //(DateOnly WeekStart, DateOnly WeekEnd) = DateHelper.GetDateRangeForCurrentWeek();
+        //DateOnly date = WeekStart;
+        MPWeek weekMealPlans = new MPWeek { Days = [SunMP, MonMP, TueMP, WedMP, ThuMP, FriMP, SatMP] };
+        //foreach (var dayMP in weekMealPlans)
+        //{
+        //    dayMP.Date = date;
+        //    date = date.AddDays(1);
+        //}
         return weekMealPlans;
     }
 
@@ -677,7 +677,7 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
             }
 
             //Insert block for scheduling recipes onto meal planner.
-            foreach (MealPlanner day in GetMealsThisWeek())
+            foreach (MPDay day in GetMealsForWeek().Days)
             {
                 CtrlModel.SaveMealPlannerToNeo4j(day, username);
             }
@@ -811,16 +811,16 @@ new IngredientDetail{Ingredient = PeasAndCarrots, Name = "Peas and Carrots", Qua
         Console.WriteLine();
         Console.WriteLine();
         Console.WriteLine("Meal Planner Data Test");
-        foreach (var dayMP in SeedData.GetMealsThisWeek())
+        foreach (var dayMP in SeedData.GetMealsForWeek().Days)
         {
             Console.WriteLine("Date: " + dayMP.Date);
             int mealNum = 1;
-            foreach (var meal in dayMP.ScheduledMeals)
+            foreach (var meal in dayMP.Meals)
             {
                 Console.WriteLine("Meal " + mealNum + ": ");
-                foreach (var recipe in meal.Recipes)
+                foreach (var recipeName in meal.recipeNames)
                 {
-                    Console.WriteLine(recipe.Name);
+                    Console.WriteLine(recipeName);
                 }
                 Console.WriteLine();
                 mealNum++;
