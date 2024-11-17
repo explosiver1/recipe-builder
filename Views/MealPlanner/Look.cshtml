@@ -1,0 +1,191 @@
+@model RecipeBuilder.ViewModels.MealPlannerLookVM
+
+@{
+    ViewData["Title"] = @Model.mealTitle;
+}
+<style>
+    .fixed-header{
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: auto;
+        background-color: #F4F3EC;
+        padding: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+    .recipe-link{
+        margin: 0 10px;
+        color: #96AE6D;
+        text-decoration: none;
+        cursor: pointer;
+        padding: 5px 10px;
+    }
+    .recipe-link:hover {
+        color: #4A743E;
+    }
+    .content{
+        padding-top: 60px;
+    }
+    #recipeContainer {
+        background-color: #F4F3EC;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 900px;
+        margin: auto;
+    }
+    #recipeContainer ul {
+        list-style-type: disc;
+        padding-left: 20px;
+        color: #4A743E;
+    }
+
+    #recipeContainer ul li {
+        margin: 10px 0;
+    }
+
+    #recipeContainer form {
+        display: inline; /* Keep the form inline with the text */
+    }
+    .column {
+        float: left;
+        width: 50%;
+    }
+    .row {
+        display: flex;
+    }
+    .link-container {
+        display:flex;
+        gap: 10px;
+        justify-content: center;
+    }
+    .section-title {
+        scroll-margin: 150px;
+    }
+</style>
+<div class="fixed-header">
+    <h2 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">@Model.mealTitle</h2><br>
+    @if (@Model.mealData.recipes != null && @Model.mealData.recipes.Any())
+    {
+        <div class="link-container">
+            @foreach (Recipe recipe in @Model.mealData.recipes)
+        {
+            <a class="recipe-link" href="#@recipe.Name">@recipe.Name</a>   
+        }
+        </div>
+    }
+    else
+    {
+        <p>No Recipes Found.</p>
+    }
+</div>
+<body>
+    <div class="row content">
+        @if (@Model.mealData.recipes != null && @Model.mealData.recipes.Any())
+        {
+            @foreach (Recipe recipe in @Model.mealData.recipes)
+            {
+                <div class ="row mb-3">
+                    <div class="col-md-4 d-flex align-items-center" style="width:200px"></div>
+                    <div class="col-md-8 text-center">
+                        <h1 id="@recipe.Name" class="display-4 section-title" style="margin: 0;">@recipe.Name</h1><br>
+                    </div>
+                </div>
+                <div class="row">
+                <!--Left Side of Page-->
+                    <div id="recipeContainer"class="col-md-4">
+                        <h4>Rating: @recipe.Rating</h4>
+                        <h4>Difficulty: @recipe.Difficulty</h4>
+                        @if (@recipe.Ingredients !=  null)
+                        {
+                            <h4>Ingredients:</h4>
+                            <ul>
+                            @foreach (var ing in @recipe.Ingredients)
+                            {
+                                <li>
+                                    @ing.Quantity @ing.Unit @ing.Qualifier @ing.Ingredient.Name
+                                    @* <button class="add-to-cart-btn" onclick="addToCart('@ing.Ingredient.Name',this)">Add to Cart</button> *@
+                                </li>
+                            }
+                            </ul>
+                        }
+                    </div>
+                    <!--Right Side of Page-->
+                    <div class="col-md-8">
+                        <div id="recipeContainer">
+                            @if(@recipe.Description != null && @recipe.Description.Any())
+                            {
+                                <i class="align-items-center">@recipe.Description</i>
+                            }
+                            <br>
+                            @if(@recipe.Tags != null && @recipe.Tags.Any())
+                            {
+                                <span>Tags: </span>
+                                int i=0;
+                                @foreach(var tags in @recipe.Tags)
+                                {
+                                    if (i != 0)
+                                    {
+                                        <span>, @tags</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@tags</span>
+                                        i++;
+                                    }
+                                }
+                            }
+                            <br>
+                            @if(@recipe.Equipment != null && @recipe.Equipment.Any())
+                            {
+                                <span>Equipment needed: </span>
+                                int i=0;
+                                @foreach(var tools in @recipe.Equipment)
+                                {
+                                    if (i != 0)
+                                    {
+                                        <span>, @tools</span>
+                                    }
+                                    else
+                                    {
+                                        <span>@tools</span>
+                                        i++;
+                                    }
+                                }
+                            }
+                        </div><br>
+                        <div id="recipeContainer">
+                            <div class="row">
+                                <div class="column">
+                                    <h5 class="align-items-center">Prep Time: @recipe.PrepTime min</h5>
+                                </div>
+                                <div class="column">
+                                    <h5 class="align-items-center">Cook Time: @recipe.CookTime min</h5>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <span>Makes @recipe.numServings @recipe.servingSize</span>
+                            </div>
+                        </div><br>
+                        <div id="recipeContainer">
+                            <h4>Instructions:</h4>
+                            <ol>
+                                @if (@recipe.Instructions !=  null)
+                                {
+                                    @foreach (var inst in @recipe.Instructions)
+                                    {
+                                        <li>@inst</li>
+                                    }
+                                }
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>No Recipes Found.</p>
+        }
+    </div>
+</body>

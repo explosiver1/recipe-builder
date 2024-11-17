@@ -8,7 +8,7 @@ public class MPMeal()
 {
     //public string mealDescription = "";
     //public string mealNotes = "";
-    //public List<Recipe> recipes = new List<Recipe>();
+    public List<Recipe> recipes = new List<Recipe>();
     public List<string> recipeNames = new List<string>();
     public DateOnly date;
     public int mealNum;
