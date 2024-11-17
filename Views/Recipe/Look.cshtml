@@ -29,7 +29,6 @@
                         @ing.Quantity @ing.Unit @ing.Qualifier @ing.Ingredient.Name
                         @* <button class="add-to-cart-btn" onclick="addToCart('@ing.Ingredient.Name',this)">Add to Cart</button> *@
                     </li>
-                    @* <br> *@
                 }
                 </ul>
             }
@@ -89,7 +88,6 @@
                         <h5 class="align-items-center">Cook Time: @Model.recipe.CookTime min</h5>
                     </div>
                 </div>
-                <br>
                 <div class="row align-items-center">
                     <h5>Makes @Model.recipe.numServings @Model.recipe.servingSize</h5>
                 </div>
