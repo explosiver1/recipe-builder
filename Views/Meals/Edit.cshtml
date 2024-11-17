@@ -10,6 +10,7 @@
 <form asp-controller="Meals" asp-action="Edit" method="post">
     <div class="form-group">
         <label for="MealName">Meal Name: @Model.mealData.Name</label>
+        <input type="hidden" name="mealData.Name" value="@Model.mealData.Name"/>
     </div>
 
     <div class="form-group">
@@ -27,7 +28,7 @@
             <p>@recipe</p>
         }
     }
-    
+
     @if(Model.UserRecipesNames != null && Model.UserRecipesNames.Any())
     {
         <div class="form-group">
@@ -45,16 +46,18 @@
                             <tr>
                                 <td>
                                     <select name="RecipesToAdd[@i]" value="@Model.mealData.RecipeNames">
-                                        <option value="" disabled selected>Select a Recipe</option>
+                                        <option value="" selected>None</option>
                                         @foreach(string recipeName in Model.UserRecipesNames)
                                         {
                                             <option value="@recipeName">@recipeName</option>
                                         }
                                     </select>
                                 </td>
+                               @*
                                 <td>
-                                    <button type="button" onclick="removeRecipeRow(this)">Remove</button>
+                                    <button type="button" onclick="removeRecipeRow(this)">Remove Selection</button>
                                 </td>
+                                *@
                             </tr>
                         }
                     </tbody>
@@ -70,7 +73,7 @@
         {
             <p>No Recipes to Select</p>
         }
-    <button type="submit" class="btn btn-success">Save Cookbook</button>
+    <button type="submit" class="btn btn-success">Save Meal</button>
 </form>
 <script>
     function addRecipeRow(){

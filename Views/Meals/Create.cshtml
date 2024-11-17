@@ -65,7 +65,7 @@
     .recipes-list a {
         color: #4A743E;
         text-decoration: none;
-        font-weight: normal; 
+        font-weight: normal;
     }
 
     .recipes-list a:hover {
@@ -73,13 +73,13 @@
     }
 
     .recipes-added-label {
-        margin-top: 10px; 
-        font-weight: normal; 
+        margin-top: 10px;
+        font-weight: normal;
     }
 
     /* button is aligned at the same height as label */
     .add-recipes {
-        margin-top: 20px; 
+        margin-top: 20px;
     }
 
 </style>
@@ -123,16 +123,18 @@
                         <tr>
                             <td>
                                 <select name="meal.RecipeNames[@i]" value="@Model.meal.RecipeNames">
-                                    <option value="" disabled selected>Select a Recipe</option>
+                                    <option value="" selected>None</option>
                                     @foreach(string recipeName in Model.UserRecipesNames)
                                     {
                                         <option value="@recipeName">@recipeName</option>
                                     }
                                 </select>
                             </td>
+                            @*
                             <td>
                                 <button type="button" onclick="removeRecipeRow(this)">Remove</button>
                             </td>
+                            *@
                         </tr>
                     }
                     </tbody>
