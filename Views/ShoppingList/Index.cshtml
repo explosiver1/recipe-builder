@@ -25,9 +25,9 @@
             transition: background-color 0.3s ease;
         }
 
-        button:hover {
-            background-color: #96AE6D;
-        }
+            button:hover {
+                background-color: #96AE6D;
+            }
 
         /* remove button styling */
         .remove-btn {
@@ -35,9 +35,9 @@
             margin-left: 10px;
         }
 
-        .remove-btn:hover {
-            background-color: #c82333;
-        }
+            .remove-btn:hover {
+                background-color: #c82333;
+            }
 
         /* background styling for the shopping list */
         #shoppingListContainer {
@@ -60,13 +60,13 @@
             color: #4A743E;
         }
 
-        #shoppingListContainer ul li {
-            font-size: 18px;
-            margin: 5px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+            #shoppingListContainer ul li {
+                font-size: 18px;
+                margin: 5px 0;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
 
 
         #shoppingListContainer form {
@@ -82,9 +82,9 @@
             cursor: pointer;
         }
 
-        #shoppingListContainer a:hover, #shoppingListContainer button:hover {
-            text-decoration: underline;
-        }
+            #shoppingListContainer a:hover, #shoppingListContainer button:hover {
+                text-decoration: underline;
+            }
 
         .alphabet {
             display: flex;
@@ -92,17 +92,17 @@
             margin: 20px 0;
         }
 
-        .alphabet a {
-            margin: 0 10px;
-            text-decoration: none;
-            color: #4A743E;
-            font-weight: bold;
-            transition: color 0.3s;
-        }
+            .alphabet a {
+                margin: 0 10px;
+                text-decoration: none;
+                color: #4A743E;
+                font-weight: bold;
+                transition: color 0.3s;
+            }
 
-        .alphabet a:hover {
-            color: #96AE6D;
-        }
+                .alphabet a:hover {
+                    color: #96AE6D;
+                }
 
         /* ensure checkbox and text stay on the left side */
         .item-left {
@@ -145,11 +145,204 @@
             margin-right: 10px;
         }
 
-        .checked-row{
+        .checked-row {
             background-color: #d3d3d3;
             text-decoration: line-through;
         }
     </style>
+
+    <!-- javascript for button/list functionality -->
+    <script>
+        // remove an item from the pantry list (client-side only)
+        function removeItem(event) {
+            const item = event.target.closest('li'); // get closest list item
+            if (item) {
+                item.remove(); // remove item from the DOM
+            }
+        }
+
+        function scrollToIngredient() {
+            const searchInput = document.getElementById('ingredientSearch').value.toLowerCase();
+            const items = document.querySelectorAll('.ingredients-list li a');
+
+            items.forEach(item => {
+                if (item.textContent.toLowerCase().includes(searchInput)) {
+                    const ingredientSection = item.closest('ul').previousElementSibling; // get following header (h2)
+                    ingredientSection.scrollIntoView({ behavior: 'smooth' });
+                    return; // exit loop
+                }
+            });
+        }
+
+        // Edit item
+        function editRow(button) {
+            // Get row of button
+            var row = button.closest('tr');
+            var cells = row.querySelectorAll('.editable');
+            //cells[0].innerHTML = `<input type="text" name="name" value="${cells[0].textContent}" readonly/>`;
+            //cells[1].innerHTML = `<input type="text" name="quantity" value="${cells[1].textContent}" />`;
+            //cells[2].innerHTML = `<input type="text" name="unit" value="${cells[2].textContent}" />`;
+            //cells[3].innerHTML = `<input type="text" name="qualifier" value="${cells[3].textContent}" />`;
+            //var subButton = row.querySelector('.edit-form').querySelector('button[type="submit"]');
+            //if (subButton) {
+            //subButton.removeAttribute('hidden');
+            //}
+
+            //Setup values in dialog box.
+            var dialog = document.querySelector('dialog');
+            document.getElementById('editName').value = cells[0].textContent;
+            document.getElementById('editQuantity').value = cells[1].textContent;
+            document.getElementById('editUnit').value = cells[2].textContent;
+            document.getElementById('editQualifier').value = cells[3].textContent;
+
+            dialog.showModal();
+
+            //button.textContent = 'Cancel';
+            //button.setAttribute('onclick', 'cancelEdit(this)');
+        }
+
+        // Cancel edit
+        function cancelEdit(span) {
+            //var row = button.closest('tr');
+            //var cells = row.querySelectorAll('input[type="text"]');
+            //cells[0].innerHTML = `<input type="text" name="name" value="${cells[0].textContent}" readonly/>`;
+            //cells[1].innerHTML = `<input type="text" name="quantity" value="${cells[1].textContent}" />`;
+            //cells[2].innerHTML = `<input type="text" name="unit" value="${cells[2].textContent}" />`;
+            //cells[3].innerHTML = `<input type="text" name="qualifier" value="${cells[3].textContent}" />`;
+            //var subbutton = row.querySelector('.edit-form').querySelector('button[type="submit"]');
+            //if(subbutton){
+            //subbutton.setAttribute('hidden', 'hidden');
+            //}
+            //button.textContent = 'Edit';
+            //button.setAttribute('onclick', 'editRow(this)');
+            var dialog = document.getElementById('editDialog');
+            dialog.close();
+        }
+
+        // Edit item - client side only (changes text to text boxes & edit button to save)
+        // function editRow(button) {
+        //     // Get row of button
+        //     var row = button.closest('tr');
+
+        //     // Change each cell to a textbox
+        //     var cells = row.querySelectorAll('.editable');
+        //     cells.forEach(function (cell) {
+        //         var currentText = cell.textContent;
+        //         cell.innerHTML = `<input type="text" value="${currentText}" />`;
+        //     });
+
+        //     button.textContent = 'Save';
+        //     button.setAttribute('onclick', 'saveRow(this)');
+        // }
+
+        // Client side only, Needs to be updated to save to server side - should have cancel button added
+        function saveRow(button) {
+            // Get row of button
+            var row = button.closest('tr');
+
+            // Change each cell to text with updated values
+            var cells = row.querySelectorAll('.editable');
+            cells.forEach(function (cell) {
+                var inputField = cell.querySelector('input');
+                if (inputField) { cell.textContent = inputField.value; }
+            });
+
+            button.textContent = 'Edit';
+            button.setAttribute('onclick', 'editRow(this)');
+        }
+
+        // remove an item from the list
+        function removeItem(element) {
+            element.parentElement.parentElement.remove(); // remove the entire list item
+        }
+
+        // handle "Add to Pantry" action
+        function addToPantry(item) {
+            alert(item + " added to pantry!");
+            // Here you can handle logic for pantry
+        }
+
+        // add a new item to the list
+        document.getElementById("addItemBtn").addEventListener("click", function () {
+            const newItem = document.getElementById("newItem").value;
+
+            if (newItem.trim() !== "") {
+                // create a new list item with a checkbox, add to pantry button, and remove button
+                const li = document.createElement("li");
+
+                // left section for the checkbox and text
+                const itemLeft = document.createElement("div");
+                itemLeft.classList.add("item-left");
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.onchange = function () { toggleCompletion(this); };
+
+                const textSpan = document.createElement("span");
+                textSpan.textContent = newItem;
+
+                itemLeft.appendChild(checkbox);
+                itemLeft.appendChild(textSpan);
+
+                // button container to hold both "Add to Pantry" and "Remove" buttons
+                const buttonContainer = document.createElement("div");
+                buttonContainer.classList.add("button-container");
+
+                const pantryBtn = document.createElement("button");
+                pantryBtn.textContent = "Add to Pantry";
+                pantryBtn.classList.add("pantry-btn");
+                pantryBtn.onclick = function () { addToPantry(newItem); };
+
+                const removeBtn = document.createElement("button");
+                removeBtn.textContent = "Remove";
+                removeBtn.classList.add("remove-btn");
+                removeBtn.onclick = function () { removeItem(this); };
+
+                buttonContainer.appendChild(pantryBtn);
+                buttonContainer.appendChild(removeBtn);
+
+                li.appendChild(itemLeft);  // add checkbox and text to the left side
+                li.appendChild(buttonContainer); // add buttons to the right side
+
+                // add the new item to the list
+                document.getElementById("shoppingList").appendChild(li);
+
+                // clear the input field
+                document.getElementById("newItem").value = "";
+            }
+        });
+
+        // toggle completion status of items
+        function toggleCompletion(checkbox) {
+            const row = checkbox.closest('tr')
+            if (checkbox.checked) {
+                row.classList.add('checked-row');
+            }
+            else {
+                row.classList.remove('checked-row')
+            }
+        }
+
+        // Function to add an item from the shopping list to the pantry
+        function addToPantry(itemName) {
+            fetch(`/ShoppingList/AddItemToPantry?itemName=${itemName}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        alert(`${itemName} added to pantry!`);
+                        location.reload(); // Optionally reload to see the changes
+                    } else {
+                        alert("Failed to add item to pantry.");
+                    }
+                });
+        }
+
+    </script>
 </head>
 
 <body>
@@ -219,6 +412,7 @@
                             <th>Description</th>
                             <th></th>
                             <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     @foreach (var item in ABCList.Value)
@@ -230,10 +424,11 @@
                                 <td class="editable">@item.Quantity</td>
                                 <td class="editable">@item.Unit</td>
                                 <td class="editable">@item.Qualifier</td>
+                                <td><button type="submit" class="btn btn-custom" hidden="hidden">Submit</button></td>
                                 <td><button onclick="editRow(this)" class="btn btn-custom">Edit</button></td>
-                                <form method="post" asp-controller="Pantry" asp-action="RemoveFromPantry">
+                                <form method="post" asp-controller="ShoppingList" asp-action="RemoveFromShoppingList">
                                     <input type="hidden" name="ingredientName" value="@item.Name" />
-                                    <td><button type="submit" class="btn btn-custom">Delete</button></td>
+                                <td><button type="submit" class="btn btn-custom">Delete</button></td>
                                 </form>
                             </tr>
                         </tbody>
@@ -242,170 +437,34 @@
             }
         </div>
         @* <ul id="shoppingList">
-            @if (@Model.items.Count != 0) {
-                foreach (var item in @Model.items) {
-                    <li>
-                        <div class="item-left">
-                            <input type="checkbox" onchange="toggleCompletion(this)">
-                            <span>@item.Name</span>
-                        </div>
-                        <div class="button-container">
-                            <button class="pantry-btn" onclick="addToPantry('@item.Name')">Add to Pantry</button>
-                            <button class="remove-btn" onclick="removeItem(this)">Remove</button>
-                        </div>
-                    </li>
-                }
-            } else {
-                <p>No items in the shopping list.</p>
-            }
+        @if (@Model.items.Count != 0) {
+        foreach (var item in @Model.items) {
+        <li>
+        <div class="item-left">
+        <input type="checkbox" onchange="toggleCompletion(this)">
+        <span>@item.Name</span>
+        </div>
+        <div class="button-container">
+        <button class="pantry-btn" onclick="addToPantry('@item.Name')">Add to Pantry</button>
+        <button class="remove-btn" onclick="removeItem(this)">Remove</button>
+        </div>
+        </li>
+        }
+        } else {
+        <p>No items in the shopping list.</p>
+        }
         </ul> *@
     </div>
 
-    <!-- javascript for button/list functionality -->
-    <script>
-        // remove an item from the pantry list (client-side only)
-        function removeItem(event) {
-            const item = event.target.closest('li'); // get closest list item
-            if (item) {
-                item.remove(); // remove item from the DOM
-            }
-        }
-
-        function scrollToIngredient() {
-            const searchInput = document.getElementById('ingredientSearch').value.toLowerCase();
-            const items = document.querySelectorAll('.ingredients-list li a');
-
-            items.forEach(item => {
-                if (item.textContent.toLowerCase().includes(searchInput)) {
-                    const ingredientSection = item.closest('ul').previousElementSibling; // get following header (h2)
-                    ingredientSection.scrollIntoView({ behavior: 'smooth' });
-                    return; // exit loop
-                }
-            });
-        }
-
-        // Edit item - client side only (changes text to text boxes & edit button to save)
-        function editRow(button) {
-            // Get row of button
-            var row = button.closest('tr');
-
-            // Change each cell to a textbox
-            var cells = row.querySelectorAll('.editable');
-            cells.forEach(function (cell) {
-                var currentText = cell.textContent;
-                cell.innerHTML = `<input type="text" value="${currentText}" />`;
-            });
-
-            button.textContent = 'Save';
-            button.setAttribute('onclick', 'saveRow(this)');
-        }
-
-        // Client side only, Needs to be updated to save to server side - should have cancel button added
-        function saveRow(button) {
-            // Get row of button
-            var row = button.closest('tr');
-
-            // Change each cell to text with updated values
-            var cells = row.querySelectorAll('.editable');
-            cells.forEach(function (cell) {
-                var inputField = cell.querySelector('input');
-                if (inputField) { cell.textContent = inputField.value; }
-            });
-
-            button.textContent = 'Edit';
-            button.setAttribute('onclick', 'editRow(this)');
-        }
-
-        // remove an item from the list
-        function removeItem(element) {
-            element.parentElement.parentElement.remove(); // remove the entire list item
-        }
-
-        // handle "Add to Pantry" action
-        function addToPantry(item) {
-            alert(item + " added to pantry!");
-            // Here you can handle logic for pantry
-        }
-
-        // add a new item to the list
-        document.getElementById("addItemBtn").addEventListener("click", function() {
-            const newItem = document.getElementById("newItem").value;
-
-            if (newItem.trim() !== "") {
-                // create a new list item with a checkbox, add to pantry button, and remove button
-                const li = document.createElement("li");
-
-                // left section for the checkbox and text
-                const itemLeft = document.createElement("div");
-                itemLeft.classList.add("item-left");
-
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                checkbox.onchange = function() { toggleCompletion(this); };
-
-                const textSpan = document.createElement("span");
-                textSpan.textContent = newItem;
-
-                itemLeft.appendChild(checkbox);
-                itemLeft.appendChild(textSpan);
-
-                // button container to hold both "Add to Pantry" and "Remove" buttons
-                const buttonContainer = document.createElement("div");
-                buttonContainer.classList.add("button-container");
-
-                const pantryBtn = document.createElement("button");
-                pantryBtn.textContent = "Add to Pantry";
-                pantryBtn.classList.add("pantry-btn");
-                pantryBtn.onclick = function() { addToPantry(newItem); };
-
-                const removeBtn = document.createElement("button");
-                removeBtn.textContent = "Remove";
-                removeBtn.classList.add("remove-btn");
-                removeBtn.onclick = function() { removeItem(this); };
-
-                buttonContainer.appendChild(pantryBtn);
-                buttonContainer.appendChild(removeBtn);
-
-                li.appendChild(itemLeft);  // add checkbox and text to the left side
-                li.appendChild(buttonContainer); // add buttons to the right side
-
-                // add the new item to the list
-                document.getElementById("shoppingList").appendChild(li);
-
-                // clear the input field
-                document.getElementById("newItem").value = "";
-            }
-        });
-
-        // toggle completion status of items
-        function toggleCompletion(checkbox) {
-            const row = checkbox.closest('tr')
-            if(checkbox.checked){
-                row.classList.add('checked-row');
-            }
-            else{
-                row.classList.remove('checked-row')
-            }
-        }
-
-        // Function to add an item from the shopping list to the pantry
-        function addToPantry(itemName) {
-            fetch(`/ShoppingList/AddItemToPantry?itemName=${itemName}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                }
-            })
-            .then(response => {
-                if (response.ok) {
-                    alert(`${itemName} added to pantry!`);
-                    location.reload(); // Optionally reload to see the changes
-                } else {
-                    alert("Failed to add item to pantry.");
-                }
-            });
-        }
-
-    </script>
+    <dialog id="editDialog">
+        <p>Enter New Properties</p>
+        <form method="post" asp-controller="ShoppingList" asp-action="EditShoppingListItem">
+            <input id="editName" type="text" name="name" value="" readonly />
+            <input id="editQuantity" type="text" name="quantity" value="" />
+            <input id="editUnit" type="text" name="unit" value="" />
+            <input id="editQualifier" type="text" name="qualifier" value="" />
+            <button type="submit">Submit</button>
+        </form>
+        <span onclick="cancelEdit()">Cancel</span>
+    </dialog>
 </body>
