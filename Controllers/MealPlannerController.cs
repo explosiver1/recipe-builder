@@ -206,44 +206,11 @@ public class MealPlannerController : Controller
         Console.WriteLine("Received this data from view to remove recipe from meal planner\nDate: " + data.date + "\nMeal Number: " + data.mealNum + "\nRecipe: " + data.recipeToRemove);
 
         CtrlModel.RemoveFromMealPlanner(data.date, data.mealNum, data.recipeToRemove, at.username);
-        return RedirectToAction("Daily", new { date = data.date});
+        return RedirectToAction("Daily", new { date = data.date });
     }
 
-    public IActionResult Look(MealPlannerLookVM MPMealData)
-    {
-        //If user isn't logged in, don't allow access to this page - redirect to main site page
-        AuthToken at;
-        try
-        {
-            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-            if (!at.Validate())
-            {
-                throw new Exception("Authentication Expired. Please login again.");
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"An error occurred: {ex.Message}");
-            return RedirectToAction("Index", "Home");
-        }
 
-        Console.WriteLine(MPMealData.mealTitle);
-        foreach (var item in MPMealData.mealData.recipeNames)
-        {
-            Console.WriteLine(item);
-        }
-        foreach (var item in MPMealData.mealData.recipes)
-        {
-            Console.WriteLine(item.Name);
-        }
-
-        // Load view with data
-        return View(MPMealData);
-    }
-
-    // POST: for viewing meal recipes
-    [HttpPost]
-    public IActionResult ViewMealDetails(string date, int mealNum)
+    public IActionResult Look(DateOnly date, int mealNum)
     {
         AuthToken at;
         try
@@ -260,9 +227,10 @@ public class MealPlannerController : Controller
             return RedirectToAction("Index", "Home");
         }
 
+        int mealIndex = mealNum;
         MealPlannerLookVM VM = new MealPlannerLookVM();
-        VM.mealData = CtrlModel.GetMealPlan(date, mealNum, at.username);
-        VM.mealTitle = "Meal " + (mealNum + 1).ToString() + " for " + date;
+        VM.mealData = CtrlModel.GetMealPlan(date, mealIndex, at.username);
+        VM.mealTitle = "Meal " + (mealIndex + 1).ToString() + " for " + date;
         Console.WriteLine(VM.mealTitle);
         foreach (var item in VM.mealData.recipeNames)
         {
@@ -273,11 +241,13 @@ public class MealPlannerController : Controller
             Console.WriteLine(item.Name);
         }
 
-        return RedirectToAction("Look", "MealPlanner", VM);
-
+        return View(VM);
     }
 
-
+    //public IActionResult EditMealPlan()
+    //{
+        
+    //}
     //     // POST: /MealPlanner/Remove
     //     [HttpPost]
     //    public IActionResult Remove(string mealSetName)

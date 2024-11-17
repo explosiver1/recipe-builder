@@ -106,12 +106,20 @@
                 @foreach (var day in week.Days)
                 {
                     <div class="day">
-                        <p class="day-title">@day.Date.DayOfWeek @day.Date</p>
-                        @foreach (var meal in day.Meals)
-                        {
-                            <p>
-                                @string.Join(", ", meal.recipeNames.Select(recipe => recipe))
-                            </p>
+                        <a class="day-title" asp-controller="MealPlanner" asp-action="Daily" asp-route-date="@day.Date">@day.Date.DayOfWeek @day.Date</a>
+                        @{ int mealIndex = 0; 
+                            @foreach (var meal in day.Meals)
+                            {
+                                <a asp-controller="MealPlanner" asp-action="Look" asp-route-date=">@day.Date" asp-route-mealNum="@mealIndex">
+                                    Meal @(mealIndex + 1) Recipes
+                                </a>
+                                <p>
+                                    @string.Join(", ", meal.recipeNames.Select(recipe => recipe))
+                                </p>
+                                {
+                                    mealIndex++;
+                                }
+                            }
                         }
                     </div>
                 }
