@@ -679,6 +679,118 @@ public class DBQueryModel
         }
     }
 
+    public async static Task<bool> RemoveToolsFromRecipe(string username, string recipe)
+    {
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var query = @"
+               MATCH (recipe:Recipe)-[x:USES]->(t:Tool)
+               WHERE recipe.name = $recipeName
+               DELETE x
+               WITH x
+               RETURN COUNT(x) > 0
+           ";
+        string recipeName = username + recipe;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            var response = await session.RunAsync(query, new { recipeName });
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool toolRemoved = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + toolRemoved);
+            return toolRemoved;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
+    public static async Task<bool> RemoveIngredientFromRecipe(string ing, string recipe, string username)
+    {
+        string recipeName = username + recipe;
+        string ingName = username + ing;
+
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var query = @"
+               MATCH (recipe:Recipe)-[x:MADE_WITH]->(i:Ingredient)
+               WHERE recipe.name = $recipeName AND i.name = $ingName
+               DELETE x
+               WITH x
+               RETURN COUNT(x) > 0
+           ";
+
+        var session = driver.AsyncSession();
+        try
+        {
+            var response = await session.RunAsync(query, new { recipeName });
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool toolRemoved = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + toolRemoved);
+            return toolRemoved;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+
+    }
+
+    public static async Task<bool> RemoveTagFromRecipe(string t, string r, string username)
+    {
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var query = @"
+           MATCH (recipe:Recipe)-[x:TAGGED_WITH]->(t:Tag)
+           WHERE recipe.name = $recipeName AND t.name = $toolName
+           DELETE x
+           WITH x
+           RETURN COUNT(x) > 0
+       ";
+        string recipeName = username + r;
+        string toolName = username + t;
+
+        var session = driver.AsyncSession();
+        try
+        {
+            var response = await session.RunAsync(query, new { recipeName, toolName });
+
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            bool toolRemoved = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + toolRemoved);
+            return toolRemoved;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return false;
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
     // CreateGroup()
     // public static async Task<bool> CreateGroupNode(string group)
     // {
@@ -863,6 +975,10 @@ public class DBQueryModel
             await session.CloseAsync();
         }
     }
+
+    //public static async Task<bool> RemoveStepNode(string step, string recipe, string username) {
+    //
+    //}
 
 
     // CreateTagNode()
@@ -1536,7 +1652,7 @@ public class DBQueryModel
         }
     }
 
-    private static async Task<bool> DeleteStepsFromRecipe(string username, string recipeName)
+    public static async Task<bool> DeleteStepsFromRecipe(string username, string recipeName)
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name;
