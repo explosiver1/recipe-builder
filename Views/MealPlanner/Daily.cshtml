@@ -104,7 +104,22 @@
                         int mealIndex = Model.mealPlansForDay.Meals.IndexOf(meal); 
                         
                         <div class="meal-entry" id="table-container">
-                            <p><strong>Meal: @(@mealIndex + 1)</strong></p>
+                           
+                            <table class="table">
+                                @* <thead>
+                                    <tr>
+                                        <th></th>
+                                    </tr>
+                                </thead> *@
+                                    
+                                    <tbody>
+                                        <tr>
+                                            <td> <p><strong>Meal: @(@mealIndex + 1)</strong></p> </td>
+                                            <td><button type="submit" class="btn btn-custom" hidden="hidden">Submit</button></td>
+                                            <td><button onclick="editRow(this)" class="btn btn-custom">Edit</button></td>
+                                        </tr>
+                                    </tbody>
+                            </table>
                             <div class="currentMeal">
                                 <table id="currentMealTable">
                                     <thead>
@@ -128,21 +143,25 @@
                                         </tbody>
                                     }
                                 </table>
-                            </div><br>
+                            </div>
+                            </div>}
+                            </div>
+                            <br>
                             <!-- action links inside meal container -->
                             <div class="action-links">
                                 <!--Meal Selector Table-->
-                                <div>
+                                <!--BELOW CODE MOVED TO MODAL-->
+@*                                 <div>
                                     <label for="meals" class="meals-added-label">Meals Added:</label>
-                                </div><br>
-                                @if(Model.UserMealsNames != null && Model.UserMealsNames.Any())
+                                </div><br> *@
+                               @*  @if(Model.UserMealsNames != null && Model.UserMealsNames.Any())
                                 {
                                     <div class="form-group">
                                         <div id="meal-container">
                                             <table id="mealTable">
                                                 <thead>
                                                     <tr>
-                                                        <th>Meals</th>
+                                                        <th>Add Meals</th>
                                                         <th></th>
                                                     </tr>
                                                 </thead>
@@ -223,8 +242,8 @@
                                 }
                                 <br><button type="submit" class="btn btn-custom">Save Scheduled Meal</button><br>
                             </div>
-                        </div>
-                    }
+                        </div>*@
+                    
                 </div>
             }
             else
@@ -240,7 +259,7 @@
         </div>
         <!-- javascript for adding additional meal entries -->
         <script>
-            let mealCount = 0;
+            let mealCount = 0;//@Model.mealPlansForDay.Meals.Count();
             function addMeal() {
                 mealCount++;
                 const mealList = document.getElementById('meal-list');
@@ -249,7 +268,7 @@
                 newScheduledMeal.id = '';
                 newScheduledMeal.style.display = 'block';
                 const sectionHeader = newScheduledMeal.querySelector('p strong');
-                sectionHeader.textContent = 'Meal ${mealCount}:';
+                sectionHeader.textContent = 'Meal';// + mealCount;
                 
                 mealList.appendChild(newScheduledMeal);
 
@@ -298,6 +317,112 @@
 
                 document.getElementById("recipeTable").getElementsByTagName('tbody')[0].appendChild(newRow);
             }
+            // Edit item
+            function editRow(button) {
+                // Get row of button
+                var row = button.closest('tr');
+                var cells = row.querySelectorAll('.editable');
+
+                //Setup values in dialog box.
+                var dialog = document.querySelector('dialog');
+
+                dialog.showModal();
+            }
+                    // Cancel edit
+        function cancelEdit(span) {
+            var dialog = document.getElementById('editDialog');
+            dialog.close();
+        }
         </script>
-    </div>
+
+    <dialog id="editDialog">
+        <form method="post" asp-controller="MealPlanner" asp-action="EditMealPlan">
+            @if(Model.UserMealsNames != null && Model.UserMealsNames.Any())
+                {
+                    <div class="form-group">
+                        <div id="meal-container">
+                            <table id="mealTable">
+                                <thead>
+                                    <tr>
+                                        <th>Add Meals</th>
+                                       @*  <th></th> *@
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @for (int i = 0; i < Model.UserMealsNames.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                            <select name="meal.MealNames[@i]" value="@Model.mealPlansForDay.Meals">
+                                                <option value="" disabled selected>Select a Meal</option>
+                                                @foreach(string mealName in Model.UserMealsNames)
+                                                {
+                                                    <option value="@mealName">@mealName</option>
+                                                }
+                                            </select>
+                                        </td>
+                                        @* <td>
+                                            <button type="button" onclick="removeMealRow(this)">Remove</button>
+                                        </td> *@
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div>
+                            <span class="plus-button" onclick="addMealRow()">Add Meal</span>
+                        </div><br>
+                    </div>
+                }
+                else
+                {
+                    <p>No Meals to Select</p>
+                }
+                <!--Recipe Selector Table-->
+                @if(Model.UserRecipesNames != null && Model.UserRecipesNames.Any())
+                {
+                    <div class="form-group">
+                        <div id="recipe-container">
+                            <table id="recipeTable">
+                                <thead>
+                                    <tr>
+                                        <th>Add Recipes</th>
+                                        @* <th></th> *@
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                @for (int i = 0; i < Model.UserRecipesNames.Count; i++)
+                                {
+                                    <tr>
+                                        <td>
+                                                <select name="meal.RecipeNames[@i]" value="@Model.mealPlansForDay.Meals">
+                                                <option value="" disabled selected>Select a Recipe</option>
+                                                @foreach(string recipeName in Model.UserRecipesNames)
+                                                {
+                                                    <option value="@recipeName">@recipeName</option>
+                                                }
+                                            </select>
+                                        </td>
+                                       @*  <td>
+                                            <button type="button" onclick="removeRecipeRow(this)">Remove</button>
+                                        </td> *@
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        </div>
+                        @* <div>
+                            <span class="plus-button" onclick="addRecipeRow()">Add Recipe</span>
+                        </div><br> *@
+                    </div>
+                }
+                else
+                {
+                    <p>No Recipes to Select</p>
+                }
+                <br><button type="submit" class="btn btn-custom">Save Scheduled Meal</button><br>
+                               
+        </form>
+        <span onclick="cancelEdit()">Cancel</span>
+    </dialog>
 </body>

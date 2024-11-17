@@ -93,14 +93,23 @@
                     <a class="schedule-title" asp-area="" asp-controller="MealPlanner" asp-action="Daily" asp-route-date="@day.Date">@day.Date.DayOfWeek @day.Date</a>
                     @if (@day.Meals.Count > 0)
                     {
-                        foreach (MPMeal meal in @day.Meals)
                         {
-                            <div>
-                            @foreach (string recipeName in meal.recipeNames)
+                            int mealIndex = 0;
+                            foreach (MPMeal meal in @day.Meals)
                             {
-                                <p>@recipeName</p>
+                                <div>
+                                <a asp-controller="MealPlanner" asp-action="Look" asp-route-date=">@day.Date" asp-route-mealNum="@mealIndex">
+                                    Meal @(mealIndex + 1) Recipes
+                                </a>
+                                @foreach (string recipeName in meal.recipeNames)
+                                {
+                                    <p>@recipeName</p>
+                                }
+                                </div>
+                                {
+                                    mealIndex++;
+                                }
                             }
-                            </div>
                         }
                     }
                 </div> 

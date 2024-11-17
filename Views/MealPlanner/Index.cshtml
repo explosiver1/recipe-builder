@@ -67,6 +67,12 @@
         text-align: center;
     }
 
+    .day-title {
+        font-size: 1.2em;
+        color: #4A743E;
+        margin: 0 0 5px 0;
+    }
+
     .schedule-title {
         font-size: 1.5em;
         margin: 10px 0;
@@ -88,11 +94,9 @@
                 int mealIndex = @Model.ScheduledMealsToday.Meals.IndexOf(meal);
                 int mealNum = mealIndex + 1;
                 <div class="day">
-                    <form method="post" asp-controller="MealPlanner" asp-action="ViewMealDetails">
-                        <input type="hidden" name="date" value="@Model.ScheduledMealsToday.Date.ToString()" />
-                        <input type="hidden" name="mealNum" value=@mealIndex />
-                        <button type="submit" class="btn btn-custom">Meal @mealNum Recipes</button>
-                    </form>
+                    <a asp-controller="MealPlanner" asp-action="Look" asp-route-date="@Model.ScheduledMealsToday.Date" asp-route-mealNum=@mealIndex>
+                        Meal @mealNum Recipes
+                    </a>
 
                         @foreach (var recipe in meal.recipeNames)
                         {
@@ -111,15 +115,25 @@
             @foreach (var day in @Model.ScheduledMealsThisWeek.Days)
             {
                 <div class="day">
-                    <a asp-controller="MealPlanner" asp-action="Day" asp-route-date="@day.Date">
+                    <a class="day-title" asp-controller="MealPlanner" asp-action="Daily" asp-route-date=@day.Date>
                         @day.Date.DayOfWeek @day.Date
                     </a>
-                    @foreach (var meal in day.Meals)
-                    {
-                        <p>Meal @(@day.Meals.IndexOf(meal) + 1) Recipes</p>
-                        @foreach (var recipe in meal.recipeNames)
+                    <br />
+                    @{
+                        int mealIndex = 0;
+                    
+                        @foreach (var meal in day.Meals)
                         {
-                            <p>@recipe</p>
+                            <a asp-controller="MealPlanner" asp-action="Look" asp-route-date=@day.Date asp-route-mealNum=@mealIndex>
+                                Meal @(@mealIndex + 1) Recipes
+                            </a>
+                            @foreach (var recipe in meal.recipeNames)
+                            {
+                                <p>@recipe</p>
+                            }
+                            {
+                                mealIndex++;
+                            }
                         }
                     }
                 </div>
