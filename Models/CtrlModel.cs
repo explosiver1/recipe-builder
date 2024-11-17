@@ -873,5 +873,87 @@ public static class CtrlModel
         }
         return true;
     }
+  
+    public static bool EditRecipe(string username, Recipe r)
+    {
+        try
+        {
+            //Get call on existing recipe
+            Recipe oldRecipe = DBQueryModel.GetRecipe(username, r.Name).Result;
+            //Call to set new paramters on Recipe node.
+            if (!DBQueryModel.EditRecipe(username, r.Name, "", "", "", r.Description, r.Rating.ToString(), r.Difficulty.ToString(), r.numServings.ToString(), r.servingSize, r.CookTime.ToString(), r.PrepTime.ToString()).Result)
+            {
+                throw new Exception("Error, recipe parameters could not be changed.");
+            }
+            foreach (string t in r.Tags)
+            {
+                if (!oldRecipe.Tags.Contains(t))
+                {
+                    if (!DBQueryModel.CreateTagNode(t, r.Name, username).Result)
+                    {
+                        throw new Exception("Error, tags could not be edited");
+                    }
+                }
+            }
+            foreach (string t in oldRecipe.Tags)
+            {
+                if (!r.Tags.Contains(t))
+                {
+                    if (!DBQueryModel.RemoveTagFromRecipe(t, r.Name, username).Result)
+                    {
+                        throw new Exception("Error, tags could not be edited.");
+                    }
+                }
+            }
+            if (!DBQueryModel.DeleteStepsFromRecipe(username, r.Name).Result)
+            {
+                throw new Exception("Error, steps could not be edited.");
+            }
+            int i = 0;
+            foreach (string step in r.Instructions)
+            {
+                if (!DBQueryModel.CreateStepNode(username, r.Name, i.ToString(), step).Result)
+                {
+                    throw new Exception("Error, steps could not be edited.");
+                }
+            }
+            if (!DBQueryModel.RemoveToolsFromRecipe(username, r.Name).Result)
+            {
+                throw new Exception("Error, tools could not be edited");
+            }
+            foreach (string t in r.Equipment)
+            {
+                if (!DBQueryModel.CreateToolNode(username, r.Name, t).Result)
+                {
+                    throw new Exception("Error, tools could not be edited");
+                }
+            }
+            // Repeat for Ingredients
+            foreach (IngredientDetail ingD in oldRecipe.Ingredients)
+            {
+                if (!DBQueryModel.RemoveIngredientFromRecipe(ingD.Name, r.Name, username).Result)
+                {
+                    throw new Exception("Error, could not edit ingredients");
+                }
+            }
+            foreach (IngredientDetail ingD in oldRecipe.Ingredients)
+            {
+                if (!DBQueryModel.CreateIngredientNode(username, ingD.Name).Result)
+                {
+                    throw new Exception("Error, could not edit ingredients");
+                }
+                if (!DBQueryModel.ConnectIngredientNode(username, r.Name, ingD.Name, ingD.Unit, ingD.Qualifier, ingD.Quantity).Result)
+                {
+                    throw new Exception("Error, could not edit ingredients");
+                }
+            }
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error, recipe could not be updated. Exception: " + e);
+            return false;
+        }
+    }
 
 }
