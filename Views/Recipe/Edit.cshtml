@@ -103,7 +103,6 @@
                         <th>Quantity</th>
                         <th>Unit</th>
                         <th>Qualifier</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -122,9 +121,11 @@
                             <td>
                                 <input type="text" name="IngredientsInput[@i].Qualifier" value="@Model.IngredientsInput[i].Qualifier" />
                             </td>
+                            @*
                             <td>
                                 <button type="button" onclick="removeIngredientRow(this)">Remove</button>
                             </td>
+                            *@
                         </tr>
                     }
                 </tbody>
@@ -141,7 +142,6 @@
                     <thead>
                     <tr>
                         <th>Instruction</th>
-                        <th>Actions</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -151,9 +151,11 @@
                                 <td>
                                     <input type="text" name="InstructionsInput[@i]" value="@Model.InstructionsInput[i]" />
                                 </td>
+                                @*
                                 <td>
                                     <button type="button" onclick="removeInstructionRow(this)">Remove</button>
                                 </td>
+                                *@
                             </tr>
                         }
                     </tbody>

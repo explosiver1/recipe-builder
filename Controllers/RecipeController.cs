@@ -318,7 +318,7 @@ namespace RecipeBuilder.Controllers
                 return RedirectToAction("Index", "Home");
             }
             // Get the recipe data (replace with actual fetch logic)
-            Recipe recipe = DBQueryModel.GetRecipe(at.username, recipeName).Result;
+            Recipe recipe = CtrlModel.GetRecipe(at.username, recipeName);
             Console.WriteLine("REcipe Name: " + recipe.Name);
             if (recipe == null)
             {
@@ -330,7 +330,7 @@ namespace RecipeBuilder.Controllers
                 recipe = recipe,
                 TagsInput = string.Join(", ", recipe.Tags),
                 IngredientsInput = recipe.Ingredients,
-                ServingSizeInput = string.Empty, //recipe.servingSize != null ? string.Join(", ", recipe.servingSize.Select(kv => $"{kv.Key}, {kv.Value}")) : "",
+                ServingSizeInput = recipe.servingSize, //recipe.servingSize != null ? string.Join(", ", recipe.servingSize.Select(kv => $"{kv.Key}, {kv.Value}")) : "",
                 EquipmentInput = string.Join(", ", recipe.Equipment),
                 InstructionsInput = recipe.Instructions,
             };
@@ -357,6 +357,26 @@ namespace RecipeBuilder.Controllers
                 Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
+
+            // Parse Tags
+
+            RecipeVM.recipe.Tags = RecipeVM.TagsInput.Split(',')
+                                    .Select(tag => tag.Trim())
+                                    .Where(tag => !string.IsNullOrEmpty(tag))
+                                    .ToList();
+
+
+            // Parse Equipment
+
+            RecipeVM.recipe.Equipment = RecipeVM.EquipmentInput.Split(',')
+                                    .Select(tool => tool.Trim())
+                                    .Where(tool => !string.IsNullOrEmpty(tool))
+                                    .ToList();
+
+            RecipeVM.recipe.servingSize = RecipeVM.ServingSizeInput;
+
+            RecipeVM.recipe.Ingredients = RecipeVM.IngredientsInput;
+            RecipeVM.recipe.Instructions = RecipeVM.InstructionsInput;
 
             bool test = CtrlModel.EditRecipe(at.username, RecipeVM.recipe);
 

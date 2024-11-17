@@ -679,6 +679,43 @@ public class DBQueryModel
         }
     }
 
+    public async static Task<List<string>> GetToolsByRecipe(string username, string recipe)
+    {
+        using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
+        var session = driver.AsyncSession();
+        string recipeName = username + recipe;
+        string query = @"MATCH (r:Recipe)-[]->(t:Tool)
+            WHERE r.name = $recipeName
+            RETURN t";
+
+        try
+        {
+
+
+            var response = await session.RunAsync(query, new { recipeName });
+            List<string> tools = new List<string>();
+            // Pulls all responses from query
+            IReadOnlyList<IRecord> records = await response.ToListAsync();
+
+            // Checks if there is a record && gets the first record which should be the bool response
+            foreach (IRecord i in records)
+            {
+                var tNode = i["t"].As<INode>();
+                tools.Add(GetCleanString(username, tNode["name"].As<string>()));
+            }
+            return tools;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Error, tools could not be retrieved for recipe {recipe}. Exception: {e}");
+            return new List<string>();
+        }
+        finally
+        {
+            await session.CloseAsync();
+        }
+    }
+
     public async static Task<bool> RemoveToolsFromRecipe(string username, string recipe)
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
@@ -687,7 +724,9 @@ public class DBQueryModel
                WHERE recipe.name = $recipeName
                DELETE x
                WITH x
-               RETURN NOT(COUNT(x) > 0)
+               MATCH(r:Recipe)-[xx:USES]->(t:Tool)
+               WHERE r.name = $recipeName
+               RETURN NOT(COUNT(xx) > 0)
            ";
         string recipeName = username + recipe;
 
@@ -700,7 +739,7 @@ public class DBQueryModel
             IReadOnlyList<IRecord> records = await response.ToListAsync();
 
             // Checks if there is a record && gets the first record which should be the bool response
-            bool toolRemoved = records.Any() && records.First()[0].As<bool>();
+            bool toolRemoved = records.First()[0].As<bool>();
             Console.WriteLine("Returning Result: " + toolRemoved);
             Console.WriteLine($"Tools removed");
             return toolRemoved;
@@ -1065,8 +1104,6 @@ public class DBQueryModel
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
             MATCH (recipe:Recipe {name: $recipeName})
-            OPTIONAL MATCH (tool:Tool {name: $toolName})
-            OPTIONAL MATCH (tag:Tag {name: $tagName})
             RETURN recipe.name AS recipeName,
                 recipe.description AS description,
                 recipe.servingSize AS servingSize,
@@ -1074,14 +1111,10 @@ public class DBQueryModel
                 recipe.rating AS rating,
                 recipe.difficulty AS difficulty,
                 recipe.prepTime AS prepTime,
-                recipe.cookTime AS cookTime,
-                tool.name AS toolName,
-                tag.name AS tagName
+                recipe.cookTime AS cookTime
         ";
 
         var recipeName = username + recipe;
-        var toolName = !string.IsNullOrEmpty(tool) ? username + tool : string.Empty;
-        var tagName = !string.IsNullOrEmpty(tag) ? username + tag : string.Empty;
 
         // Initialize the Neo4j session
         var session = driver.AsyncSession();
@@ -1090,7 +1123,7 @@ public class DBQueryModel
         try
         {
             // Run the query and pass in parameters
-            var result = await session.RunAsync(query, new { recipeName, toolName, tagName });
+            var result = await session.RunAsync(query, new { recipeName });
 
             // Process each record in the result
             await result.ForEachAsync(record =>
@@ -1157,6 +1190,11 @@ public class DBQueryModel
             //resultRecipe.Instructions = GetInstuctionsByRecipe(recipeName, username).Result;
 
             //Add foreach for tools here once we implement it. We may leave it as a comma delimited string for time.
+            List<string> toolList = GetToolsByRecipe(username, recipe).Result;
+            if (toolList.Any())
+            {
+                resultRecipe.Equipment = toolList;
+            }
         }
         catch (Exception ex)
         {
@@ -1657,18 +1695,15 @@ public class DBQueryModel
     {
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string name;
-        string startLabel;
-        startLabel = "User";
         name = username + recipeName;
 
-        string query = "MATCH (:" + startLabel + ")-[:OWNS]->(rec:Recipe)-[]->(t:Step)\n " +
-            "WHERE rec.name = '" + name + "'\n" +
-            "WITH t\n" +
-            "DETACH DELETE t\n" +
-            "WITH t\n" +
-            "MATCH (:User )-[:OWNS]->(recc:Recipe)-[]->(tt:Step)\n " +
-            "WHERE recc.name = '" + name + "'\n" +
-            "return NOT(COUNT(tt) > 0)\n";
+        string query = @$"MATCH (:User)-[:OWNS]->(rec:Recipe)-[]->(t:Step)
+            WHERE rec.name = '{name}'
+            DETACH DELETE t
+            WITH t
+            MATCH (:User )-[:OWNS]->(recc:Recipe)-[]->(tt:Step)
+            WHERE recc.name = '{name}'
+            return NOT(COUNT(tt) > 0)";
         try
         {
             var response = await driver.ExecutableQuery(query).WithConfig(qConf).ExecuteAsync();
@@ -1676,8 +1711,9 @@ public class DBQueryModel
             var record = irol.First<IRecord>();
             return record[0].As<bool>();
         }
-        catch
+        catch (Exception e)
         {
+            Console.WriteLine($"Error removing steps from recipe {recipeName}. Exception " + e);
             return false;
         }
         finally

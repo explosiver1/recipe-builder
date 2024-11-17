@@ -949,7 +949,7 @@ public static class CtrlModel
             }
             foreach (string t in r.Tags)
             {
-                if (!oldRecipe.Tags.Contains(t))
+                if (t != "" && t != null && !oldRecipe.Tags.Contains(t))
                 {
                     if (!DBQueryModel.CreateTagNode(t, r.Name, username).Result)
                     {
@@ -959,11 +959,14 @@ public static class CtrlModel
             }
             foreach (string t in oldRecipe.Tags)
             {
-                if (!r.Tags.Contains(t))
+                if (t != "" && t != null)
                 {
-                    if (!DBQueryModel.RemoveTagFromRecipe(t, r.Name, username).Result)
+                    if (!r.Tags.Contains(t))
                     {
-                        throw new Exception("Error, tags could not be edited.");
+                        if (!DBQueryModel.RemoveTagFromRecipe(t, r.Name, username).Result)
+                        {
+                            throw new Exception("Error, tags could not be edited.");
+                        }
                     }
                 }
             }
@@ -974,40 +977,52 @@ public static class CtrlModel
             int i = 0;
             foreach (string step in r.Instructions)
             {
-                if (!DBQueryModel.CreateStepNode(username, r.Name, i.ToString(), step).Result)
+                if (step != "" && step != null)
                 {
-                    throw new Exception("Error, steps could not be edited.");
+                    if (!DBQueryModel.CreateStepNode(username, r.Name, i.ToString(), step).Result)
+                    {
+                        throw new Exception("Error, steps could not be edited.");
+                    }
+                    i++;
                 }
-                i++;
             }
             if (!DBQueryModel.RemoveToolsFromRecipe(username, r.Name).Result)
             {
-                throw new Exception("Error, tools could not be edited");
+                throw new Exception("Error, tools could not be edited at remove step.");
             }
             foreach (string t in r.Equipment)
             {
-                if (!DBQueryModel.CreateToolNode(username, r.Name, t).Result)
+                if (t != "" && t != null)
                 {
-                    throw new Exception("Error, tools could not be edited");
+                    if (!DBQueryModel.CreateToolNode(username, r.Name, t).Result)
+                    {
+                        throw new Exception("Error, tools could not be edited at add step.");
+                    }
                 }
             }
             // Repeat for Ingredients
             foreach (IngredientDetail ingD in oldRecipe.Ingredients)
             {
-                if (!DBQueryModel.RemoveIngredientFromRecipe(ingD.Name, r.Name, username).Result)
+                if (ingD != null && ingD.Name != "")
                 {
-                    throw new Exception("Error, could not edit ingredients");
+                    if (!DBQueryModel.RemoveIngredientFromRecipe(ingD.Name, r.Name, username).Result)
+                    {
+                        throw new Exception("Error, could not edit ingredients");
+                    }
                 }
             }
             foreach (IngredientDetail ingD in r.Ingredients)
             {
-                if (!DBQueryModel.CreateIngredientNode(username, ingD.Name).Result)
+                if (ingD != null && ingD.Name != "" && ingD.Name != null)
                 {
-                    throw new Exception("Error, could not edit ingredients");
-                }
-                if (!DBQueryModel.ConnectIngredientNode(username, r.Name, ingD.Name, ingD.Unit, ingD.Qualifier, ingD.Quantity).Result)
-                {
-                    throw new Exception("Error, could not edit ingredients");
+                    if (!DBQueryModel.CreateIngredientNode(username, ingD.Name).Result)
+                    {
+                        throw new Exception("Error, could not edit ingredients");
+                    }
+                    if (!DBQueryModel.ConnectIngredientNode(username, r.Name, ingD.Name, ingD.Unit, ingD.Qualifier, ingD.Quantity).Result)
+                    {
+                        throw new Exception("Error, could not edit ingredients");
+                    }
                 }
             }
             return true;
