@@ -119,7 +119,7 @@ public class MealsController : Controller
 
         try
         {
-            meal = DBQueryModel.GetMeal(at.username, mealName).Result;
+            meal = CtrlModel.getMeal(mealName, at.username);
         }
         catch (Exception e)
         {
@@ -129,7 +129,7 @@ public class MealsController : Controller
 
         var viewModel = new MealsEditVM
         {
-            mealData = new MealSet { Name = meal.Name,Description = meal.Description, RecipeNames = meal.RecipeNames },
+            mealData = meal,//new MealSet { Name = meal.Name,Description = meal.Description, RecipeNames = meal.RecipeNames },
             UserRecipesNames = CtrlModel.GetRecipeNameList(at.username)
         };
 
@@ -172,6 +172,25 @@ public class MealsController : Controller
 
         MealsLookVM mealVM = new MealsLookVM();
         mealVM.meal = CtrlModel.getMeal(id, at.username);
+        
+        // Debugging code
+        Console.WriteLine(mealVM.meal.Name);
+        if (mealVM.meal.Recipes != null && mealVM.meal.Recipes.Any()) 
+        {
+            foreach (var recipe in mealVM.meal.Recipes)
+            {
+                Console.WriteLine(recipe.Name);
+            }
+        }
+        if (mealVM.meal.RecipeNames != null && mealVM.meal.RecipeNames.Any())
+        {
+            foreach (var recipeName in mealVM.meal.RecipeNames)
+            {
+                Console.WriteLine(recipeName);
+            }
+        }
+
+        // Load view with data
         return View(mealVM);
     }
 

@@ -516,7 +516,7 @@ public static class CtrlModel
 
     public static List<string> GetUserMealNames(string username)
     {
-        var mealNames = DBQueryModel.GetMealNodeNames(username);
+        var mealNames = DBQueryModel.GetMealNodeNames(username).Result;
         return mealNames;
     }
     public static MealSet getMeal(string mealName, string username)

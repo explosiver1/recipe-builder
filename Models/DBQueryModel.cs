@@ -1693,7 +1693,7 @@ public class DBQueryModel
             // Process each record in the result
             await result.ForEachAsync(record =>
             {
-                Recipe r = GetRecipe(username, record["rec"].As<INode>()["name"].As<string>()).Result;
+                Recipe r = GetRecipe(username, GetCleanString(username, record["rec"].As<INode>()["name"].As<string>())).Result;
                 meal.Recipes.Add(r);
                 Console.WriteLine("Retrieved recipe " + r.Name + " from meal " + mealName);
             });

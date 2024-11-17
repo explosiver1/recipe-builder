@@ -20,10 +20,14 @@
     <div>
         <label for="AddedRecipes">Added Recipes:</label>
     </div>
-    @foreach (var recipe in Model.mealData.RecipeNames)
+    @if (Model.mealData.RecipeNames != null && Model.mealData.RecipeNames.Any())
     {
-        <p>@recipe</p>
+        @foreach (var recipe in Model.mealData.RecipeNames)
+        {
+            <p>@recipe</p>
+        }
     }
+    
     @if(Model.UserRecipesNames != null && Model.UserRecipesNames.Any())
     {
         <div class="form-group">
@@ -40,7 +44,7 @@
                         {
                             <tr>
                                 <td>
-                                    <select name="cookbook.RecipeNames[@i]" value="@Model.RecipesToAdd[i]">
+                                    <select name="RecipesToAdd[@i]" value="@Model.mealData.RecipeNames">
                                         <option value="" disabled selected>Select a Recipe</option>
                                         @foreach(string recipeName in Model.UserRecipesNames)
                                         {
