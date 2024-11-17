@@ -10,6 +10,36 @@
     <title>Shopping List</title>
 
     <style>
+        /* button styling */
+        button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: white;
+            background-color: #4A743E;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #96AE6D;
+        }
+
+        /* remove button styling */
+        .remove-btn {
+            background-color: #dc3545;
+            margin-left: 10px;
+        }
+
+        .remove-btn:hover {
+            background-color: #c82333;
+        }
+
+        /* background styling for the shopping list */
         #shoppingListContainer {
             background-color: #F4F3EC;
             padding: 20px;
@@ -18,26 +48,27 @@
             margin: auto;
         }
 
+        
         .smallInput {
             width: 80px;
         }
 
         /* scoped list item styling within #shoppingListContainer */
         #shoppingListContainer ul {
-            list-style-type: none;
-            padding-left: 0;
+            list-style-type: disc;
+            padding-left: 20px;
             color: #4A743E;
-
         }
 
         #shoppingListContainer ul li {
-                font-size: 18px;
-                margin: 5px 0;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+            font-size: 18px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
+        
         #shoppingListContainer form {
             display: inline; /* Keep the form inline with the text */
         }
@@ -71,8 +102,7 @@
 
         .alphabet a:hover {
             color: #96AE6D;
-        } 
-
+        }
 
         /* ensure checkbox and text stay on the left side */
         .item-left {
@@ -84,11 +114,11 @@
             margin-right: 10px;
         }
 
-        @* /* button container for Add to Pantry and Remove buttons */
+        /* button container for Add to Pantry and Remove buttons */
         .button-container {
             display: flex;
             justify-content: flex-end;
-        } *@
+        }
 
         /* strikethrough effect only on text, not buttons */
         .completed {
@@ -115,11 +145,121 @@
             margin-right: 10px;
         }
 
-        .checked-row {
+        .checked-row{
             background-color: #d3d3d3;
             text-decoration: line-through;
         }
     </style>
+</head>
+
+<body>
+    <!-- Page Heading -->
+    <div class="text-center">
+        <h1 class="display-4" style="color: #4A743E;">Shopping List</h1>
+        <br>
+    </div>
+
+    <!-- Add to shopping list 'form' -->
+    <div id="shoppingListContainer" class="table-responsive">
+        <form asp-action="AddItemToShoppingList" method="post">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Item Name</th>
+                        <th>Amount</th>
+                        <th>Unit</th>
+                        <th>Description</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" name="newIngredient.Name" required /></td>
+                        <td><input class="smallInput" type="text" name="newIngredient.Quantity" /></td>
+                        <td><input class="smallInput" type="text" name="newIngredient.Unit" /></td>
+                        <td><input type="text" name="newIngredient.Qualifier" /></td>
+                        <td><button type="submit" class="btn btn-custom">Add Item</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+    </div>
+    
+    <br />
+
+    <!-- View current shopping list items -->
+    <div id="shoppingListContainer">
+        <!-- Search Bar -->
+        <div class="text-center">
+            <div class="search-container">
+                <input type="text" id="ingredientSearch" placeholder="Search" oninput="scrollToIngredient()">
+            </div>
+        </div>
+
+        <!-- ABC Nav Bar -->
+        <div class="alphabet">
+            @foreach (var letter in @Model.ABCShoppingList.Keys)
+            {
+                <a href="#@letter">@letter</a>
+            }
+        </div>
+
+        <!-- Current shopping list items -->
+        <div class="table-responsive">
+            @foreach (var ABCList in @Model.ABCShoppingList)
+            {
+                <h2 id="@ABCList.Key">@ABCList.Key</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Item Name</th>
+                            <th>Amount</th>
+                            <th>Unit</th>
+                            <th>Description</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    @foreach (var item in ABCList.Value)
+                    {
+                        <tbody>
+                            <tr>
+                                <td><input class="item-left" type="checkbox" onchange="toggleCompletion(this)"></td>
+                                <td class="editable"><a href="/Recipe/Index/@item.Name">@item.Name</a></td>
+                                <td class="editable">@item.Quantity</td>
+                                <td class="editable">@item.Unit</td>
+                                <td class="editable">@item.Qualifier</td>
+                                <td><button onclick="editRow(this)" class="btn btn-custom">Edit</button></td>
+                                <form method="post" asp-controller="Pantry" asp-action="RemoveFromPantry">
+                                    <input type="hidden" name="ingredientName" value="@item.Name" />
+                                    <td><button type="submit" class="btn btn-custom">Delete</button></td>
+                                </form>
+                            </tr>
+                        </tbody>
+                    }
+                </table>
+            }
+        </div>
+        @* <ul id="shoppingList">
+            @if (@Model.items.Count != 0) {
+                foreach (var item in @Model.items) {
+                    <li>
+                        <div class="item-left">
+                            <input type="checkbox" onchange="toggleCompletion(this)">
+                            <span>@item.Name</span>
+                        </div>
+                        <div class="button-container">
+                            <button class="pantry-btn" onclick="addToPantry('@item.Name')">Add to Pantry</button>
+                            <button class="remove-btn" onclick="removeItem(this)">Remove</button>
+                        </div>
+                    </li>
+                }
+            } else {
+                <p>No items in the shopping list.</p>
+            }
+        </ul> *@
+    </div>
 
     <!-- javascript for button/list functionality -->
     <script>
@@ -144,66 +284,21 @@
             });
         }
 
-        // Edit item
+        // Edit item - client side only (changes text to text boxes & edit button to save)
         function editRow(button) {
             // Get row of button
             var row = button.closest('tr');
+
+            // Change each cell to a textbox
             var cells = row.querySelectorAll('.editable');
-            //cells[0].innerHTML = <input type="text" name="name" value="${cells[0].textContent}" readonly/>;
-            //cells[1].innerHTML = <input type="text" name="quantity" value="${cells[1].textContent}" />;
-            //cells[2].innerHTML = <input type="text" name="unit" value="${cells[2].textContent}" />;
-            //cells[3].innerHTML = <input type="text" name="qualifier" value="${cells[3].textContent}" />;
-            //var subButton = row.querySelector('.edit-form').querySelector('button[type="submit"]');
-            //if (subButton) {
-            //subButton.removeAttribute('hidden');
-            //}
+            cells.forEach(function (cell) {
+                var currentText = cell.textContent;
+                cell.innerHTML = `<input type="text" value="${currentText}" />`;
+            });
 
-            //Setup values in dialog box.
-            var dialog = document.querySelector('dialog');
-            document.getElementById('editName').value = cells[0].textContent;
-            document.getElementById('editQuantity').value = cells[1].textContent;
-            document.getElementById('editUnit').value = cells[2].textContent;
-            document.getElementById('editQualifier').value = cells[3].textContent;
-
-            dialog.showModal();
-
-            //button.textContent = 'Cancel';
-            //button.setAttribute('onclick', 'cancelEdit(this)');
+            button.textContent = 'Save';
+            button.setAttribute('onclick', 'saveRow(this)');
         }
-
-        // Cancel edit
-        function cancelEdit(span) {
-            //var row = button.closest('tr');
-            //var cells = row.querySelectorAll('input[type="text"]');
-            //cells[0].innerHTML = <input type="text" name="name" value="${cells[0].textContent}" readonly/>;
-            //cells[1].innerHTML = <input type="text" name="quantity" value="${cells[1].textContent}" />;
-            //cells[2].innerHTML = <input type="text" name="unit" value="${cells[2].textContent}" />;
-            //cells[3].innerHTML = <input type="text" name="qualifier" value="${cells[3].textContent}" />;
-            //var subbutton = row.querySelector('.edit-form').querySelector('button[type="submit"]');
-            //if(subbutton){
-            //subbutton.setAttribute('hidden', 'hidden');
-            //}
-            //button.textContent = 'Edit';
-            //button.setAttribute('onclick', 'editRow(this)');
-            var dialog = document.getElementById('editDialog');
-            dialog.close();
-        }
-
-        // Edit item - client side only (changes text to text boxes & edit button to save)
-        // function editRow(button) {
-        //     // Get row of button
-        //     var row = button.closest('tr');
-
-        //     // Change each cell to a textbox
-        //     var cells = row.querySelectorAll('.editable');
-        //     cells.forEach(function (cell) {
-        //         var currentText = cell.textContent;
-        //         cell.innerHTML = <input type="text" value="${currentText}" />;
-        //     });
-
-        //     button.textContent = 'Save';
-        //     button.setAttribute('onclick', 'saveRow(this)');
-        // }
 
         // Client side only, Needs to be updated to save to server side - should have cancel button added
         function saveRow(button) {
@@ -233,7 +328,7 @@
         }
 
         // add a new item to the list
-        document.getElementById("addItemBtn").addEventListener("click", function () {
+        document.getElementById("addItemBtn").addEventListener("click", function() {
             const newItem = document.getElementById("newItem").value;
 
             if (newItem.trim() !== "") {
@@ -246,7 +341,7 @@
 
                 const checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
-                checkbox.onchange = function () { toggleCompletion(this); };
+                checkbox.onchange = function() { toggleCompletion(this); };
 
                 const textSpan = document.createElement("span");
                 textSpan.textContent = newItem;
@@ -261,12 +356,12 @@
                 const pantryBtn = document.createElement("button");
                 pantryBtn.textContent = "Add to Pantry";
                 pantryBtn.classList.add("pantry-btn");
-                pantryBtn.onclick = function () { addToPantry(newItem); };
+                pantryBtn.onclick = function() { addToPantry(newItem); };
 
                 const removeBtn = document.createElement("button");
                 removeBtn.textContent = "Remove";
                 removeBtn.classList.add("remove-btn");
-                removeBtn.onclick = function () { removeItem(this); };
+                removeBtn.onclick = function() { removeItem(this); };
 
                 buttonContainer.appendChild(pantryBtn);
                 buttonContainer.appendChild(removeBtn);
@@ -284,163 +379,34 @@
 
         // toggle completion status of items
         function toggleCompletion(checkbox) {
-            const li = checkbox.closest('li');  // get the closest li element
-            const itemText = li.querySelector('span');  // find the span inside li
-
-            if (checkbox.checked) {
-                itemText.classList.add('completed'); // Add the 'completed' class for strikethrough
-            } else {
-                itemText.classList.remove('completed'); // Remove the 'completed' class
+            const row = checkbox.closest('tr')
+            if(checkbox.checked){
+                row.classList.add('checked-row');
+            }
+            else{
+                row.classList.remove('checked-row')
             }
         }
 
-
         // Function to add an item from the shopping list to the pantry
         function addToPantry(itemName) {
-            fetch(/ShoppingList/AddItemToPantry ? itemName = ${ itemName }, {
+            fetch(`/ShoppingList/AddItemToPantry?itemName=${itemName}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
                 }
             })
-                .then(response => {
-                    if (response.ok) {
-                        alert(${ itemName } added to pantry!);
-                        location.reload(); // Optionally reload to see the changes
-                    } else {
-                        alert("Failed to add item to pantry.");
-                    }
-                });
+            .then(response => {
+                if (response.ok) {
+                    alert(`${itemName} added to pantry!`);
+                    location.reload(); // Optionally reload to see the changes
+                } else {
+                    alert("Failed to add item to pantry.");
+                }
+            });
         }
 
     </script>
 </head>
-
-<body>
-    <!-- page heading -->
-    <div class="text-center">
-        <h1 class="display-4" style="color: #4A743E;">Shopping List</h1>
-        <br>
-    </div>
-
-    <!-- add to shopping list 'form' -->
-    <div id="shoppingListContainer" class="table-responsive">
-        <form asp-action="AddItemToShoppingList" method="post">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Item Name</th>
-                        <th>Amount</th>
-                        <th>Unit</th>
-                        <th>Description</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input type="text" name="newIngredient.Name" required /></td>
-                        <td><input class="smallInput" type="text" name="newIngredient.Quantity" /></td>
-                        <td><input class="smallInput" type="text" name="newIngredient.Unit" /></td>
-                        <td><input type="text" name="newIngredient.Qualifier" /></td>
-                        <td><button type="submit" class="btn btn-custom">Add Item</button></td>
-                    </tr>
-                </tbody>
-            </table>
-        </form>
-    </div>
-
-    <br />
-
-    <!-- view current shopping list items -->
-    <div id="shoppingListContainer">
-        <!-- search Bar -->
-        <div class="text-center">
-            <div class="search-container">
-                <input type="text" id="ingredientSearch" placeholder="Search" oninput="scrollToIngredient()">
-            </div>
-        </div>
-
-        <!-- ABC nav bar -->
-        <div class="alphabet">
-            @foreach (var letter in @Model.ABCShoppingList.Keys)
-            {
-                <a href="#@letter">@letter</a>
-            }
-        </div>
-
-        <!-- current shopping list items -->
-        <div class="table-responsive">
-            @foreach (var ABCList in @Model.ABCShoppingList)
-            {
-                <h2 id="@ABCList.Key">@ABCList.Key</h2>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th></th>
-                            <th>Item Name</th>
-                            <th>Amount</th>
-                            <th>Unit</th>
-                            <th>Description</th>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    @foreach (var item in ABCList.Value)
-                    {
-                        <tbody>
-                            <tr>
-                                <td><input class="item-left" type="checkbox" onchange="toggleCompletion(this)"></td>
-                                <td class="editable"><a href="/Recipe/Index/@item.Name">@item.Name</a></td>
-                               
-                                <td class="editable">@item.Quantity</td>
-                                <td class="editable">@item.Unit</td>
-                                <td class="editable">@item.Qualifier</td>
-                                <td><button type="submit" class="btn btn-custom" hidden="hidden">Submit</button></td>
-                                <td><button onclick="editRow(this)" class="btn btn-custom">Edit</button></td>
-                                <form method="post" asp-controller="ShoppingList" asp-action="RemoveFromShoppingList">
-                                    <input type="hidden" name="ingredientName" value="@item.Name" />
-                                    <td><button type="submit" class="btn btn-custom">Delete</button></td>
-                                </form>
-                            </tr>
-                        </tbody>
-                    }
-
-                </table>
-            }
-        </div>
-
-        @* <ul id="shoppingList">
-        @if (@Model.items.Count != 0) {
-        foreach (var item in @Model.items) {
-        <li>
-        <div class="item-left">
-        <input type="checkbox" onchange="toggleCompletion(this)">
-        <span>@item.Name</span>
-        </div>
-        <div class="button-container">
-        <button class="pantry-btn" onclick="addToPantry('@item.Name')">Add to Pantry</button>
-        <button class="remove-btn" onclick="removeItem(this)">Remove</button>
-        </div>
-        </li>
-        }
-        } else {
-        <p>No items in the shopping list.</p>
-        }
-        </ul> *@
-    </div>
-
-
-    <dialog id="editDialog">
-        <p>Enter New Properties</p>
-        <form method="post" asp-controller="ShoppingList" asp-action="EditShoppingListItem">
-            <input id="editName" type="text" name="name" value="" readonly />
-            <input id="editQuantity" type="text" name="quantity" value="" />
-            <input id="editUnit" type="text" name="unit" value="" />
-            <input id="editQualifier" type="text" name="qualifier" value="" />
-            <button type="submit">Submit</button>
-        </form>
-        <span onclick="cancelEdit()">Cancel</span>
-    </dialog>
 </body>
