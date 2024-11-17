@@ -497,7 +497,7 @@ public static class CtrlModel
         }
         return myDictionary;
     }
-    
+
 
     /* Returns list of all user's saved meals */
     public static List<MealSet> getMeals(string username)
@@ -555,7 +555,7 @@ public static class CtrlModel
     public static void RemoveFromMealPlanner(DateOnly date, int mealNum, string recipeToRemove, string username)
     {
         Console.WriteLine("Attempting to remove recipe from meal planner\nDate: " + date + "\nMeal Number: " + mealNum + "\nRecipe: " + recipeToRemove);
-        var result = DBQueryModel.UnScheduleRecipe(username, recipeToRemove,date.ToString(),mealNum.ToString());
+        var result = DBQueryModel.UnScheduleRecipe(username, recipeToRemove, date.ToString(), mealNum.ToString());
     }
 
     // Placeholder method to simulate getting all meals
@@ -873,7 +873,7 @@ public static class CtrlModel
         }
         return true;
     }
-  
+
     public static bool EditRecipe(string username, Recipe r)
     {
         try
@@ -916,6 +916,7 @@ public static class CtrlModel
                 {
                     throw new Exception("Error, steps could not be edited.");
                 }
+                i++;
             }
             if (!DBQueryModel.RemoveToolsFromRecipe(username, r.Name).Result)
             {
@@ -936,7 +937,7 @@ public static class CtrlModel
                     throw new Exception("Error, could not edit ingredients");
                 }
             }
-            foreach (IngredientDetail ingD in oldRecipe.Ingredients)
+            foreach (IngredientDetail ingD in r.Ingredients)
             {
                 if (!DBQueryModel.CreateIngredientNode(username, ingD.Name).Result)
                 {
