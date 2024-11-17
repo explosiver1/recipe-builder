@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Reflection;
 
 namespace RecipeBuilder.Controllers;
 
@@ -34,6 +35,8 @@ public class MealPlannerController : Controller
         MealPlannerIndexVM viewModel = new MealPlannerIndexVM();
         viewModel.ScheduledMealsToday = CtrlModel.GetMealsForDate(date, at.username);
         viewModel.ScheduledMealsThisWeek = CtrlModel.GetMealsForWeek(date, at.username);
+        viewModel.mealTitle = "";
+        viewModel.mealData = new MPMeal();
         //var currentDate = date;
         //var startOfWeek = DateHelper.GetStartOfWeek(currentDate);
         //var datesInWeek = DateHelper.GetDatesForWeek(startOfWeek);
@@ -208,7 +211,82 @@ public class MealPlannerController : Controller
         return RedirectToAction("Daily", new { date = data.date});
     }
 
-        
+    //// An override of Meals/Look to allow Meal planner meal recipes to viewed concurrently
+    //public IActionResult Look(MealsLookVM MPMealData)
+    //{
+    //    //If user isn't logged in, don't allow access to this page - redirect to main site page
+    //    AuthToken at;
+    //    try
+    //    {
+    //        at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+    //        if (!at.Validate())
+    //        {
+    //            throw new Exception("Authentication Expired. Please login again.");
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        Console.WriteLine($"An error occurred: {ex.Message}");
+    //        return RedirectToAction("Index", "Home");
+    //    }
+
+    //    // Debugging code
+    //    Console.WriteLine(MPMealData.meal.Name);
+    //    if (MPMealData.meal.Recipes != null && MPMealData.meal.Recipes.Any())
+    //    {
+    //        foreach (var recipe in MPMealData.meal.Recipes)
+    //        {
+    //            Console.WriteLine(recipe.Name);
+    //        }
+    //    }
+    //    if (MPMealData.meal.RecipeNames != null && MPMealData.meal.RecipeNames.Any())
+    //    {
+    //        foreach (var recipeName in MPMealData.meal.RecipeNames)
+    //        {
+    //            Console.WriteLine(recipeName);
+    //        }
+    //    }
+
+    //    // Load view with data
+    //    return View(MPMealData);
+    //}
+
+    // POST: for viewing meal recipes
+    [HttpPost]
+    public IActionResult ViewMealDetails(string date, string mealNum)
+    {
+        AuthToken at;
+        try
+        {
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            if (!at.Validate())
+            {
+                throw new Exception("Authentication Expired. Please login again.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return RedirectToAction("Index", "Home");
+        }
+
+        Console.WriteLine("Meal Title: " + date);
+        Console.WriteLine("Recipes: " + mealNum);
+        //foreach (string recipeName in mealData.mealData.recipeNames)
+        //{
+        //    Console.WriteLine(recipeName);
+        //}
+        //"Meal @mealNum for @Model.ScheduledMealsToday.Date.DayOfWeek @Model.ScheduledMealsToday.Date"
+        return View("Index", "User");
+        //MealsLookVM mealData = new MealsLookVM();
+        //mealData.meal.Name = mealTitle;
+        //mealData.meal.RecipeNames = meal.recipeNames;
+        //foreach (var recipeName in meal.recipeNames)
+        //{
+        //    mealData.meal.AddRecipe(CtrlModel.GetRecipe(at.username, recipeName));
+        //}
+        //return RedirectToAction("Look", "Meals", new { MPMealData = mealData });
+    }
 
 
     //     // POST: /MealPlanner/Remove

@@ -81,18 +81,25 @@
         <hr class="rounded">
         <br>
         
-        <h2 class="schedule-title">Today: @Model.ScheduledMealsToday.Date.DayOfWeek @Model.ScheduledMealsToday.Date</h2>
+        <h2 class="schedule-title">@Model.ScheduledMealsToday.Date.DayOfWeek @Model.ScheduledMealsToday.Date</h2>
         <div class="schedule">
             @foreach (var meal in @Model.ScheduledMealsToday.Meals)
             {
+                int mealIndex = @Model.ScheduledMealsToday.Meals.IndexOf(meal);
+                int mealNum = mealIndex + 1;
                 <div class="day">
-                    <a asp-controller="MealPlanner" asp-action="Look" asp-route-id=@meal>
-                        Meal @(@Model.ScheduledMealsToday.Meals.IndexOf(meal) + 1) Recipes
-                    </a>
-                    @foreach (var recipe in meal.recipeNames)
-                    {
-                        <p>@recipe</p>
-                    }
+                    <form method="post" asp-controller="MealPlanner" asp-action="ViewMealDetails">
+                        <input type="hidden" name="date" value="@Model.ScheduledMealsToday.Date.ToString()" />
+                        <input type="hidden" name="mealNum" value=@mealIndex />
+                        <button type="submit" class="btn btn-custom">Meal @mealNum Recipes</button>
+                    </form>
+
+                        @foreach (var recipe in meal.recipeNames)
+                        {
+                            <p>@recipe</p>
+                        }
+
+                    
                 </div>
             }
         </div>
