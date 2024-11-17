@@ -31,8 +31,17 @@ public class MealsController : Controller
         {
             // Use the placeholder method to simulate combining data from Neo4j
             // IDK What was happening here. I've left a chunk of the old statement behind the comment.
-            meals = CtrlModel.GetAllMeals(at.username) //.Concat(CtrlModel.GetMealsFromNeo4j()).ToList()
+            meals = new List<MealSet>() //CtrlModel.GetAllMeals(at.username) //.Concat(CtrlModel.GetMealsFromNeo4j()).ToList()
         };
+
+        foreach (string m in CtrlModel.GetAllMealNames(at.username))
+        {
+            MealSet meal = new MealSet()
+            {
+                Name = m
+            };
+            mealVM.meals.Add(meal);
+        }
 
         return View(mealVM);
     }
@@ -83,6 +92,9 @@ public class MealsController : Controller
             Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
+        //Uses a predicate to match which list elements it should remove.
+        //This is necessary for removing possible empty strings the new drop down lists may create.
+        mealsVM.meal.RecipeNames.RemoveAll(t => t == "");
 
         if (CtrlModel.CreateMeal(at.username, mealsVM.meal))
         {
@@ -95,7 +107,7 @@ public class MealsController : Controller
     }
 
     [HttpGet]
-    public IActionResult Edit(string mealName)
+    public IActionResult Edit(string mealName, string msg = "")
     {
         // Uncomment the following line if you want to use seed data
         // var cookbook = RecipeSeedData.cookbooks.FirstOrDefault(c => c.Title == cookbookName);
@@ -139,17 +151,31 @@ public class MealsController : Controller
     [HttpPost]
     public IActionResult Edit(MealsEditVM viewModel)
     {
-        MealSet meal = new MealSet { Name = viewModel.mealData.Name };
-
-        if (meal == null)
+        AuthToken at;
+        try
         {
-            return NotFound();
+            at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+            if (!at.Validate())
+            {
+                throw new Exception("Authentication Expired. Please login again.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.Message}");
+            return RedirectToAction("Index", "Home");
+        }
+        //Changes to dropdown options allowed for empty strings being passed into list.
+        //Now we have to check for them.
+        viewModel.RecipesToAdd.RemoveAll(r => r == "" || r == null);
+        viewModel.mealData.RecipeNames = viewModel.RecipesToAdd;
+        // Update meal
+        if (!CtrlModel.EditMeal(at.username, viewModel.mealData))
+        {
+            return Edit(viewModel.mealData.Name, "Error meal could not be edited.");
         }
 
-        // Update meal
-        //CtrlModel.SaveMealEdits(viewModel.mealData);
-
-        return RedirectToAction("Index");
+        return RedirectToAction("Look", new { id = viewModel.mealData.Name });
     }
 
     public IActionResult Look(string id)
@@ -172,10 +198,10 @@ public class MealsController : Controller
 
         MealsLookVM mealVM = new MealsLookVM();
         mealVM.meal = CtrlModel.getMeal(id, at.username);
-        
+
         // Debugging code
         Console.WriteLine(mealVM.meal.Name);
-        if (mealVM.meal.Recipes != null && mealVM.meal.Recipes.Any()) 
+        if (mealVM.meal.Recipes != null && mealVM.meal.Recipes.Any())
         {
             foreach (var recipe in mealVM.meal.Recipes)
             {

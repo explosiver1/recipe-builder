@@ -2054,6 +2054,7 @@ public class DBQueryModel
 
     public static async Task<bool> DeleteMeal(string username, string meal)
     {
+        Console.WriteLine($"Entering DBQueryModel.DeleteMeal with parameters: username: {username}, meal {meal}");
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var deleteQuery = @"
             MATCH (meal:Meal {name: $mealName})

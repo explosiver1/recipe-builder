@@ -563,7 +563,14 @@ public static class CtrlModel
     {
         //This behavior is duplicated, so I'm just redirecting it to where the behavior is done.
         //This is preferable in case this method name is still being used.
-        return getMeals(username);
+        try
+        {
+            return getMeals(username);
+        }
+        catch
+        {
+            return new List<MealSet>();
+        }
         // Placeholder logic - return a list of simulated meals
         //Console.WriteLine("Simulating retrieval of all meals...");
 
@@ -572,6 +579,19 @@ public static class CtrlModel
         //    new MealSet { Name = "Cookies", Description = "Description for Placeholder Meal 1" },
         //    new MealSet { Name = "Chocolate Cookies", Description = "Description for Placeholder Meal 2" }
         //};
+    }
+
+    public static List<string> GetAllMealNames(string username)
+    {
+        try
+        {
+            return DBQueryModel.GetMealNodeNames(username).Result;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error, couldn't retrieve meal list. Exception: " + e);
+            return new List<string>();
+        }
     }
 
     /* MEAL PLANNER METHODS */
@@ -809,9 +829,12 @@ public static class CtrlModel
             }
             foreach (string recipe in meal.RecipeNames)
             {
-                if (!DBQueryModel.ConnectMealNode(username, meal.Name, recipe).Result)
+                if (recipe != "" && recipe != null)
                 {
-                    return false;
+                    if (!DBQueryModel.ConnectMealNode(username, meal.Name, recipe).Result)
+                    {
+                        return false;
+                    }
                 }
             }
             return true;
@@ -821,6 +844,32 @@ public static class CtrlModel
             Console.WriteLine("Failed to create meal");
             return false;
         }
+    }
+
+    public static bool EditMeal(string username, MealSet meal)
+    {
+        Console.WriteLine($"Entering CtrlModel.EditMeal with parameters: username: {username}, meal.Name: {meal.Name}, meals:");
+        foreach (string r in meal.RecipeNames)
+        {
+            Console.WriteLine($"     meal: {r}");
+        }
+        try
+        {
+            if (!RemoveMeal(username, meal.Name))
+            {
+                throw new Exception("Old meal data could not be removed");
+            }
+            if (!CreateMeal(username, meal))
+            {
+                throw new Exception("New meal data could not be added");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error, meal could not be edited. Exception: " + e);
+            return false;
+        }
+        return true;
     }
 
     public static bool RemoveFromMeal(string username, string mealName, string recipeName)
