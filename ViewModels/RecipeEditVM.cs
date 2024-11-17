@@ -14,6 +14,7 @@ namespace RecipeBuilder.ViewModels
         public string ServingSizeInput { get; set; }
         public string EquipmentInput { get; set; }
         public List<string> InstructionsInput { get; set; }
+        public string? msg { get; set; }
 
         // Constructor to initialize Inputs for easier editing
         public RecipeEditVM()

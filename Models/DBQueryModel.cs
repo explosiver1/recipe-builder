@@ -202,27 +202,27 @@ public class DBQueryModel
     // Unsure how to handle tool and tag since it needs both new and old names passed to be able to delete the previous node
     public static async Task<bool> EditRecipe(string username, string recipe, string tool = "", string order = "", string stepDescription = "", string recipeDescription = "", string rating = "", string difficulty = "", string servings = "", string servingSize = "", string cookTime = "", string prepTime = "")
     {
+        Console.WriteLine($"Entering DBQueryModel.EditRecipe with parameters: username: {username}, recipe: {recipe}, tool {tool}, order: {order}, stepDescription: {stepDescription}, recipeDescription {recipeDescription}, rating: {rating}, difficulty: {servings}, servingSize: {servingSize}, cookTime: {cookTime}, prepTime: {prepTime}");
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         string query = @"
             MATCH (recipe:Recipe{name:$recipeName})
-            OPTIONAL MATCH (step:Step{order:$order})
             ";
 
         var recipeName = username + recipe;
         var toolName = username + tool;
-        var parameters = new Dictionary<string, object> { { "name", recipeName }, { "order", order } };
+        var parameters = new Dictionary<string, object> { { "recipeName", recipeName } };
         var updates = new List<string>();
 
         // Dynamically add SET clauses for non-empty parameters
-        if (!string.IsNullOrEmpty(stepDescription))
-        {
-            updates.Add("step.description = $stepDescription");
-            parameters["description"] = stepDescription;
-        }
+        //if (!string.IsNullOrEmpty(stepDescription))
+        //{
+        //    updates.Add("step.description = $stepDescription");
+        //    parameters["description"] = stepDescription;
+        //}
         if (!string.IsNullOrEmpty(recipeDescription))
         {
             updates.Add("recipe.description = $recipeDescription");
-            parameters["description"] = recipeDescription;
+            parameters["recipeDescription"] = recipeDescription;
         }
         if (!string.IsNullOrEmpty(rating))
         {
@@ -687,7 +687,7 @@ public class DBQueryModel
                WHERE recipe.name = $recipeName
                DELETE x
                WITH x
-               RETURN COUNT(x) > 0
+               RETURN NOT(COUNT(x) > 0)
            ";
         string recipeName = username + recipe;
 
@@ -702,6 +702,7 @@ public class DBQueryModel
             // Checks if there is a record && gets the first record which should be the bool response
             bool toolRemoved = records.Any() && records.First()[0].As<bool>();
             Console.WriteLine("Returning Result: " + toolRemoved);
+            Console.WriteLine($"Tools removed");
             return toolRemoved;
         }
         catch (Exception ex)
@@ -732,7 +733,7 @@ public class DBQueryModel
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { recipeName });
+            var response = await session.RunAsync(query, new { recipeName, ingName });
 
             // Pulls all responses from query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
@@ -759,26 +760,26 @@ public class DBQueryModel
         using var driver = GraphDatabase.Driver(ServerSettings.neo4jURI, AuthTokens.Basic(ServerSettings.dbUser, ServerSettings.dbPassword));
         var query = @"
            MATCH (recipe:Recipe)-[x:TAGGED_WITH]->(t:Tag)
-           WHERE recipe.name = $recipeName AND t.name = $toolName
+           WHERE recipe.name = $recipeName AND t.name = $tagName
            DELETE x
            WITH x
-           RETURN COUNT(x) > 0
+           RETURN NOT(COUNT(x) > 0)
        ";
         string recipeName = username + r;
-        string toolName = username + t;
+        string tagName = username + t;
 
         var session = driver.AsyncSession();
         try
         {
-            var response = await session.RunAsync(query, new { recipeName, toolName });
+            var response = await session.RunAsync(query, new { recipeName, tagName });
 
             // Pulls all responses from query
             IReadOnlyList<IRecord> records = await response.ToListAsync();
 
             // Checks if there is a record && gets the first record which should be the bool response
-            bool toolRemoved = records.Any() && records.First()[0].As<bool>();
-            Console.WriteLine("Returning Result: " + toolRemoved);
-            return toolRemoved;
+            bool tagRemoved = records.Any() && records.First()[0].As<bool>();
+            Console.WriteLine("Returning Result: " + tagRemoved);
+            return tagRemoved;
         }
         catch (Exception ex)
         {

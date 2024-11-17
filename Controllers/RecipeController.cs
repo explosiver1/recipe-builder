@@ -301,7 +301,7 @@ namespace RecipeBuilder.Controllers
 
         // Edit method (GET): Display the form to edit an existing recipe
         [HttpGet]
-        public IActionResult Edit(string recipeName)
+        public IActionResult Edit(string recipeName, string msg = "")
         {
             AuthToken at;
             try
@@ -332,9 +332,10 @@ namespace RecipeBuilder.Controllers
                 IngredientsInput = recipe.Ingredients,
                 ServingSizeInput = string.Empty, //recipe.servingSize != null ? string.Join(", ", recipe.servingSize.Select(kv => $"{kv.Key}, {kv.Value}")) : "",
                 EquipmentInput = string.Join(", ", recipe.Equipment),
-                InstructionsInput = recipe.Instructions
+                InstructionsInput = recipe.Instructions,
             };
 
+            viewModel.msg = msg;
             return View(viewModel);
         }
 
@@ -355,6 +356,13 @@ namespace RecipeBuilder.Controllers
             {
                 Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
+            }
+
+            bool test = CtrlModel.EditRecipe(at.username, RecipeVM.recipe);
+
+            if (!test)
+            {
+                return RedirectToAction("Edit", "Recipe");
             }
             string name = RecipeVM.recipe.Name;
             return RedirectToAction("Look", "Recipe", new { recipeName = name });
