@@ -7,9 +7,5 @@ namespace RecipeBuilder.ViewModels
     {
         public MPDay ScheduledMealsToday { get; set; } = new MPDay();
         public MPWeek ScheduledMealsThisWeek { get; set; } = new MPWeek();
-
-        // Data for selecting a meal to view
-        public string mealTitle { get; set; } = "";
-        public MPMeal mealData { get; set; } = new MPMeal();
     }
 }

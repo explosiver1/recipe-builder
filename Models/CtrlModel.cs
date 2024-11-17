@@ -596,6 +596,19 @@ public static class CtrlModel
 
     /* MEAL PLANNER METHODS */
     /* Retrieve meals for a given date */
+
+    public static MPMeal GetMealPlan(string selectedDate, int mealIndex, string username)
+    {
+        List<MPMeal> MealsForDay = DBQueryModel.GetMealPlanByDay(username, selectedDate).Result;
+        MPMeal mealData = new MPMeal();
+        mealData.recipeNames = MealsForDay[mealIndex].recipeNames;
+        foreach (string recipeName in mealData.recipeNames)
+        {
+            mealData.recipes.Add(CtrlModel.GetRecipe(username, recipeName));
+        }
+        return mealData;
+    }
+
     public static MPDay GetMealsForDate(DateOnly selectedDate, string username)
     {
         MPDay mpDay = new MPDay { Date = selectedDate, Meals = DBQueryModel.GetMealPlanByDay(username, selectedDate.ToString()).Result };
