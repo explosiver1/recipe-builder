@@ -97,7 +97,7 @@
                     <h4 style="color: #4A743E;">@meal.Name</h4>
                     <div class="button-container">
                         <a asp-action="Look" asp-route-id="@meal.Name" class="btn btn-custom">View</a>
-                        <a asp-action="Edit" asp-route-id="@meal.Name" class="btn btn-custom">Edit</a>
+                        <a asp-action="Edit" asp-route-mealName="@meal.Name" class="btn btn-custom">Edit</a>
                     </div>
                     <form method="post" asp-controller="Meals" asp-action="RemoveMeal">
                         <input type="hidden" name="mealToRemove" value="@meal.Name" />

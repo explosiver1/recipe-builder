@@ -497,7 +497,7 @@ public static class CtrlModel
         }
         return myDictionary;
     }
-
+    
 
     /* Returns list of all user's saved meals */
     public static List<MealSet> getMeals(string username)
@@ -514,6 +514,11 @@ public static class CtrlModel
         }
     }
 
+    public static List<string> GetUserMealNames(string username)
+    {
+        var mealNames = DBQueryModel.GetMealNodeNames(username).Result;
+        return mealNames;
+    }
     public static MealSet getMeal(string mealName, string username)
     {
         return DBQueryModel.GetMeal(username, mealName).Result; //SeedData.getMeal(mealName);
@@ -550,7 +555,7 @@ public static class CtrlModel
     public static void RemoveFromMealPlanner(DateOnly date, int mealNum, string recipeToRemove, string username)
     {
         Console.WriteLine("Attempting to remove recipe from meal planner\nDate: " + date + "\nMeal Number: " + mealNum + "\nRecipe: " + recipeToRemove);
-        var result = DBQueryModel.UnScheduleRecipe(username, recipeToRemove, date.ToString(), mealNum.ToString());
+        var result = DBQueryModel.UnScheduleRecipe(username, recipeToRemove,date.ToString(),mealNum.ToString());
     }
 
     // Placeholder method to simulate getting all meals
@@ -868,7 +873,7 @@ public static class CtrlModel
         }
         return true;
     }
-
+  
     public static bool EditRecipe(string username, Recipe r)
     {
         try

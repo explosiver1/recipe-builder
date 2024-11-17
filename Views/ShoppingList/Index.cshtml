@@ -392,11 +392,8 @@
                         <tbody>
                             <tr>
                                 <td><input class="item-left" type="checkbox" onchange="toggleCompletion(this)"></td>
-                                <td class="editable">
-                                    <a href="@Url.Action("Index", "Recipe", new { name = item.Name })">
-                                        <span>@item.Name</span> 
-                                    </a>
-                                </td>
+                                <td class="editable"><a href="/Recipe/Index/@item.Name">@item.Name</a></td>
+                               
                                 <td class="editable">@item.Quantity</td>
                                 <td class="editable">@item.Unit</td>
                                 <td class="editable">@item.Qualifier</td>
