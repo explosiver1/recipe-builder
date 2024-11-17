@@ -62,6 +62,14 @@
         .text-center {
             text-align: center;
         }
+
+        .logIn-container{
+            background-color: #F4F3EC;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 900px;
+            margin: auto;
+        }
     </style>
 </head>
 
@@ -70,18 +78,19 @@
         <div class="text-center">
             <h1 class="display-4">Log In</h1> <!-- Title -->
             <form method="post" asp-controller="Account" asp-action="Login" id="form">
-                <div class="form-group">
-                    <h2 class="schedule-title">Username</h2> <!-- Title styled similar to h2 -->
-                    <input type="text" asp-for="Username" class="form-control" id="username" placeholder="Enter your username" />
-                    <span asp-validation-for="Username" class="text-danger"></span>
-                </div>
-                <br>
-                <div class="form-group">
-                    <h2 class="schedule-title">Password</h2> <!-- Title styled similar to h2 -->
-                    <input type="password" asp-for="Password" class="form-control" id="password" placeholder="Enter your password" />
-                    <span asp-validation-for="Password" class="text-danger"></span>
-                </div>
-                <br>
+                <div class="logIn-container">
+                    <div class="form-group">
+                        <h2 class="schedule-title">Username</h2> <!-- Title styled similar to h2 -->
+                        <input type="text" asp-for="Username" class="form-control" id="username" placeholder="Enter your username" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <h2 class="schedule-title">Password</h2> <!-- Title styled similar to h2 -->
+                        <input type="password" asp-for="Password" class="form-control" id="password" placeholder="Enter your password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                </div><br>
                 <div class="form-group">
                     <a asp-controller="Account" asp-action="Create">Create Account</a>
                     <div class="button-container" id="button">
