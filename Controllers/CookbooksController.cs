@@ -45,6 +45,7 @@ public class CookbooksController : Controller
     [HttpGet]
     public IActionResult Cookbook(string name, string msg = "")
     {
+        Console.WriteLine("Cookbook name: " + name);
         //If user isn't logged in, don't allow access to this page - redirect to main site page
         AuthToken at;
         try
@@ -71,7 +72,7 @@ public class CookbooksController : Controller
             //        Console.WriteLine(recipeName);
             //    }
             //}
-            
+
         }
         catch (Exception e)
         {
@@ -89,7 +90,7 @@ public class CookbooksController : Controller
         //        Console.WriteLine(recipeName);
         //    }
         //}
-        
+
         return View(viewModel);
     }
 
@@ -217,18 +218,25 @@ public class CookbooksController : Controller
             Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
-
+        Console.WriteLine("Cookbook name coming from VM: " + viewModel.cookbookName);
         CtrlModel.EditCookbook(at.username, viewModel.cookbookName, viewModel.cookbookDescription);
 
-        if (viewModel.recipesToAdd.Any()) 
+        if (viewModel.recipesToAdd.Any())
         {
+            Console.WriteLine("Found recipes to add");
             foreach (string recipeName in viewModel.recipesToAdd)
             {
-                CtrlModel.AddToCookbook(at.username, viewModel.cookbookName, recipeName);
+                if (recipeName != "")
+                {
+                    Console.WriteLine(recipeName);
+                    CtrlModel.AddToCookbook(at.username, viewModel.cookbookName, recipeName);
+                }
             }
         }
+        else { Console.WriteLine("No recipes were added"); }
 
-        return RedirectToAction("Cookbook", "Cookbooks", viewModel.cookbookName);
+        return RedirectToAction("Cookbook", "Cookbooks", new { name = viewModel.cookbookName });
+
     }
 
 
@@ -244,7 +252,7 @@ public class CookbooksController : Controller
                 Console.WriteLine("Cookbook Title:" + cookbookTitle);
                 Console.WriteLine("Recipe to Remove: " + recipeToRemove);
                 at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
-                test = false; //DBQueryModel.CookbookRemoveRecipe(at.username, ccvm.cookbook.Title, ccvm.recipeToRemove);
+                test = CtrlModel.RemoveFromCookbook(at.username, cookbookTitle, recipeToRemove); //DBQueryModel.CookbookRemoveRecipe(at.username, cookbook.Title, recipeToRemove).Result;
                 if (!test)
                 {
                     CookbooksCookbookVM ccvm = new CookbooksCookbookVM();
@@ -257,7 +265,7 @@ public class CookbooksController : Controller
                 Console.WriteLine("Error: " + e);
             }
         }
-        return RedirectToAction("Cookbook");
+        return RedirectToAction("Cookbook", new { name = cookbookTitle });
     }
 
     [HttpPost]

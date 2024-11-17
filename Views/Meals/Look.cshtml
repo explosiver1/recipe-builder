@@ -8,6 +8,7 @@
         position: fixed;
         top: 50px;
         width: 100%;
+        height: auto;
         background-color: #ccc;
         padding: 10px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -25,9 +26,36 @@
     .content{
         padding-top: 60px;
     }
+    #recipeContainer {
+        background-color: #F4F3EC;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 900px;
+        margin: auto;
+    }
+    #recipeContainer ul {
+        list-style-type: disc;
+        padding-left: 20px;
+        color: #4A743E;
+    }
+
+    #recipeContainer ul li {
+        margin: 10px 0;
+    }
+
+    #recipeContainer form {
+        display: inline; /* Keep the form inline with the text */
+    }
+    .column {
+        float: left;
+        width: 50%;
+    }
+    .row {
+        display: flex;
+    }
 </style>
 <div class="fixed-header">
-    <h1 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">@Model.meal.Name</h1><br>
+    <h2 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">@Model.meal.Name</h2><br>
     @if(@Model.meal.Recipes != null && @Model.meal.Recipes.Any())
     {
         @foreach(Recipe recipe in @Model.meal.Recipes)
@@ -48,48 +76,92 @@
         {
             @foreach(Recipe recipe in @Model.meal.Recipes)
             {
-                <h3 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">@recipe.Name</h3>
-                <div class="col-md-4">
-                    <h4>Prep Time:</h4>
-                    <ul>
-                        <li>@recipe.PrepTime minutes</li>
-                    </ul>
-                    <h4>Cooktime:</h4>
-                    <ul>
-                        <li>@recipe.CookTime minutes</li>
-                    </ul>
-                    <h4>Rating:</h4>
-                    <ul>
-                        <li>@recipe.Rating</li>
-                    </ul>
-                    <h4>Difficulty:</h4>
-                    <ul>
-                        <li>@recipe.Difficulty</li>
-                    </ul>
-                    <h4>Ingredients:</h4>
-                    <ul>
+                <div class ="row mb-3">
+                    <div class="col-md-8 text-center">
+                        <h1 class="display-4" style="margin: 0;">@recipe.Name</h1><br>
+                    </div>
+                </div>
+                <div class="row">
+                <!--Left Side of Page-->
+                    <div id="recipeContainer"class="col-md-4">
+                        <h4>Rating:</h4>
+                        <ul>
+                            <li>@recipe.Rating</li>
+                        </ul>
+                        <h4>Difficulty:</h4>
+                        <ul>
+                            <li>@recipe.Difficulty</li>
+                        </ul>
                         @if (@recipe.Ingredients !=  null)
                         {
+                            <h4>Ingredients:</h4>
+                            <ul>
                             @foreach (var ing in @recipe.Ingredients)
                             {
                                 <li>
-                                    @ing.Quantity @ing.Unit @ing.Ingredient.Name
-                                </li><br>
+                                    @ing.Quantity @ing.Unit @ing.Qualifier @ing.Ingredient.Name
+                                    <button class="add-to-cart-btn" onclick="addToCart('@ing.Ingredient.Name',this)">Add to Cart</button>
+                                </li>
+                                <br>
                             }
+                            </ul>
                         }
-                    </ul>
-                </div>
-                <div class="col-md-8">
-                    <h4>Instructions:</h4>
-                    <ol>
-                        @if (@recipe.Instructions !=  null)
-                        {
-                            @foreach (var inst in @recipe.Instructions)
+                    </div>
+                    <!--Right Side of Page-->
+                    <div class="col-md-8">
+                        <div id="recipeContainer">
+                            @if(@recipe.Description != null && @recipe.Description.Any())
                             {
-                                <li>@inst</li>
+                                <i class="align-items-center">@recipe.Description</i>
                             }
-                        }
-                    </ol>
+                            <br>
+                            @if(@recipe.Tags != null && @recipe.Tags.Any())
+                            {
+                                <span>Tags: </span>
+                                @foreach(var tags in @recipe.Tags)
+                                {
+                                    <span>@tags </span>
+                                }
+                            }
+                            <br>
+                            @if(@recipe.Equipment != null && @recipe.Equipment.Any())
+                            {
+                                <span>Equipment needed: </span>
+                                @foreach(var tools in @recipe.Equipment)
+                                {
+                                    <span>@tools </span>
+                                }
+                            }
+                        </div><br>
+                        <div id="recipeContainer">
+                            <div class="row">
+                                <div class="column">
+                                    <h4 class="align-items-center"><u>Prep Time:</u></h4>
+                                    <span class="align-items-center">@recipe.PrepTime minutes</span>
+                                </div>
+                                <div class="column">
+                                    <h4 class="align-items-center"><u>Cook Time:</u></h4>
+                                    <span class="align-items-center">@recipe.CookTime minutes</span>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <span>Makes @recipe.numServings @recipe.servingSize</span>
+                            </div>
+                        </div><br>
+                        <div id="recipeContainer">
+                            <h4>Instructions:</h4>
+                            <ul>
+                                @if (@recipe.Instructions !=  null)
+                                {
+                                    @foreach (var inst in @recipe.Instructions)
+                                    {
+                                        <li>@inst</li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             }
         }

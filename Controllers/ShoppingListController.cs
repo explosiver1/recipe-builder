@@ -124,7 +124,7 @@ public class ShoppingListController : Controller
 
     // Remove method: Removes an item from the shopping list
     [HttpPost]
-    public IActionResult EditShoppingListItem(IngredientDetail item)
+    public IActionResult EditShoppingListItem(string name, string unit, int quantity, string qualifier)
     {
         AuthToken at;
         try
@@ -140,7 +140,7 @@ public class ShoppingListController : Controller
             Console.WriteLine($"An error occurred: {ex.Message}");
             return RedirectToAction("Index", "Home");
         }
-
+        IngredientDetail item = new IngredientDetail { Name=name, Unit = unit, Quantity = quantity, Qualifier = qualifier };
         CtrlModel.EditShoppingListItem(at.username, item);
         return RedirectToAction("Index", "ShoppingList");
     }

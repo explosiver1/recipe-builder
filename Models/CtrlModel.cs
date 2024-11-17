@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace RecipeBuilder.Models;
 
@@ -30,7 +31,7 @@ public static class CtrlModel
     {
         Cookbook? cookbookObj = DBQueryModel.GetCookbook(cookbookName, username).Result; //SeedData.GetCookbook(cookbookName);// Update to be DBQueryModel Function Call
         return cookbookObj;
-    }    
+    }
 
     public static List<Recipe> GetRecipeList(string username)//string userName)
 
@@ -297,7 +298,7 @@ public static class CtrlModel
         {
             RemoveItemFromShoppingList(username, item.Name);
             return AddItemToShoppingList(username, item);
-            
+
         }
         catch
         {
@@ -474,7 +475,7 @@ public static class CtrlModel
     {
         List<IngredientDetail> ABCList = myList.OrderBy(x => x.Name).ToList();
         Dictionary<string, List<IngredientDetail>> myDictionary = new Dictionary<string, List<IngredientDetail>>();
-        
+
         foreach (IngredientDetail item in ABCList)
         {
             if (item.Name.Length > 0)
@@ -496,7 +497,7 @@ public static class CtrlModel
         }
         return myDictionary;
     }
-
+    
 
     /* Returns list of all user's saved meals */
     public static List<MealSet> getMeals(string username)
@@ -513,6 +514,11 @@ public static class CtrlModel
         }
     }
 
+    public static List<string> GetUserMealNames(string username)
+    {
+        var mealNames = DBQueryModel.GetMealNodeNames(username).Result;
+        return mealNames;
+    }
     public static MealSet getMeal(string mealName, string username)
     {
         return DBQueryModel.GetMeal(username, mealName).Result; //SeedData.getMeal(mealName);
@@ -530,7 +536,7 @@ public static class CtrlModel
             {
                 foreach (string recipeName in meal.recipeNames)
                 {
-                    if (!DBQueryModel.ScheduleRecipe(username, recipeName, meal.date.ToString(), i).Result)
+                    if (!DBQueryModel.ScheduleRecipe(username, recipeName, mealPlannerDay.Date.ToString(), i).Result)
                     {
                         throw new Exception("Recipe could not be added. Return of false from DBQueryModel.ScheduleRecipe()");
                     }
@@ -546,7 +552,11 @@ public static class CtrlModel
         }
 
     }
-
+    public static void RemoveFromMealPlanner(DateOnly date, int mealNum, string recipeToRemove, string username)
+    {
+        Console.WriteLine("Attempting to remove recipe from meal planner\nDate: " + date + "\nMeal Number: " + mealNum + "\nRecipe: " + recipeToRemove);
+        var result = DBQueryModel.UnScheduleRecipe(username, recipeToRemove,date.ToString(),mealNum.ToString());
+    }
 
     // Placeholder method to simulate getting all meals
     public static List<MealSet> GetAllMeals(string username)
@@ -575,16 +585,16 @@ public static class CtrlModel
     }
 
     /* Retrieve meals for a week */
-    public static MPWeek GetMealsForWeek(DateOnly selectedDate, string username) 
+    public static MPWeek GetMealsForWeek(DateOnly selectedDate, string username)
     {
         // Determine the dates of all the days in the same week as the given date
-        List < DateOnly > weekDates = DateHelper.GetDatesForWeek(selectedDate);
+        List<DateOnly> weekDates = DateHelper.GetDatesForWeek(selectedDate);
 
         // Create & populate a week of mealsets (MPWeek) for this date's week
         MPWeek weekMeals = new MPWeek();
         foreach (DateOnly day in weekDates)
         {
-            weekMeals.Days.Add( GetMealsForDate(day, username) );
+            weekMeals.Days.Add(GetMealsForDate(day, username));
         }
         return weekMeals;
     }
@@ -615,32 +625,7 @@ public static class CtrlModel
         // Loop through each week of the month, starting with first day of week (Sun)
         for (DateOnly startOfWeek = startOfFirstWeekOfMonth; startOfWeek <= startOfLastWeekOfMonth; startOfWeek = startOfWeek.AddDays(7))
         {
-            MPWeek currentWeek = GetMealsForWeek(selectedDate, username);
-            
-            //Console.WriteLine("Created new Week");
-            //// Loop through days of week, populating day data
-            //for (int i = 0; i < 7; i++)
-            //{
-            //    Console.WriteLine("Creating new day for {0}", day);
-            //    // Get data for day
-            //    MPDay currentDay = new MPDay
-            //    {
-            //        Date = day,
-            //        Meals = CtrlModel.getMealsForDate(day, username).Select(meal => new MPMeal
-            //        {
-            //            mealDescription = meal.Description,
-            //            recipes = meal.Recipes
-            //        }).ToList()
-            //    };
-            //    Console.WriteLine("Data for new day obtained");
-            //    // Add day to week
-                //currentWeek.Days.Add(currentDay);
-                //Console.WriteLine("Day added to current week");
-                //// Increment day to next date
-                //day = day.AddDays(1);
-                //Console.WriteLine("Ready for next day: {0}", day);
-            //}
-
+            MPWeek currentWeek = GetMealsForWeek(startOfWeek, username);
             // Add week to month
             month.weeks.Add(currentWeek);
             Console.WriteLine("Added new week");
@@ -705,7 +690,7 @@ public static class CtrlModel
         {
             if (!DBQueryModel.RemoveFromCookbook(username, cookbookName, recipeName).Result)
             {
-                throw new Exception("DBQueryModel.AddToCookbook returned false");
+                throw new Exception("DBQueryModel.RemoveFromCookbook returned false");
             }
         }
         catch (Exception e)
@@ -734,6 +719,7 @@ public static class CtrlModel
 
     public static void EditCookbook(string username, string cookbookName, string description)
     {
+        Console.WriteLine($"Entering CtrlModel.EditCookbook with parameters: username: {username}, cookbookName: {cookbookName}, description: {description}");
         bool success = DBQueryModel.EditCookBook(username, cookbookName, description).Result;
     }
     public static IngredientDetail? GetIngredientDetailFromShoppingList(IngredientDetail ingredientDetail, string username)
@@ -772,7 +758,7 @@ public static class CtrlModel
                             }
                         }
                     }
-                    
+
                 }
                 catch (Exception e)
                 {
@@ -886,6 +872,88 @@ public static class CtrlModel
             return false;
         }
         return true;
+    }
+  
+    public static bool EditRecipe(string username, Recipe r)
+    {
+        try
+        {
+            //Get call on existing recipe
+            Recipe oldRecipe = DBQueryModel.GetRecipe(username, r.Name).Result;
+            //Call to set new paramters on Recipe node.
+            if (!DBQueryModel.EditRecipe(username, r.Name, "", "", "", r.Description, r.Rating.ToString(), r.Difficulty.ToString(), r.numServings.ToString(), r.servingSize, r.CookTime.ToString(), r.PrepTime.ToString()).Result)
+            {
+                throw new Exception("Error, recipe parameters could not be changed.");
+            }
+            foreach (string t in r.Tags)
+            {
+                if (!oldRecipe.Tags.Contains(t))
+                {
+                    if (!DBQueryModel.CreateTagNode(t, r.Name, username).Result)
+                    {
+                        throw new Exception("Error, tags could not be edited");
+                    }
+                }
+            }
+            foreach (string t in oldRecipe.Tags)
+            {
+                if (!r.Tags.Contains(t))
+                {
+                    if (!DBQueryModel.RemoveTagFromRecipe(t, r.Name, username).Result)
+                    {
+                        throw new Exception("Error, tags could not be edited.");
+                    }
+                }
+            }
+            if (!DBQueryModel.DeleteStepsFromRecipe(username, r.Name).Result)
+            {
+                throw new Exception("Error, steps could not be edited.");
+            }
+            int i = 0;
+            foreach (string step in r.Instructions)
+            {
+                if (!DBQueryModel.CreateStepNode(username, r.Name, i.ToString(), step).Result)
+                {
+                    throw new Exception("Error, steps could not be edited.");
+                }
+            }
+            if (!DBQueryModel.RemoveToolsFromRecipe(username, r.Name).Result)
+            {
+                throw new Exception("Error, tools could not be edited");
+            }
+            foreach (string t in r.Equipment)
+            {
+                if (!DBQueryModel.CreateToolNode(username, r.Name, t).Result)
+                {
+                    throw new Exception("Error, tools could not be edited");
+                }
+            }
+            // Repeat for Ingredients
+            foreach (IngredientDetail ingD in oldRecipe.Ingredients)
+            {
+                if (!DBQueryModel.RemoveIngredientFromRecipe(ingD.Name, r.Name, username).Result)
+                {
+                    throw new Exception("Error, could not edit ingredients");
+                }
+            }
+            foreach (IngredientDetail ingD in oldRecipe.Ingredients)
+            {
+                if (!DBQueryModel.CreateIngredientNode(username, ingD.Name).Result)
+                {
+                    throw new Exception("Error, could not edit ingredients");
+                }
+                if (!DBQueryModel.ConnectIngredientNode(username, r.Name, ingD.Name, ingD.Unit, ingD.Qualifier, ingD.Quantity).Result)
+                {
+                    throw new Exception("Error, could not edit ingredients");
+                }
+            }
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Error, recipe could not be updated. Exception: " + e);
+            return false;
+        }
     }
 
 }

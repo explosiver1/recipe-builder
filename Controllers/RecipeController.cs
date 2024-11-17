@@ -122,7 +122,7 @@ namespace RecipeBuilder.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred: {ex.Message}"); 
+                Console.WriteLine($"An error occurred: {ex.Message}");
                 return RedirectToAction("Index", "Home");
             }
 
@@ -221,7 +221,7 @@ namespace RecipeBuilder.Controllers
                                             .Where(tag => !string.IsNullOrEmpty(tag))
                                             .ToList();
                 }
-                
+
 
                 // Parse Ingredients
                 recipeVM.recipe.Ingredients = recipeVM.IngredientsInput; /* .Split('\n')
@@ -256,7 +256,7 @@ namespace RecipeBuilder.Controllers
                                             .Where(tool => !string.IsNullOrEmpty(tool))
                                             .ToList();
                 }
-                
+
 
                 // Parse Instructions
                 recipeVM.recipe.Instructions = recipeVM.InstructionsInput; /*.Split('\n')
@@ -342,6 +342,20 @@ namespace RecipeBuilder.Controllers
         [HttpPost]
         public IActionResult EditRecipe(RecipeEditVM RecipeVM)
         {
+            AuthToken at;
+            try
+            {
+                at = JsonConvert.DeserializeObject<AuthToken>(HttpContext.Session.GetString("authToken")!)!;
+                if (!at.Validate())
+                {
+                    throw new Exception("Authentication Expired. Please login again.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"An error occurred: {ex.Message}");
+                return RedirectToAction("Index", "Home");
+            }
             string name = RecipeVM.recipe.Name;
             return RedirectToAction("Look", "Recipe", new { recipeName = name });
         }

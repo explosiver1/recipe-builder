@@ -22,20 +22,27 @@ namespace RecipeBuilder.Models
             return (startOfMonth, endOfMonth);
         }
 
-        public static DateOnly GetStartOfWeek(DateOnly currentDate)
+        public static DateOnly GetStartOfWeek(DateOnly givenDate)
         {
-            return currentDate.AddDays(-(int)currentDate.DayOfWeek);
+            return givenDate.AddDays(-(int)givenDate.DayOfWeek);
         }
 
-        public static List<DateOnly> GetDatesForWeek(DateOnly currentDate)
+        public static List<DateOnly> GetDatesForWeek(DateOnly givenDate)
         {
-            DateOnly startOfWeek = GetStartOfWeek(currentDate);
+            DateOnly startOfWeek = GetStartOfWeek(givenDate);
             var datesInWeek = new List<DateOnly>();
             for (int i = 0; i < 7; i++)
             {
                 datesInWeek.Add(startOfWeek.AddDays(i));
             }
             return datesInWeek;
+        }
+
+        public static (DateOnly startOfWeek, DateOnly endOfWeek) GetDateRangeForWeek(DateOnly givenDate)
+        {
+            var startOfWeek = givenDate.AddDays(-(int)givenDate.DayOfWeek); // Assuming Sunday as the start of the week
+            var endOfWeek = startOfWeek.AddDays(6);
+            return (startOfWeek, endOfWeek);
         }
     }
 }
