@@ -1848,6 +1848,7 @@ public class DBQueryModel
             {
                 Recipe r = GetRecipe(username, GetCleanString(username, record["rec"].As<INode>()["name"].As<string>())).Result;
                 meal.Recipes.Add(r);
+                //meal.RecipeNames.Add(r.Name);
                 Console.WriteLine("Retrieved recipe " + r.Name + " from meal " + mealName);
             });
         }

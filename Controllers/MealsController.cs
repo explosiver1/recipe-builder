@@ -145,6 +145,15 @@ public class MealsController : Controller
             UserRecipesNames = CtrlModel.GetRecipeNameList(at.username)
         };
 
+        if (viewModel.mealData.RecipeNames == null)
+        {
+            viewModel.mealData.RecipeNames = new List<string>();
+        }
+        foreach (Recipe r in viewModel.mealData.Recipes)
+        {
+            viewModel.mealData.RecipeNames.Add(r.Name);
+        }
+
         return View(viewModel);
     }
 
