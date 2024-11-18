@@ -83,24 +83,24 @@
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <div class="d-flex">
-        <div class="input-group input-group-sm">
+        @* <div class="input-group input-group-sm">
             <input type="text" class="form-control" placeholder="Search by Tags..." name="TagSearch" value="@ViewData["CurrentTagFilter"]" style="max-width: 150px;" />
             <div class="input-group-append">
                 <button class="btn btn-search" type="submit">Search</button>
             </div>
-        </div>
+        </div> *@
     </div>
     <h1 class="text-center flex-grow-1 display-4" style="margin: 0; color: #4A743E;">Cookbooks</h1>
     <hr class="rounded">
     <a asp-controller="Cookbooks" asp-action="Add" class="btn btn-custom d-flex">Create New Cookbook</a>
 </div>
 
-<div class="text-center">
+@* <div class="text-center">
     <div class="form-group">
         <input type="text" class="form-control" placeholder="Search Recipes..." name="searchTerm" value="@ViewData["CurrentFilter"]" />
     </div><br>
     <button type="submit" class="btn btn-search ml-2">Search</button>
-</div><br>
+</div><br> *@
 
 <div class="row">
     @if (Model.cookbooks != null && Model.cookbooks.Any())
