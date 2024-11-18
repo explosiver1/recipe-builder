@@ -19,7 +19,7 @@
     </div>
 
     <div>
-        <label for="AddedRecipes">Added Recipes:</label>
+        <label for="AddedRecipes">Current Recipes:</label>
     </div>
     @if (Model.mealData.RecipeNames != null && Model.mealData.RecipeNames.Any())
     {
@@ -46,7 +46,12 @@
                             <tr>
                                 <td>
                                     <select name="RecipesToAdd[@i]" value="@Model.mealData.RecipeNames">
+                                    @if(Model.mealData.RecipeNames.Count > i && Model.mealData.RecipeNames[i] != "") {
+                                        <option value="">None</option>
+                                        <option value="@Model.mealData.RecipeNames[@i]" selected>@Model.mealData.RecipeNames[@i]</option>
+                                        } else {
                                         <option value="" selected>None</option>
+                                        }
                                         @foreach(string recipeName in Model.UserRecipesNames)
                                         {
                                             <option value="@recipeName">@recipeName</option>

@@ -7,35 +7,33 @@ public class ServerSettings
 {
     //These fields will be fed from an ini file adjacent to the server binary.
     //For now, they're placed directly in code.
-    public static string neo4jURI = "bolt+s://recipes.zelpa.net:7687";  //"bolt://localhost:7687";
-    public static string dbUser = "neo4j";
-    public static string dbPassword = "55QvQu95HG";
+    public static string neo4jURI = "";
+    public static string dbUser = "";
+    public static string dbPassword = "";
 
     static ServerSettings()
     {
-
-        //XML is super WIP. Idk how to use it well yet.
-
         // Load the XML file
         try
         {
-            XDocument doc = XDocument.Load("settings.xml");
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "settings.xml");
+            Console.WriteLine("File Path: " + filePath);
+
+            XDocument doc = XDocument.Load(filePath);
 
             // Query elements using LINQ
-            var elements = from el in doc.Descendants("Credentials")
-                           select el;
-
-            // Loop through the elements
-            foreach (var el in elements)
-            {
-                Console.WriteLine("Element: " + el.Name);
-                Console.WriteLine("Value: " + el.Value);
-            }
+            XElement serverSettings = doc.Element("ServerCredentials")!;
+            Console.WriteLine(serverSettings.Element("URI")!.Value);
+            neo4jURI = serverSettings.Element("URI")!.Value;
+            dbUser = serverSettings.Element("dbUser")!.Value;
+            dbPassword = serverSettings.Element("dbPassword")!.Value;
         }
-        catch
+        catch (Exception e)
         {
-            Console.WriteLine("settings.xml file could not be opened.");
+            Console.WriteLine("settings.xml file could not be opened. Exception: " + e);
+            neo4jURI = string.Empty;
+            dbUser = string.Empty;
+            dbPassword = string.Empty;
         }
-
     }
 }
